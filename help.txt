@@ -1,0 +1,89 @@
+Embarcadero C++ Win32 Preprocessor 6.90 Copyright (c) 1993-2014 Embarcadero Technologies, Inc.
+Available options (* = default setting, xxx = has sub-options: use -h -X):
+(Note: -X- or -w-XXX will usually undo whatever was set or unset by -X or -wXXX.
+ If two options conflict, the last one specified will be used.)
+--sysroot Sets the logical root directory for headers, libraries and frameworks
+	  (Paths specified in --sysinc or --syslib and those in -F that begin
+	   with '/' are prefixed with this value)
+--sysinc  Set the system include file search path
+	  (if specified, sysroot will be prepended)
+--syslib  Set the system library file search path
+	  (if specified, sysroot will be prepended)
+--savemem Set maximum SAVEMEM memory (in Mb)
+	  (This is the contiguous memory allocated to store global symbols and
+	   similar constructs.  Pre-compiled headers use this memory)
+--version Show compiler version
+--replacehdr Replace header name (e.g. --replaceHeader=a.h=b.h)
+--xrtti   Generate extended rtti information
+  -3      Generate 80386 protected-mode compatible instructions
+  -4      Generate 80386/80486 protected-mode compatible instructions
+  -5      Generate Pentium instructions
+  -6      Generate Pentium Pro instructions
+  -Axxx   Enable ANSI conformance
+  -Cxxx   Enable nested comments
+  -D      -D<name> defines 'name' as a null string, or use -D<name>=<value>
+  -E      Specify which assembler to use
+  -G      Optimize for size/speed; use -O1 and -O2 instead
+  -Hi     Include the contents of header file: -Histdio.h
+  -Hp     Print headers as they are included
+  -I      Set the include file search path
+  -K      Set default character type to unsigned
+  -L      Library file search path
+  -M      Create a linker map file
+  -N      Hodgepodge of miscellanity (see -h -N)
+  -Nd     Macros get a value of "1" by default (-DX => -DX=1)
+  -Nt     GNU __typeof(var) support
+  -Nv     Allow void& as a valid type
+  -O      Optimize jumps
+  -P      Perform C++ compile regardless of source extension
+  -Q      Extended compiler error information
+  -Rxxx   Include browser information in generated .OBJ files
+  -S      Control output format; see user documentation
+  -T      Specify assembler option, e.g. -Tx
+  -U      Undefine any previous definitions of name
+  -Vxxx   Compatibility options
+  -W      Target is a Windows application
+  -X      Disable compiler autodependency output
+  -Zd     Output global defs as DocBook specs; to specify: -Zd=<file>.c
+  -Zn     Disable and/or don't define CodeGear builtins
+  -Zx     Output global definitions to XML file.
+	      Sub Options:
+		-Zx=<filename> Emit only types/declarations in <filename>
+		-Zxf[=filename] Skip base type members 
+		-Zxm[=filename] Emit macros
+		-Zxp[=filename] Emit file & line position
+  -axxx   Set data alignment boundary.  Default is -a8; -a- means -a1
+  -b      Enable -bi and treat enums as ints from a typechecking point of view
+* -bi     Make sizeof(enum x) == sizeof(int) unless explicitly stated otherwise
+  -c      Compile to object file only, do not link
+  -d      Merge duplicate strings
+  -dc     Put strings into the read-only data segment
+  -dw     Put strings into the (writeable) data segment
+  -e      Specify target executable pathname
+  -g      Stop batch compilation after n warnings (Default = 255)
+  -h      Request help ('-h -' shows all help).  Can be specific: -h -V
+  -i      Set maximum significant identifier length (Default = 250)
+  -j      Stop batch compilation after n errors (Default = 50)
+* -k      Generate standard stack frames
+  -l      Pass options to the linker; example: -ls -l-x
+  -m      Generate makefile dependency information
+  -md     Put dependency info in .d files, not in the object file
+  -mm     Ignore system header files while generating dependency info
+  -mo     Specify the output file for dependency info
+  -n      Set output directory for object files
+  -o      Set output filename (-o<filename> or -o <filename> supported)
+  -pxxx   Use Pascal calling convention
+  -q      Suppress compiler identification banner
+  -r      Use register variables
+  -rd     Use register variables only when register keyword is employed
+  -s      Link using the system's non-incremental linker
+  -t      Specify target executable
+* -u      Generate underscores on symbol names
+  -vxxx   Turn on source debugging
+  -w      Display all warnings
+  -w!     Return non-zero from compiler on warnings
+  -xxxx   Enable exception handling
+  -y      Debug line numbers on
+  -z      Options for redefining standard segment names
+Use '-h <OPT>' for help on a specific option, or
+    '-h -' to see all available options.
