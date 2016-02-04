@@ -26,3 +26,13 @@
 *.exe
 *.out
 *.app
+Win32/*
+Win64/*
+
+# Files after preprocesing
+*.i
+
+# Other
+*.vlb
+*.local
+__history/*
