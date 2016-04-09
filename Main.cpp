@@ -365,9 +365,12 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k)
 	long double sin2omega =	dtime / (as[k] + aks[k]) * ((z2 - z3) * v1 + (z3 - z1) * v2 + (z1 - z2) * v3 -
 							(r3 - r2) * u1 - (r1 - r3) * u2 - (r2 - r1) * u3);
 	long double cos2omega = sqrtl(powl(1 - sin2omega, 2));
-	srr[k] =	0.5 * (srr[k] + szz[k]) + 0.5 * (srr[k] - szz[k]) * cos2omega - srz[k] * sin2omega;
-	szz[k] =	0.5 * (srr[k] + szz[k]) - 0.5 * (srr[k] - szz[k]) * cos2omega + srz[k] * sin2omega;
-	srz[k] =	srz[k] * cos2omega + 0.5 * (srr[k] - szz[k]) * sin2omega;
+    long double srrt =	0.5 * (srr[k] + szz[k]) + 0.5 * (srr[k] - szz[k]) * cos2omega - srz[k] * sin2omega;
+	long double szzt =	0.5 * (srr[k] + szz[k]) - 0.5 * (srr[k] - szz[k]) * cos2omega + srz[k] * sin2omega;
+	long double srzt =	srz[k] * cos2omega + 0.5 * (srr[k] - szz[k]) * sin2omega;
+	srr[k] = srrt;
+	szz[k] = szzt;
+	srz[k] = srzt;
 
 	/*
 	 частные производные функции F по компонентам тензора пластических
@@ -833,7 +836,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender)
 	tfinish = nt * dtimepr;
 	if( !NoAnim )
 		threegraphs(false);
-	for (int n = 0; n <= nt; n++)
+	for (auto n = 0; n <= nt; n++)
 	{
 		if (UnlimStop) {
 			return;
@@ -2129,7 +2132,8 @@ void __fastcall TmainForm::jjjjBoxChange(TObject *)
 // (2015 год) Переписать!!! // (2015 год) Переписать!!!
 // (2015 год) Переписать!!! // (2015 год) Переписать!!!
 //void WriteToFile(FILE *file, FILE *file1, FILE *file2, FILE *file3)
-//{//	int j;
+//{
+//	int j;
 //	// sqI2p - интенсивность пластических деформаций
 //	// tetp - объёмная пластическая деформация
 //	// p - давление
