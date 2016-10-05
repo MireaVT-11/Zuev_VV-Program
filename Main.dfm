@@ -325,6 +325,13 @@ object mainForm: TmainForm
     Height = 177
     Shape = bsRightLine
   end
+  object Label30: TLabel
+    Left = 562
+    Top = 594
+    Width = 65
+    Height = 13
+    Caption = #1047#1072#1075#1083#1091#1073#1083#1077#1085#1080#1077
+  end
   object alfEdit: TEdit
     Left = 3
     Top = 24
@@ -933,6 +940,24 @@ object mainForm: TmainForm
     Enabled = False
     TabOrder = 59
     Text = '100'
+  end
+  object InputEdit1: TSpinEdit
+    Left = 562
+    Top = 613
+    Width = 121
+    Height = 22
+    MaxValue = 100
+    MinValue = 0
+    TabOrder = 60
+    Value = 0
+  end
+  object AltInpCBox: TCheckBox
+    Left = 562
+    Top = 641
+    Width = 126
+    Height = 17
+    Caption = #1040#1083#1100#1090'. '#1088#1077#1078#1080#1084' '#1079#1072#1075#1083'.'
+    TabOrder = 61
   end
   object SaveDialog1: TSaveDialog
     Left = 440

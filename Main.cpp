@@ -558,6 +558,19 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k)
 		T_max += 10.0;
 }
 
+// Нужно для заглубления ударника. Проверяет, будет ли элемент мишени с номером k заменён элементом ударника
+bool test_k(int k)
+{
+	if(k>2*n2*n4)
+		return true;
+	for(int i=0;i<mainForm->InputEdit1->Value;++i)
+	{
+	   if(k>2*(n2-i-1)*n4 && k<=2*(n2-i)*n4-2*(n4-n3))
+		  return true;
+	}
+	return false;
+}
+
 // Нажатие книпки "Пуск". Основная функция.
 void __fastcall TmainForm::RefreshClick(TObject *Sender)
 {
@@ -705,11 +718,19 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender)
 	// ЗАДАНИЕ НАЧАЛЬНОЙ СКОРОСТИ СОУДАРЕНИЯ
 	if (CheckBoxs->Checked) // Движение снаряда
 	{
-		for (int i = n2 * (n4 + 1) + 1; i <= n2 * (n4 + 1) + n3 + 1; i++)
-			speedz[i] = -0.5 * vindent; // сохранение симметрии
+		int zcl = InputEdit1->Value;
+		for (int i = (n2 - zcl) * (n4 + 1) + 1; i <= (n2 - zcl) * (n4 + 1) + n3 + 1; i++)
+		{	speedz[i] = -0.5 * vindent; // сохранение симметрии
+			}
 		// speedz[i] = vs;
 		for (int i = (n2 + 1) * (n4 + 1) + 1; i <= numbertop; i++)
-			speedz[i] = -vindent;
+			{speedz[i] = -vindent;}
+		for(int c = 0; c < zcl-1; ++c)
+		{
+			 for(int i = (n2 - c)*(n4+1)+1; i<=(n2 - c)*(n4+1)+n3; ++i)
+			 speedz[i]=-vindent;
+			 speedz[(int)((n2 - c)*(n4+1)+n3+1)] = -0.5 * vindent;
+		}  
 	}
 	if (CheckBoxn->Checked) // Нижняя волна
 		for (int i = 1; i <= n4 + 1; i++)
@@ -1205,7 +1226,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender)
 	const int magicNomber = 10;
 	long double *data[magicNomber] = {epsrr,epszz,epsrz,epstt,epsrrp,epszzp,epsrzp,epsttp,tet,sqI2p};
 	sd("R, %\tepsrr\tepszz\tepsrz\tepstt\tepsrrp\tepszzp\tepsrzp\tepsttp\ttet\tsqI2p", data, magicNomber, TElemTarget, n2);
-    //END магия
+	//END магия
 	Button2->Caption = "Построение графиков";
 //	fclose(file);
 //	fclose(file1);
@@ -1360,7 +1381,10 @@ void topology()
 		for (int i = 1; i <= nstrat; i++)
 			for (int j = 1; j <= n2i[i] * 2 * n4; j++)
 			{
-				matelm[k--] = matstrat[i];
+				int tmat = matstrat[i];
+				if(test_k(k))
+					tmat = matstrat0;
+				matelm[k--] = tmat;
 				//k = k - 1;
 			}
 	}
@@ -1502,7 +1526,7 @@ void topology()
 		tmat = matstrat0;
 		/*if (tcrdr*tcrdr+pow(tcrdz-0.5*tzast,2)<=0.125*tzast*tzast) {
 		   tmat = 1;
-		}*/
+		} */
 		// Случай стакана в качестве сооружения
 		if (mainForm->CheckBoxStakan->Checked)
 		{
@@ -1778,13 +1802,12 @@ void _fastcall TmainForm::threegraphs(bool save, int i) {
 	holst = bmp->Canvas;
 	holst->FillRect(rect);
 	beauty = BeautyCBox->Checked;
-	holst->Pen->Color = RGB(30,30,30);
+	holst->Pen->Color = static_cast<TColor>(RGB(30,30,30));
 
 	for (int k = 1; k <= numberelem; k++)
 		threeangle(k);
 
 	//if (beauty) AntiAliasing();//Антиальясинг - зло!
-
 	graphForm->Canvas->CopyRect(rect,holst,rect);
 	//bmp->ReleaseHandle();
 	//bmp->Free();
@@ -1869,6 +1892,8 @@ void threeangle(int k)
 	holst->Brush->Color = HotColor;
 	//holst->Pen->Color = HotColor;
 	holst->Polygon(poly, 2);
+	/*if(test_k(k))
+		holst->TextOutW((poly[0].x+poly[1].x+poly[2].x)/3-4, (poly[0].y+poly[1].y+poly[2].y)/3-4,IntToStr(k));*/
 	//holst->Brush->Color = clBlack;
 }
 

@@ -18,6 +18,7 @@
 #include <System.Rtti.hpp>
 #include <Vcl.Bind.DBEngExt.hpp>
 #include <Vcl.Bind.Editors.hpp>
+#include <Vcl.Samples.Spin.hpp>
 //#include <Vcl.Bind.DBEngExt.hpp>
 //#include <Vcl.Bind.Editors.hpp>
 
@@ -135,6 +136,9 @@ __published:	// IDE-managed Components
 	TEdit *Edit1;
 	TBindingsList *BindingsList1;
 	TLinkControlToProperty *LinkControlToPropertyEnabled;
+	TSpinEdit *InputEdit1;
+	TLabel *Label30;
+	TCheckBox *AltInpCBox;
         void __fastcall RefreshClick(TObject *Sender);
         void __fastcall FormCreate(TObject *Sender);
         void __fastcall jjjjBoxChange(TObject *Sender);
