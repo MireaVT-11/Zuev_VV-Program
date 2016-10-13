@@ -230,7 +230,7 @@ object mainForm: TmainForm
     Left = 240
     Top = 407
     Width = 217
-    Height = 2
+    Height = 14
     Shape = bsBottomLine
   end
   object Bevel8: TBevel
@@ -539,9 +539,7 @@ object mainForm: TmainForm
     Width = 167
     Height = 21
     Style = csDropDownList
-    ItemIndex = 3
     TabOrder = 20
-    Text = #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 2'
     Items.Strings = (
       #1040#1083#1102#1084#1080#1085#1080#1081
       #1057#1090#1072#1083#1100
@@ -600,9 +598,9 @@ object mainForm: TmainForm
   end
   object Button1: TButton
     Left = 245
-    Top = 367
+    Top = 391
     Width = 204
-    Height = 34
+    Height = 25
     Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1085#1086#1074#1086#1075#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072
     TabOrder = 23
     OnClick = Button1Click
@@ -910,9 +908,9 @@ object mainForm: TmainForm
     TabOrder = 56
   end
   object BeautyCBox: TCheckBox
-    Left = 335
+    Left = 396
     Top = 485
-    Width = 97
+    Width = 61
     Height = 17
     Caption = #1050#1088#1072#1089#1086#1090#1072
     Enabled = False
@@ -946,8 +944,11 @@ object mainForm: TmainForm
     Top = 613
     Width = 121
     Height = 22
+    Hint = #1056#1072#1073#1086#1090#1072#1077#1090' '#1090#1086#1083#1100#1082#1086' '#1089' '#1075#1086#1088#1080#1079#1086#1085#1090#1072#1083#1100#1085#1099#1084#1080' '#1089#1083#1086#1103#1084#1080'!'
     MaxValue = 100
     MinValue = 0
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 60
     Value = 0
   end
@@ -956,12 +957,33 @@ object mainForm: TmainForm
     Top = 641
     Width = 126
     Height = 17
+    Hint = #1044#1074#1080#1078#1077#1085#1080#1077' '#1079#1072#1075#1083#1091#1073#1083#1105#1085#1085#1086#1081' '#1095#1072#1089#1090#1080'. '#1053#1077' '#1089#1086#1074#1089#1077#1084' '#1082#1086#1088#1088#1077#1082#1090#1085#1086', '#1085#1086' '#1088#1072#1073#1086#1090#1072#1077#1090
     Caption = #1040#1083#1100#1090'. '#1088#1077#1078#1080#1084' '#1079#1072#1075#1083'.'
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 61
   end
+  object CheckBox5: TCheckBox
+    Left = 335
+    Top = 485
+    Width = 55
+    Height = 17
+    Caption = #1053#1072#1075#1088#1077#1074
+    TabOrder = 62
+    OnClick = CheckBox5Click
+  end
+  object Button4: TButton
+    Left = 245
+    Top = 363
+    Width = 204
+    Height = 25
+    Caption = #1048#1079#1084#1077#1085#1080#1090#1100' '#1089#1074#1086#1081#1089#1090#1074#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1072
+    TabOrder = 63
+    OnClick = Button4Click
+  end
   object SaveDialog1: TSaveDialog
-    Left = 440
-    Top = 472
+    Left = 448
+    Top = 424
   end
   object BindingsList1: TBindingsList
     Methods = <>

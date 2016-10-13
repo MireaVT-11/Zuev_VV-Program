@@ -9,6 +9,7 @@
 #include <System.Math.hpp>
 
 #include "Main.h"
+#include "Matedit.hpp";
 
 #include "lagrangepolynomial.h"
 
@@ -203,23 +204,6 @@ bool NoAnim = false;
 bool UnlimStop = false;
 
 int nforgraf = 0;
-
-struct TMaterial
-{
-	long double G;//модуль Юнга
-	long double ro0;
-	long double sigma0;
-	long double k;
-	long double alpha;
-	long double sigma1;
-	long double k1;
-
-	//температура
-	long double ctep, gammatep;
-
-	char Name[ 30 ];
-	int Color;
-};
 
 TMaterial Material[ 100 ];
 
@@ -719,6 +703,8 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender)
 	if (CheckBoxs->Checked) // Движение снаряда
 	{
 		int zcl = InputEdit1->Value;
+		if(!AltInpCBox->Checked)
+			zcl = 0;
 		for (int i = (n2 - zcl) * (n4 + 1) + 1; i <= (n2 - zcl) * (n4 + 1) + n3 + 1; i++)
 		{	speedz[i] = -0.5 * vindent; // сохранение симметрии
 			}
@@ -728,7 +714,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender)
 		for(int c = 0; c < zcl-1; ++c)
 		{
 			 for(int i = (n2 - c)*(n4+1)+1; i<=(n2 - c)*(n4+1)+n3; ++i)
-			 speedz[i]=-vindent;
+				speedz[i]=-vindent;
 			 speedz[(int)((n2 - c)*(n4+1)+n3+1)] = -0.5 * vindent;
 		}  
 	}
@@ -1802,7 +1788,6 @@ void _fastcall TmainForm::threegraphs(bool save, int i) {
 	holst = bmp->Canvas;
 	holst->FillRect(rect);
 	beauty = BeautyCBox->Checked;
-	holst->Pen->Color = static_cast<TColor>(RGB(30,30,30));
 
 	for (int k = 1; k <= numberelem; k++)
 		threeangle(k);
@@ -1852,6 +1837,7 @@ void threeangle(int k)
 {
 	TColor DefColor, HotColor;
 	TPoint poly[3];
+	holst->Pen->Color = static_cast<TColor>(RGB(30,30,30));
 	DefColor = static_cast< TColor >(Material[matelm[k]].Color);
 	if (Colorletch[k - 1] != 0)
 	{
@@ -1872,7 +1858,15 @@ void threeangle(int k)
 	}
 	else
 		DefColor = clRed;
-	HotColor = TempToColor(T[k]);
+	if(mainForm->CheckBox5->Checked){
+	if(beauty){
+	if(k%2==0)
+		HotColor = TempToColor((T[k]+T[k-1])/2);
+	else
+		HotColor = TempToColor((T[k]+T[k+1])/2);   }
+	else
+		HotColor = TempToColor(T[k]);}
+	else HotColor=DefColor;
 // (2015 год) Проверить на ошибки!!!
 	for (int il = 0; il <= 2; il++)
 	{
@@ -1883,6 +1877,8 @@ void threeangle(int k)
 	holst->Brush->Color = DefColor;
 	//holst->Pen->Color = DefColor;
 	holst->Polygon(poly, 2);
+	if(mainForm->CheckBox5->Checked)
+		holst->Pen->Color = static_cast<TColor>(Material[matelm[k]].Color);
 	for (int il = 0; il <= 2; il++)
 	{
 		poly[il] = 	Point((graphForm->ClientWidth - WidthCoef1 -
@@ -2788,6 +2784,8 @@ void __fastcall TmainForm::CheckBox4Click(TObject *)
 		CheckBox3->Checked = false;
 		Label17->Caption = "высоты слоёв основания";
 		Label11->Caption = "радиус основания";
+		AltInpCBox->Enabled=true;
+		InputEdit1->Enabled = true;
 		// h2iEdit1->Text = "0.006";
 		// rad1Edit->Text = "0.009";
 		// CheckBox3->State = cbUnchecked;
@@ -2797,6 +2795,8 @@ void __fastcall TmainForm::CheckBox4Click(TObject *)
         CheckBox3->Checked = true;
 		Label17->Caption = "Толщина кольца слоя основания";
 		Label11->Caption = "Высота основания";
+		InputEdit1->Enabled = false;
+		AltInpCBox->Enabled=false;
     }
 }
 // ---------------------------------------------------------------------------
@@ -2937,5 +2937,22 @@ void __fastcall TmainForm::FormClose(TObject *, TCloseAction &)
 //---------------------------------------------------------------------------
 
 
+//---------------------------------------------------------------------------
+
+void __fastcall TmainForm::CheckBox5Click(TObject *Sender)
+{
+	BeautyCBox->Enabled = CheckBox5->Checked;
+}
+//---------------------------------------------------------------------------
+
+void __fastcall TmainForm::Button4Click(TObject *Sender)
+{
+	TForm1* form = new TForm1(this);
+	form->SetLen(MatCount+1);
+	for(int i=0;i<=MatCount;)
+		form->matarr[i] = Material[++i];
+	form->ShowModal();
+	delete form;
+}
 //---------------------------------------------------------------------------
 

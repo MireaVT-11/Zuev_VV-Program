@@ -1,0 +1,173 @@
+object Form1: TForm1
+  Left = 0
+  Top = 0
+  BorderIcons = [biSystemMenu]
+  BorderStyle = bsToolWindow
+  Caption = 'Form1'
+  ClientHeight = 281
+  ClientWidth = 369
+  Color = clBtnFace
+  Font.Charset = DEFAULT_CHARSET
+  Font.Color = clWindowText
+  Font.Height = -11
+  Font.Name = 'Tahoma'
+  Font.Style = []
+  OldCreateOrder = False
+  OnShow = FormShow
+  PixelsPerInch = 96
+  TextHeight = 13
+  object Label1: TLabel
+    Left = 8
+    Top = 8
+    Width = 105
+    Height = 13
+    Caption = #1053#1072#1079#1074#1072#1085#1080#1077' '#1084#1072#1090#1077#1088#1080#1072#1083#1072
+  end
+  object Shape1: TShape
+    Left = 337
+    Top = 20
+    Width = 24
+    Height = 22
+  end
+  object ColorListBox1: TColorListBox
+    Left = 240
+    Top = 48
+    Width = 121
+    Height = 228
+    Style = [cbStandardColors, cbExtendedColors]
+    TabOrder = 0
+    OnClick = ColorListBox1Click
+  end
+  object LabeledEdit2: TLabeledEdit
+    Left = 240
+    Top = 21
+    Width = 91
+    Height = 21
+    EditLabel.Width = 26
+    EditLabel.Height = 13
+    EditLabel.Caption = #1062#1074#1077#1090
+    TabOrder = 1
+    OnChange = LabeledEdit2Change
+  end
+  object ComboBox1: TComboBox
+    Left = 8
+    Top = 21
+    Width = 216
+    Height = 22
+    AutoComplete = False
+    Style = csOwnerDrawFixed
+    ItemIndex = 0
+    TabOrder = 2
+    Text = #1040#1083#1102#1084#1080#1085#1080#1081
+    OnChange = ComboBox1Change
+    Items.Strings = (
+      #1040#1083#1102#1084#1080#1085#1080#1081
+      #1057#1090#1072#1083#1100
+      #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 1'
+      #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 2'
+      #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 3'
+      #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 4'
+      #1057#1090#1077#1082#1083#1086#1087#1083#1072#1089#1090#1080#1082
+      #1055#1077#1089#1086#1082
+      #1042#1086#1079#1076#1091#1093
+      #1057#1082#1072#1083#1072' '#1047#1091#1077#1074#1072)
+  end
+  object GEdit: TLabeledEdit
+    Left = 8
+    Top = 64
+    Width = 105
+    Height = 21
+    EditLabel.Width = 7
+    EditLabel.Height = 13
+    EditLabel.Caption = 'G'
+    TabOrder = 3
+  end
+  object ro0Edit: TLabeledEdit
+    Left = 119
+    Top = 64
+    Width = 105
+    Height = 21
+    EditLabel.Width = 16
+    EditLabel.Height = 13
+    EditLabel.Caption = 'ro0'
+    TabOrder = 4
+  end
+  object sigma0Edit: TLabeledEdit
+    Left = 8
+    Top = 104
+    Width = 105
+    Height = 21
+    EditLabel.Width = 33
+    EditLabel.Height = 13
+    EditLabel.Caption = 'sigma0'
+    TabOrder = 5
+  end
+  object sigma1Edit: TLabeledEdit
+    Left = 119
+    Top = 104
+    Width = 105
+    Height = 21
+    EditLabel.Width = 33
+    EditLabel.Height = 13
+    EditLabel.Caption = 'sigma1'
+    TabOrder = 6
+  end
+  object LabeledEdit6: TLabeledEdit
+    Left = 8
+    Top = 147
+    Width = 105
+    Height = 21
+    EditLabel.Width = 5
+    EditLabel.Height = 13
+    EditLabel.Caption = 'k'
+    TabOrder = 7
+  end
+  object LabeledEdit7: TLabeledEdit
+    Left = 119
+    Top = 147
+    Width = 105
+    Height = 21
+    EditLabel.Width = 11
+    EditLabel.Height = 13
+    EditLabel.Caption = 'k1'
+    TabOrder = 8
+  end
+  object LabeledEdit8: TLabeledEdit
+    Left = 8
+    Top = 184
+    Width = 105
+    Height = 21
+    EditLabel.Width = 50
+    EditLabel.Height = 13
+    EditLabel.Caption = 'gammatep'
+    TabOrder = 9
+  end
+  object LabeledEdit9: TLabeledEdit
+    Left = 119
+    Top = 184
+    Width = 105
+    Height = 21
+    EditLabel.Width = 21
+    EditLabel.Height = 13
+    EditLabel.Caption = 'ctep'
+    TabOrder = 10
+  end
+  object LabeledEdit10: TLabeledEdit
+    Left = 8
+    Top = 224
+    Width = 216
+    Height = 21
+    EditLabel.Width = 26
+    EditLabel.Height = 13
+    EditLabel.Caption = 'alpha'
+    TabOrder = 11
+  end
+  object Button1: TButton
+    Left = 8
+    Top = 251
+    Width = 216
+    Height = 25
+    Caption = #1047#1072#1087#1080#1089#1072#1090#1100' '#1080#1079#1084#1077#1085#1077#1085#1080#1103
+    TabOrder = 12
+  end
+end

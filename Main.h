@@ -27,6 +27,23 @@ extern bool NoAnim;
 void NewMat();
 void draw();
 
+/*struct TMaterial
+{
+	long double G;//модуль Юнга
+	long double ro0;
+	long double sigma0;
+	long double k;
+	long double alpha;
+	long double sigma1;
+	long double k1;
+
+	//температура
+	long double ctep, gammatep;
+
+	char Name[ 30 ];
+	int Color;
+};     */
+
 class TmainForm : public TForm
 {
 __published:	// IDE-managed Components
@@ -139,6 +156,8 @@ __published:	// IDE-managed Components
 	TSpinEdit *InputEdit1;
 	TLabel *Label30;
 	TCheckBox *AltInpCBox;
+	TCheckBox *CheckBox5;
+	TButton *Button4;
         void __fastcall RefreshClick(TObject *Sender);
         void __fastcall FormCreate(TObject *Sender);
         void __fastcall jjjjBoxChange(TObject *Sender);
@@ -164,6 +183,8 @@ __published:	// IDE-managed Components
         void __fastcall RadioGroup2Click(TObject *Sender);
 		void __fastcall CheckBoxStakanClick(TObject *Sender);
 		void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
+	void __fastcall CheckBox5Click(TObject *Sender);
+	void __fastcall Button4Click(TObject *Sender);
 private:	// User declarations
         void __fastcall BaseLoop(TObject *Sender, int k);
 		void __fastcall InitLoop(TObject *Sender, int k);

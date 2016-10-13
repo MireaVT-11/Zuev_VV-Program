@@ -4,12 +4,14 @@
 #pragma hdrstop
 #include <tchar.h>
 //---------------------------------------------------------------------------
+#include <Vcl.Styles.hpp>
+#include <Vcl.Themes.hpp>
 USEFORM("Save.cpp", saveForm);
 USEFORM("NewMaterial.cpp", newMaterialForm);
-USEFORM("Grafic.cpp", graficForm);
 USEFORM("Graph.cpp", graphForm);
+USEFORM("Grafic.cpp", graficForm);
 USEFORM("Main.cpp", mainForm);
-//---------------------------------------------------------------------------
+USEFORMNS("MatEdit.pas", Matedit, Form1);
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 {
 	try
@@ -17,6 +19,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 		Application->Initialize();
 		Application->MainFormOnTaskBar = true;
 		Application->CreateForm(__classid(TmainForm), &mainForm);
+		TStyleManager::TrySetStyle("Turquoise Gray");
 		Application->CreateForm(__classid(TgraphForm), &graphForm);
 		Application->CreateForm(__classid(TgraficForm), &graficForm);
 		Application->CreateForm(__classid(TnewMaterialForm), &newMaterialForm);
