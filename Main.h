@@ -27,7 +27,8 @@ extern bool NoAnim;
 void NewMat();
 void draw();
 
-/*struct TMaterial
+/* Перенесена в другой файл!
+struct TMaterial
 {
 	long double G;//модуль Юнга
 	long double ro0;
@@ -137,7 +138,6 @@ __published:	// IDE-managed Components
         TLabel *Label31;
         TEdit *Editinss;
         TRadioGroup *RadioGroup1;
-        TRadioGroup *RadioGroup2;
         TLabel *Label32;
         TEdit *Editbsh;
         TCheckBox *CheckBoxbsh;
@@ -180,7 +180,6 @@ __published:	// IDE-managed Components
         void __fastcall CheckBoxnp3Click(TObject *Sender);
         void __fastcall CheckBox4Click(TObject *Sender);
         void __fastcall CheckBox3Click(TObject *Sender);
-        void __fastcall RadioGroup2Click(TObject *Sender);
 		void __fastcall CheckBoxStakanClick(TObject *Sender);
 		void __fastcall FormClose(TObject *Sender, TCloseAction &Action);
 	void __fastcall CheckBox5Click(TObject *Sender);

@@ -163,9 +163,6 @@ Coordinates=71,348,45,51
 [Label29]
 Coordinates=406,552,52,51
 
-[RadioGroup2]
-Coordinates=866,280,79,51
-
 [CheckBoxno2]
 Coordinates=344,416,95,51
 
@@ -313,7 +310,7 @@ ExplicitSubNodes=Enabled
 Coordinates=10,144,95,51
 
 []
-Coordinates=1123,210,91,36
+Coordinates=866,280,79,51
 
 [BindingsList1]
 Coordinates=938,87,91,36

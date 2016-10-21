@@ -3,7 +3,7 @@ object Form1: TForm1
   Top = 0
   BorderIcons = [biSystemMenu]
   BorderStyle = bsToolWindow
-  Caption = 'Form1'
+  Caption = #1048#1079#1084#1077#1085#1077#1085#1080#1077' '#1089#1074#1086#1081#1089#1090#1074' '#1084#1072#1090#1077#1088#1080#1072#1083#1072
   ClientHeight = 281
   ClientWidth = 369
   Color = clBtnFace
@@ -34,6 +34,7 @@ object Form1: TForm1
     Top = 48
     Width = 121
     Height = 228
+    TabStop = False
     Style = [cbStandardColors, cbExtendedColors]
     TabOrder = 0
     OnClick = ColorListBox1Click
@@ -46,7 +47,7 @@ object Form1: TForm1
     EditLabel.Width = 26
     EditLabel.Height = 13
     EditLabel.Caption = #1062#1074#1077#1090
-    TabOrder = 1
+    TabOrder = 2
     OnChange = LabeledEdit2Change
   end
   object ComboBox1: TComboBox
@@ -57,7 +58,7 @@ object Form1: TForm1
     AutoComplete = False
     Style = csOwnerDrawFixed
     ItemIndex = 0
-    TabOrder = 2
+    TabOrder = 1
     Text = #1040#1083#1102#1084#1080#1085#1080#1081
     OnChange = ComboBox1Change
     Items.Strings = (
@@ -81,6 +82,7 @@ object Form1: TForm1
     EditLabel.Height = 13
     EditLabel.Caption = 'G'
     TabOrder = 3
+    Text = '0'
   end
   object ro0Edit: TLabeledEdit
     Left = 119
@@ -91,6 +93,7 @@ object Form1: TForm1
     EditLabel.Height = 13
     EditLabel.Caption = 'ro0'
     TabOrder = 4
+    Text = '0'
   end
   object sigma0Edit: TLabeledEdit
     Left = 8
@@ -101,6 +104,7 @@ object Form1: TForm1
     EditLabel.Height = 13
     EditLabel.Caption = 'sigma0'
     TabOrder = 5
+    Text = '0'
   end
   object sigma1Edit: TLabeledEdit
     Left = 119
@@ -111,8 +115,9 @@ object Form1: TForm1
     EditLabel.Height = 13
     EditLabel.Caption = 'sigma1'
     TabOrder = 6
+    Text = '0'
   end
-  object LabeledEdit6: TLabeledEdit
+  object kEdit: TLabeledEdit
     Left = 8
     Top = 147
     Width = 105
@@ -121,8 +126,9 @@ object Form1: TForm1
     EditLabel.Height = 13
     EditLabel.Caption = 'k'
     TabOrder = 7
+    Text = '0'
   end
-  object LabeledEdit7: TLabeledEdit
+  object k1Edit: TLabeledEdit
     Left = 119
     Top = 147
     Width = 105
@@ -131,8 +137,9 @@ object Form1: TForm1
     EditLabel.Height = 13
     EditLabel.Caption = 'k1'
     TabOrder = 8
+    Text = '0'
   end
-  object LabeledEdit8: TLabeledEdit
+  object gammatepEdit: TLabeledEdit
     Left = 8
     Top = 184
     Width = 105
@@ -141,8 +148,9 @@ object Form1: TForm1
     EditLabel.Height = 13
     EditLabel.Caption = 'gammatep'
     TabOrder = 9
+    Text = '0'
   end
-  object LabeledEdit9: TLabeledEdit
+  object ctepEdit: TLabeledEdit
     Left = 119
     Top = 184
     Width = 105
@@ -151,8 +159,9 @@ object Form1: TForm1
     EditLabel.Height = 13
     EditLabel.Caption = 'ctep'
     TabOrder = 10
+    Text = '0'
   end
-  object LabeledEdit10: TLabeledEdit
+  object alphaEdit: TLabeledEdit
     Left = 8
     Top = 224
     Width = 216
@@ -161,6 +170,7 @@ object Form1: TForm1
     EditLabel.Height = 13
     EditLabel.Caption = 'alpha'
     TabOrder = 11
+    Text = '0'
   end
   object Button1: TButton
     Left = 8
@@ -169,5 +179,6 @@ object Form1: TForm1
     Height = 25
     Caption = #1047#1072#1087#1080#1089#1072#1090#1100' '#1080#1079#1084#1077#1085#1077#1085#1080#1103
     TabOrder = 12
+    OnClick = Button1Click
   end
 end

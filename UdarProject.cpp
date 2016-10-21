@@ -18,8 +18,8 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int)
 	{
 		Application->Initialize();
 		Application->MainFormOnTaskBar = true;
-		Application->CreateForm(__classid(TmainForm), &mainForm);
 		TStyleManager::TrySetStyle("Turquoise Gray");
+		Application->CreateForm(__classid(TmainForm), &mainForm);
 		Application->CreateForm(__classid(TgraphForm), &graphForm);
 		Application->CreateForm(__classid(TgraficForm), &graficForm);
 		Application->CreateForm(__classid(TnewMaterialForm), &newMaterialForm);

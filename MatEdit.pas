@@ -24,16 +24,17 @@ type
     ro0Edit: TLabeledEdit;
     sigma0Edit: TLabeledEdit;
     sigma1Edit: TLabeledEdit;
-    LabeledEdit6: TLabeledEdit;
-    LabeledEdit7: TLabeledEdit;
-    LabeledEdit8: TLabeledEdit;
-    LabeledEdit9: TLabeledEdit;
-    LabeledEdit10: TLabeledEdit;
+    kEdit: TLabeledEdit;
+    k1Edit: TLabeledEdit;
+    gammatepEdit: TLabeledEdit;
+    ctepEdit: TLabeledEdit;
+    alphaEdit: TLabeledEdit;
     Button1: TButton;
     procedure ColorListBox1Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LabeledEdit2Change(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
     { Private declarations }
   public
@@ -66,6 +67,24 @@ begin
   Result:=rgb[0]shl 16+rgb[1]shl 8+rgb[2];
 end;
 
+procedure TForm1.Button1Click(Sender: TObject);
+var
+  i: Integer;
+begin
+  i:=ComboBox1.ItemIndex;
+  matarr[i].G:=StrToFloat(GEdit.Text)*1e9;
+  matarr[i].ro0:=StrToFloat(ro0Edit.Text);
+  matarr[i].sigma0:=StrToFloat(sigma0Edit.Text)*1e9;
+  matarr[i].k:=StrToFloat(kEdit.Text)*1e9;
+  matarr[i].alpha:=StrToFloat(alphaEdit.Text)*1e9;
+  matarr[i].sigma1:=StrToFloat(sigma1Edit.Text)*1e9;
+  matarr[i].k1:=StrToFloat(k1Edit.Text);
+  matarr[i].ctep:=StrToFloat(ctepEdit.Text);
+  matarr[i].gammatep:=StrToFloat(gammatepEdit.Text);
+  matarr[i].Color:=T2C(LabeledEdit2.Text);
+  ComboBox1Change(self);
+end;
+
 procedure TForm1.ColorListBox1Click(Sender: TObject);
 begin
   LabeledEdit2.Text := C2T(ColorListBox1.Colors[ColorListBox1.ItemIndex]);
@@ -77,6 +96,15 @@ var
 begin
   t := matarr[ComboBox1.ItemIndex];
   LabeledEdit2.Text := C2T(t.Color);
+  GEdit.Text:=FloatToStr(t.G/1e9);
+  ro0Edit.Text:=FloatToStr(t.ro0);
+  sigma0Edit.Text:=FloatToStr(t.sigma0/1e9);
+  kEdit.Text:=FloatToStr(t.k/1e9);
+  alphaEdit.Text:=FloatToStr(t.alpha/1e9);
+  sigma1Edit.Text:=FloatToStr(t.sigma1/1e9);
+  k1Edit.Text:=FloatToStr(t.k1);
+  ctepEdit.Text:=FloatToStr(t.ctep);
+  gammatepEdit.Text:=FloatToStr(t.gammatep);
 end;
 
 procedure TForm1.FormShow(Sender: TObject);

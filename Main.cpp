@@ -838,6 +838,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender)
 		for (int k = 1; k <= numberelem; k++)
 			InitLoop(Sender, k);
 	#endif
+	auto capt = Button2->Caption;
 	
 	dtime = dtimepr;
 	tfinish = nt * dtimepr;
@@ -1168,7 +1169,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender)
 		else
 		{
 			if(!(n%(nt/100)))
-				Button2->Caption = "Выполнено "+FloatToStr(RoundTo(n*100./nt,0))+"%";
+				Button2->Caption = FloatToStr(RoundTo(n*100./nt,0))+"%";
 			if(!(n%(nt/(numSeries-1))))
 				GraficRefresh(nforgraf++);
 		}
@@ -1213,7 +1214,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender)
 	long double *data[magicNomber] = {epsrr,epszz,epsrz,epstt,epsrrp,epszzp,epsrzp,epsttp,tet,sqI2p};
 	sd("R, %\tepsrr\tepszz\tepsrz\tepstt\tepsrrp\tepszzp\tepsrzp\tepsttp\ttet\tsqI2p", data, magicNomber, TElemTarget, n2);
 	//END магия
-	Button2->Caption = "Построение графиков";
+	Button2->Caption = capt;
 //	fclose(file);
 //	fclose(file1);
 //	fclose(file2);
@@ -2073,7 +2074,7 @@ void __fastcall TmainForm::FormCreate(TObject *)
 	Material[9].gammatep=0.0;
 	Material[10].gammatep=14.5e-6;
 
-
+    /*
 	// (2015 год) Для будущей загрузки материалов.
 	struct SaveDefaultMatirials
 	{
@@ -2128,8 +2129,7 @@ void __fastcall TmainForm::FormCreate(TObject *)
 	nstratBox->ItemIndex = 0;
 	matstrat1Box->ItemIndex = 4;
 	matstrat2Box->ItemIndex = 2;
-	matstrat3Box->ItemIndex = 1;
-	RadioGroup2Click(NULL);
+	matstrat3Box->ItemIndex = 1;*/
 }
 
 // ---------------------------------------------------------------------------
@@ -2819,97 +2819,6 @@ void __fastcall TmainForm::CheckBox3Click(TObject *)
 		Label11->Caption = "радиус основания";
     }
 }
-// ---------------------------------------------------------------------------
-
-void __fastcall TmainForm::RadioGroup2Click(TObject *)
-{
-	if (RadioGroup2->ItemIndex == 0)
-	{
-		CheckBox4->Checked = true;
-		CheckBoxinss->Checked = false;
-		CheckBoxbsh->Checked = false;
-		CheckBoxs->Checked = true;
-		alfEdit->Text = "0,01";
-		dtimeprEdit->Text = "0,000016";
-		ntEdit->Text = "500";
-		rad0Edit->Text = "0,005";
-		rad1Edit->Text = "0,01";
-		n3Edit->Text = "15";
-		h0Edit->Text = "0,005";
-		n1Edit->Text = "15";
-		matstrat0Box->ItemIndex = 1;
-		nstratBox->ItemIndex = 0;
-		h2iEdit1->Text = "0,01";
-		h2iEdit2->Text = "0";
-		h2iEdit3->Text = "0";
-		matstrat1Box->ItemIndex = 0;
-		vindentEdit->Text = "250";
-		Editb->Text = "0";
-		Edits->Text = "0";
-		Editn2->Text = "0";
-		Editb2->Text = "0";
-		Editinss->Text = "0";
-		Editbsh->Text = "0";
-	}
-	if (RadioGroup2->ItemIndex == 1)
-	{
-		CheckBox4->Checked = true;
-		CheckBoxinss->Checked = false;
-		CheckBoxbsh->Checked = true;
-    	CheckBoxs->Checked = false;
-		alfEdit->Text = "0,01";
-		dtimeprEdit->Text = "0,00003";
-		ntEdit->Text = "1000";
-		rad0Edit->Text = "0,005";
-		rad1Edit->Text = "0,01";
-		n3Edit->Text = "15";
-		h0Edit->Text = "0,01";
-		n1Edit->Text = "15";
-		matstrat0Box->ItemIndex = 1;
-		nstratBox->ItemIndex = 0;
-		h2iEdit1->Text = "0,02";
-		h2iEdit2->Text = "0";
-		h2iEdit3->Text = "0";
-		matstrat1Box->ItemIndex = 0;
-		vindentEdit->Text = "0";
-		Editb->Text = "0";
-		Edits->Text = "0";
-		Editn2->Text = "0";
-		Editb2->Text = "0";
-		Editinss->Text = "0";
-		Editbsh->Text = "100";
-	}
-	if (RadioGroup2->ItemIndex == 2)
-	{
-		CheckBox4->Checked = true;
-		CheckBoxinss->Checked = false;
-		CheckBoxbsh->Checked = false;
-		CheckBoxn->Checked = true;
-		CheckBoxb->Checked = true;
-		alfEdit->Text = "0,005";
-		dtimeprEdit->Text = "0,003";
-		ntEdit->Text = "1000";
-		rad0Edit->Text = "5";
-		rad1Edit->Text = "10";
-		n3Edit->Text = "20";
-		h0Edit->Text = "10";
-		n1Edit->Text = "30";
-		matstrat0Box->ItemIndex = 3;
-		nstratBox->ItemIndex = 1;
-		h2iEdit1->Text = "2";
-		h2iEdit2->Text = "5";
-		h2iEdit3->Text = "0,002";
-		matstrat1Box->ItemIndex = 3;
-		matstrat2Box->ItemIndex = 4;
-		vindentEdit->Text = "100";
-		Editb->Text = "100";
-		Edits->Text = "0";
-		Editn2->Text = "0";
-		Editb2->Text = "0";
-		Editinss->Text = "0";
-		Editbsh->Text = "0";
-	}
-}
 
 // ---------------------------------------------------------------------------
 void __fastcall TmainForm::CheckBoxStakanClick(TObject *)
@@ -2947,11 +2856,14 @@ void __fastcall TmainForm::CheckBox5Click(TObject *Sender)
 
 void __fastcall TmainForm::Button4Click(TObject *Sender)
 {
+	int count = 10;
 	TForm1* form = new TForm1(this);
-	form->SetLen(MatCount+1);
-	for(int i=0;i<=MatCount;)
+	form->SetLen(count);
+	for(int i=0;i<=count-1;)
 		form->matarr[i] = Material[++i];
 	form->ShowModal();
+	for(int i=count;i>0;)
+		Material[i] = form->matarr[--i];
 	delete form;
 }
 //---------------------------------------------------------------------------

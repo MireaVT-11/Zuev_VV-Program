@@ -63,9 +63,9 @@ object mainForm: TmainForm
   object Label9: TLabel
     Left = 464
     Top = 8
-    Width = 204
+    Width = 178
     Height = 13
-    Caption = #1085#1072#1095#1072#1083#1100#1085#1072#1103' '#1089#1082#1086#1088#1086#1089#1090#1100' '#1085#1080#1078#1085#1077#1081' '#1074#1086#1083#1085#1099'('#1084'/'#1089')'
+    Caption = #1085#1072#1095#1072#1083#1100#1085#1072#1103' '#1089#1082#1086#1088#1086#1089#1090#1100' '#1091#1076#1072#1088#1085#1080#1082#1072'('#1084'/'#1089')'
   end
   object Label12: TLabel
     Left = 243
@@ -388,7 +388,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 21
     TabOrder = 5
-    Text = '3000,e-6'
+    Text = '0,001'
   end
   object vindentEdit: TEdit
     Left = 464
@@ -396,7 +396,7 @@ object mainForm: TmainForm
     Width = 226
     Height = 21
     TabOrder = 6
-    Text = '500'
+    Text = '0'
   end
   object h0Edit: TEdit
     Left = 243
@@ -404,7 +404,7 @@ object mainForm: TmainForm
     Width = 206
     Height = 21
     TabOrder = 7
-    Text = '20'
+    Text = '2'
   end
   object n1Edit: TEdit
     Left = 243
@@ -412,7 +412,7 @@ object mainForm: TmainForm
     Width = 206
     Height = 21
     TabOrder = 8
-    Text = '35'
+    Text = '15'
   end
   object Refresh: TButton
     Left = 245
@@ -437,7 +437,9 @@ object mainForm: TmainForm
     Width = 209
     Height = 21
     Style = csDropDownList
+    ItemIndex = 0
     TabOrder = 11
+    Text = #1041#1077#1079' '#1079#1072#1082#1088#1077#1087#1083#1077#1085#1080#1081
     OnChange = jjjjBoxChange
     Items.Strings = (
       #1041#1077#1079' '#1079#1072#1082#1088#1077#1087#1083#1077#1085#1080#1081
@@ -453,7 +455,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 21
     TabOrder = 12
-    Text = '10'
+    Text = '1'
   end
   object rad1Edit: TEdit
     Left = 3
@@ -461,7 +463,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 21
     TabOrder = 13
-    Text = '20'
+    Text = '2'
   end
   object n3Edit: TEdit
     Left = 3
@@ -469,7 +471,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 21
     TabOrder = 14
-    Text = '13'
+    Text = '12'
   end
   object matstrat0Box: TComboBox
     Left = 243
@@ -477,9 +479,9 @@ object mainForm: TmainForm
     Width = 206
     Height = 21
     Style = csDropDownList
-    ItemIndex = 3
+    ItemIndex = 1
     TabOrder = 15
-    Text = #1041#1077#1090#1086#1085
+    Text = #1057#1090#1072#1083#1100
     Items.Strings = (
       #1040#1083#1102#1084#1080#1085#1080#1081
       #1057#1090#1072#1083#1100
@@ -513,7 +515,7 @@ object mainForm: TmainForm
     Width = 167
     Height = 21
     TabOrder = 17
-    Text = '40'
+    Text = '4'
   end
   object h2iEdit2: TEdit
     Left = 282
@@ -522,7 +524,7 @@ object mainForm: TmainForm
     Height = 21
     Enabled = False
     TabOrder = 18
-    Text = '17'
+    Text = '0'
   end
   object h2iEdit3: TEdit
     Left = 282
@@ -531,7 +533,7 @@ object mainForm: TmainForm
     Height = 21
     Enabled = False
     TabOrder = 19
-    Text = '0,002'
+    Text = '0'
   end
   object matstrat1Box: TComboBox
     Left = 282
@@ -539,7 +541,9 @@ object mainForm: TmainForm
     Width = 167
     Height = 21
     Style = csDropDownList
+    ItemIndex = 0
     TabOrder = 20
+    Text = #1040#1083#1102#1084#1080#1085#1080#1081
     Items.Strings = (
       #1040#1083#1102#1084#1080#1085#1080#1081
       #1057#1090#1072#1083#1100
@@ -559,9 +563,9 @@ object mainForm: TmainForm
     Height = 21
     Style = csDropDownList
     Enabled = False
-    ItemIndex = 4
+    ItemIndex = 1
     TabOrder = 21
-    Text = #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 3'
+    Text = #1057#1090#1072#1083#1100
     Items.Strings = (
       #1040#1083#1102#1084#1080#1085#1080#1081
       #1057#1090#1072#1083#1100
@@ -581,9 +585,9 @@ object mainForm: TmainForm
     Height = 21
     Style = csDropDownList
     Enabled = False
-    ItemIndex = 9
+    ItemIndex = 2
     TabOrder = 22
-    Text = #1057#1082#1072#1083#1072' '#1047#1091#1077#1074#1072
+    Text = #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 1'
     Items.Strings = (
       #1040#1083#1102#1084#1080#1085#1080#1081
       #1057#1090#1072#1083#1100
@@ -602,6 +606,7 @@ object mainForm: TmainForm
     Width = 204
     Height = 25
     Caption = #1044#1086#1073#1072#1074#1083#1077#1085#1080#1077' '#1085#1086#1074#1086#1075#1086' '#1084#1072#1090#1077#1088#1080#1072#1083#1072
+    Enabled = False
     TabOrder = 23
     OnClick = Button1Click
   end
@@ -611,6 +616,7 @@ object mainForm: TmainForm
     Width = 204
     Height = 25
     Caption = #1055#1086#1089#1090#1088#1086#1077#1085#1080#1077' '#1075#1088#1072#1092#1080#1082#1086#1074
+    Enabled = False
     TabOrder = 24
     OnClick = Button2Click
   end
@@ -653,7 +659,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 21
     TabOrder = 29
-    Text = '3000'
+    Text = '1000'
   end
   object CheckBoxn: TCheckBox
     Left = 8
@@ -688,7 +694,7 @@ object mainForm: TmainForm
     Width = 226
     Height = 21
     TabOrder = 33
-    Text = '100'
+    Text = '0'
   end
   object Edits: TEdit
     Left = 464
@@ -696,7 +702,7 @@ object mainForm: TmainForm
     Width = 226
     Height = 21
     TabOrder = 34
-    Text = '100'
+    Text = '0'
   end
   object CheckBoxns: TCheckBox
     Left = 8
@@ -740,7 +746,7 @@ object mainForm: TmainForm
     Width = 226
     Height = 21
     TabOrder = 39
-    Text = '100'
+    Text = '0'
   end
   object Editb2: TEdit
     Left = 464
@@ -748,7 +754,7 @@ object mainForm: TmainForm
     Width = 226
     Height = 21
     TabOrder = 40
-    Text = '100'
+    Text = '0'
   end
   object CheckBoxno2: TCheckBox
     Left = 8
@@ -829,12 +835,12 @@ object mainForm: TmainForm
     Width = 226
     Height = 21
     TabOrder = 49
-    Text = '1500'
+    Text = '0'
   end
   object RadioGroup1: TRadioGroup
-    Left = 575
+    Left = 464
     Top = 320
-    Width = 114
+    Width = 225
     Height = 97
     Caption = #1058#1080#1087' '#1091#1076#1072#1088#1072
     ItemIndex = 0
@@ -843,27 +849,13 @@ object mainForm: TmainForm
       #1057#1080#1085#1091#1089#1086#1080#1076#1072#1083#1100#1085#1099#1081)
     TabOrder = 50
   end
-  object RadioGroup2: TRadioGroup
-    Left = 464
-    Top = 320
-    Width = 105
-    Height = 97
-    Caption = #1056#1082#1078#1080#1084
-    ItemIndex = 0
-    Items.Strings = (
-      #1059#1076#1072#1088
-      #1064#1090#1072#1084#1087
-      #1058#1077#1089#1090)
-    TabOrder = 51
-    OnClick = RadioGroup2Click
-  end
   object Editbsh: TEdit
     Left = 464
     Top = 280
     Width = 226
     Height = 21
-    TabOrder = 52
-    Text = '250'
+    TabOrder = 51
+    Text = '0'
   end
   object CheckBoxbsh: TCheckBox
     Left = 245
@@ -871,7 +863,7 @@ object mainForm: TmainForm
     Width = 129
     Height = 19
     Caption = #1048#1085#1076#1077#1085#1090#1086#1088
-    TabOrder = 53
+    TabOrder = 52
     OnClick = CheckBoxbshClick
   end
   object CheckBoxStakan: TCheckBox
@@ -880,7 +872,7 @@ object mainForm: TmainForm
     Width = 129
     Height = 17
     Caption = #1057#1090#1072#1082#1072#1085
-    TabOrder = 54
+    TabOrder = 53
     OnClick = CheckBoxStakanClick
   end
   object ComboBoxBuild: TComboBox
@@ -890,7 +882,7 @@ object mainForm: TmainForm
     Height = 21
     Style = csDropDownList
     ItemIndex = 0
-    TabOrder = 55
+    TabOrder = 54
     Text = '0'
     Visible = False
     Items.Strings = (
@@ -905,7 +897,7 @@ object mainForm: TmainForm
     Width = 67
     Height = 17
     Caption = 'max(sqI2p)=0'
-    TabOrder = 56
+    TabOrder = 55
   end
   object BeautyCBox: TCheckBox
     Left = 396
@@ -914,7 +906,7 @@ object mainForm: TmainForm
     Height = 17
     Caption = #1050#1088#1072#1089#1086#1090#1072
     Enabled = False
-    TabOrder = 57
+    TabOrder = 56
   end
   object CheckBox2: TCheckBox
     Left = 562
@@ -928,7 +920,7 @@ object mainForm: TmainForm
     Font.Name = 'Calibri'
     Font.Style = []
     ParentFont = False
-    TabOrder = 58
+    TabOrder = 57
   end
   object Edit1: TEdit
     Left = 562
@@ -936,7 +928,7 @@ object mainForm: TmainForm
     Width = 121
     Height = 21
     Enabled = False
-    TabOrder = 59
+    TabOrder = 58
     Text = '100'
   end
   object InputEdit1: TSpinEdit
@@ -949,7 +941,7 @@ object mainForm: TmainForm
     MinValue = 0
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 60
+    TabOrder = 59
     Value = 0
   end
   object AltInpCBox: TCheckBox
@@ -961,7 +953,7 @@ object mainForm: TmainForm
     Caption = #1040#1083#1100#1090'. '#1088#1077#1078#1080#1084' '#1079#1072#1075#1083'.'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 61
+    TabOrder = 60
   end
   object CheckBox5: TCheckBox
     Left = 335
@@ -969,7 +961,7 @@ object mainForm: TmainForm
     Width = 55
     Height = 17
     Caption = #1053#1072#1075#1088#1077#1074
-    TabOrder = 62
+    TabOrder = 61
     OnClick = CheckBox5Click
   end
   object Button4: TButton
@@ -978,7 +970,7 @@ object mainForm: TmainForm
     Width = 204
     Height = 25
     Caption = #1048#1079#1084#1077#1085#1080#1090#1100' '#1089#1074#1086#1081#1089#1090#1074#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1072
-    TabOrder = 63
+    TabOrder = 62
     OnClick = Button4Click
   end
   object SaveDialog1: TSaveDialog

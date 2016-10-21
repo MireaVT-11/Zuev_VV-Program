@@ -1,8 +1,8 @@
 ﻿// CodeGear C++Builder
-// Copyright (c) 1995, 2014 by Embarcadero Technologies, Inc.
+// Copyright (c) 1995, 2015 by Embarcadero Technologies, Inc.
 // All rights reserved
 
-// (DO NOT EDIT: machine generated header) 'MatEdit.pas' rev: 28.00 (Windows)
+// (DO NOT EDIT: machine generated header) 'MatEdit.pas' rev: 30.00 (Windows)
 
 #ifndef MateditHPP
 #define MateditHPP
@@ -12,25 +12,28 @@
 #pragma option -w-      // All warnings off
 #pragma option -Vx      // Zero-length empty class member 
 #pragma pack(push,8)
-#include <System.hpp>	// Pascal unit
-#include <SysInit.hpp>	// Pascal unit
-#include <Winapi.Windows.hpp>	// Pascal unit
-#include <Winapi.Messages.hpp>	// Pascal unit
-#include <System.SysUtils.hpp>	// Pascal unit
-#include <System.Variants.hpp>	// Pascal unit
-#include <System.Classes.hpp>	// Pascal unit
-#include <Vcl.Graphics.hpp>	// Pascal unit
-#include <System.Generics.Collections.hpp>	// Pascal unit
-#include <Vcl.Controls.hpp>	// Pascal unit
-#include <Vcl.Forms.hpp>	// Pascal unit
-#include <Vcl.Dialogs.hpp>	// Pascal unit
-#include <Vcl.StdCtrls.hpp>	// Pascal unit
-#include <Vcl.ExtCtrls.hpp>	// Pascal unit
+#include <System.hpp>
+#include <SysInit.hpp>
+#include <Winapi.Windows.hpp>
+#include <Winapi.Messages.hpp>
+#include <System.SysUtils.hpp>
+#include <System.Variants.hpp>
+#include <System.Classes.hpp>
+#include <Vcl.Graphics.hpp>
+#include <System.Generics.Collections.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.Dialogs.hpp>
+#include <Vcl.StdCtrls.hpp>
+#include <Vcl.ExtCtrls.hpp>
 
 //-- user supplied -----------------------------------------------------------
 
 namespace Matedit
 {
+//-- forward type declarations -----------------------------------------------
+struct TMaterial;
+class DELPHICLASS TForm1;
 //-- type declarations -------------------------------------------------------
 struct DECLSPEC_DRECORD TMaterial
 {
@@ -49,10 +52,10 @@ public:
 };
 
 
-class DELPHICLASS TForm1;
 class PASCALIMPLEMENTATION TForm1 : public Vcl::Forms::TForm
 {
 	typedef Vcl::Forms::TForm inherited;
+	
 	
 private:
 	typedef System::DynamicArray<TMaterial> _TForm1__1;
@@ -68,16 +71,17 @@ __published:
 	Vcl::Extctrls::TLabeledEdit* ro0Edit;
 	Vcl::Extctrls::TLabeledEdit* sigma0Edit;
 	Vcl::Extctrls::TLabeledEdit* sigma1Edit;
-	Vcl::Extctrls::TLabeledEdit* LabeledEdit6;
-	Vcl::Extctrls::TLabeledEdit* LabeledEdit7;
-	Vcl::Extctrls::TLabeledEdit* LabeledEdit8;
-	Vcl::Extctrls::TLabeledEdit* LabeledEdit9;
-	Vcl::Extctrls::TLabeledEdit* LabeledEdit10;
+	Vcl::Extctrls::TLabeledEdit* kEdit;
+	Vcl::Extctrls::TLabeledEdit* k1Edit;
+	Vcl::Extctrls::TLabeledEdit* gammatepEdit;
+	Vcl::Extctrls::TLabeledEdit* ctepEdit;
+	Vcl::Extctrls::TLabeledEdit* alphaEdit;
 	Vcl::Stdctrls::TButton* Button1;
 	void __fastcall ColorListBox1Click(System::TObject* Sender);
 	void __fastcall ComboBox1Change(System::TObject* Sender);
 	void __fastcall FormShow(System::TObject* Sender);
 	void __fastcall LabeledEdit2Change(System::TObject* Sender);
+	void __fastcall Button1Click(System::TObject* Sender);
 	
 public:
 	_TForm1__1 matarr;
