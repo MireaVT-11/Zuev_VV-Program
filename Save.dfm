@@ -25,8 +25,8 @@ object saveForm: TsaveForm
   object Label2: TLabel
     Left = 69
     Top = 24
-    Width = 7
-    Height = 24
+    Width = 8
+    Height = 25
     Caption = '*'
     Font.Charset = DEFAULT_CHARSET
     Font.Color = clWindowText

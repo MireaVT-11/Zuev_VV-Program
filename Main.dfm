@@ -388,7 +388,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 21
     TabOrder = 5
-    Text = '0,001'
+    Text = '0,0001'
   end
   object vindentEdit: TEdit
     Left = 464
@@ -396,7 +396,7 @@ object mainForm: TmainForm
     Width = 226
     Height = 21
     TabOrder = 6
-    Text = '0'
+    Text = '50'
   end
   object h0Edit: TEdit
     Left = 243
@@ -404,7 +404,7 @@ object mainForm: TmainForm
     Width = 206
     Height = 21
     TabOrder = 7
-    Text = '2'
+    Text = '0,1'
   end
   object n1Edit: TEdit
     Left = 243
@@ -424,7 +424,7 @@ object mainForm: TmainForm
     OnClick = RefreshClick
   end
   object CheckBox1: TCheckBox
-    Left = 335
+    Left = 326
     Top = 462
     Width = 97
     Height = 17
@@ -455,7 +455,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 21
     TabOrder = 12
-    Text = '1'
+    Text = '0,2'
   end
   object rad1Edit: TEdit
     Left = 3
@@ -463,7 +463,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 21
     TabOrder = 13
-    Text = '2'
+    Text = '0,4'
   end
   object n3Edit: TEdit
     Left = 3
@@ -515,7 +515,7 @@ object mainForm: TmainForm
     Width = 167
     Height = 21
     TabOrder = 17
-    Text = '4'
+    Text = '0,1'
   end
   object h2iEdit2: TEdit
     Left = 282
@@ -620,46 +620,23 @@ object mainForm: TmainForm
     TabOrder = 24
     OnClick = Button2Click
   end
-  object FileEdit: TEdit
-    Left = 407
-    Top = 562
-    Width = 138
-    Height = 21
-    TabOrder = 25
-    Text = 'out.xls'
-  end
   object Button3: TButton
     Left = 407
     Top = 537
     Width = 137
     Height = 19
     Caption = #1054#1073#1079#1086#1088
-    TabOrder = 26
+    TabOrder = 25
     OnClick = Button3Click
-  end
-  object FileEdit1: TEdit
-    Left = 407
-    Top = 589
-    Width = 137
-    Height = 21
-    TabOrder = 27
-    Text = 'out1.xls'
-  end
-  object FileEdit2: TEdit
-    Left = 407
-    Top = 613
-    Width = 137
-    Height = 21
-    TabOrder = 28
-    Text = 'out2.xls'
   end
   object ntEdit: TEdit
     Left = 4
     Top = 324
     Width = 209
     Height = 21
-    TabOrder = 29
+    TabOrder = 26
     Text = '1000'
+    OnChange = ntEditChange
   end
   object CheckBoxn: TCheckBox
     Left = 8
@@ -667,7 +644,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 18
     Caption = #1053#1080#1078#1085#1103#1103' '#1074#1086#1083#1085#1072
-    TabOrder = 30
+    TabOrder = 27
     OnClick = CheckBoxnClick
   end
   object CheckBoxb: TCheckBox
@@ -676,7 +653,7 @@ object mainForm: TmainForm
     Width = 105
     Height = 18
     Caption = #1041#1086#1082#1086#1074#1072#1103' '#1074#1086#1083#1085#1072
-    TabOrder = 31
+    TabOrder = 28
     OnClick = CheckBoxbClick
   end
   object CheckBoxs: TCheckBox
@@ -685,7 +662,9 @@ object mainForm: TmainForm
     Width = 129
     Height = 15
     Caption = #1044#1074#1080#1078#1077#1085#1080#1077' '#1089#1085#1072#1088#1103#1076#1072
-    TabOrder = 32
+    Checked = True
+    State = cbChecked
+    TabOrder = 29
     OnClick = CheckBoxinssClick
   end
   object Editb: TEdit
@@ -693,7 +672,7 @@ object mainForm: TmainForm
     Top = 64
     Width = 226
     Height = 21
-    TabOrder = 33
+    TabOrder = 30
     Text = '0'
   end
   object Edits: TEdit
@@ -701,7 +680,7 @@ object mainForm: TmainForm
     Top = 104
     Width = 226
     Height = 21
-    TabOrder = 34
+    TabOrder = 31
     Text = '0'
   end
   object CheckBoxns: TCheckBox
@@ -710,7 +689,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 18
     Caption = #1057#1080#1083#1100#1085#1072#1103' '#1085#1080#1078#1085#1103#1103' '#1074#1086#1083#1085#1072
-    TabOrder = 35
+    TabOrder = 32
     OnClick = CheckBoxnsClick
   end
   object CheckBoxbs: TCheckBox
@@ -719,7 +698,7 @@ object mainForm: TmainForm
     Width = 145
     Height = 18
     Caption = #1057#1080#1083#1100#1085#1072#1103' '#1073#1086#1082#1086#1074#1072#1103' '#1074#1086#1083#1085#1072
-    TabOrder = 36
+    TabOrder = 33
     OnClick = CheckBoxbsClick
   end
   object CheckBoxn2: TCheckBox
@@ -728,7 +707,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 17
     Caption = '2 '#1085#1080#1078#1085#1080#1093' '#1074#1086#1083#1085#1099
-    TabOrder = 37
+    TabOrder = 34
     OnClick = CheckBoxn2Click
   end
   object CheckBoxb2: TCheckBox
@@ -737,7 +716,7 @@ object mainForm: TmainForm
     Width = 113
     Height = 18
     Caption = '2 '#1073#1086#1082#1086#1074#1099#1093' '#1074#1086#1083#1085#1099
-    TabOrder = 38
+    TabOrder = 35
     OnClick = CheckBoxb2Click
   end
   object Editn2: TEdit
@@ -745,7 +724,7 @@ object mainForm: TmainForm
     Top = 144
     Width = 226
     Height = 21
-    TabOrder = 39
+    TabOrder = 36
     Text = '0'
   end
   object Editb2: TEdit
@@ -753,7 +732,7 @@ object mainForm: TmainForm
     Top = 184
     Width = 226
     Height = 21
-    TabOrder = 40
+    TabOrder = 37
     Text = '0'
   end
   object CheckBoxno2: TCheckBox
@@ -762,16 +741,8 @@ object mainForm: TmainForm
     Width = 193
     Height = 17
     Caption = '2 '#1085#1080#1078#1085#1080#1093' '#1086#1076#1085#1086#1074#1088#1077#1084#1077#1085#1085#1099#1093' '#1074#1086#1083#1085#1099
-    TabOrder = 41
+    TabOrder = 38
     OnClick = CheckBoxno2Click
-  end
-  object FileEdit3: TEdit
-    Left = 407
-    Top = 637
-    Width = 137
-    Height = 21
-    TabOrder = 42
-    Text = 'out3.xls'
   end
   object CheckBoxnp1: TCheckBox
     Left = 8
@@ -779,7 +750,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 17
     Caption = #1085#1080#1078#1085#1103#1103' '#1087#1088#1086#1089#1090#1088#1072#1085#1089#1090#1074#1077#1085#1085#1072#1103' '#1074#1086#1083#1085#1072' 1'
-    TabOrder = 43
+    TabOrder = 39
     OnClick = CheckBoxnp1Click
   end
   object CheckBoxnp2: TCheckBox
@@ -788,7 +759,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 19
     Caption = #1085#1080#1078#1085#1103#1103' '#1087#1088#1086#1089#1090#1088#1072#1085#1089#1090#1074#1077#1085#1085#1072#1103' '#1074#1086#1083#1085#1072' 2'
-    TabOrder = 44
+    TabOrder = 40
     OnClick = CheckBoxnp2Click
   end
   object CheckBoxnp3: TCheckBox
@@ -797,7 +768,7 @@ object mainForm: TmainForm
     Width = 209
     Height = 19
     Caption = #1085#1080#1078#1085#1103#1103' '#1087#1088#1086#1089#1090#1088#1072#1085#1089#1090#1074#1077#1085#1085#1072#1103' '#1074#1086#1083#1085#1072' 3'
-    TabOrder = 45
+    TabOrder = 41
     OnClick = CheckBoxnp3Click
   end
   object CheckBox3: TCheckBox
@@ -806,7 +777,7 @@ object mainForm: TmainForm
     Width = 217
     Height = 17
     Caption = #1042#1077#1088#1090#1080#1082#1072#1083#1100#1085#1086#1077' '#1088#1072#1089#1087#1086#1083#1086#1078#1077#1085#1080#1077' '#1089#1083#1086#1105#1074
-    TabOrder = 46
+    TabOrder = 42
     OnClick = CheckBox3Click
   end
   object CheckBox4: TCheckBox
@@ -817,7 +788,7 @@ object mainForm: TmainForm
     Caption = #1043#1086#1088#1080#1079#1086#1085#1090#1072#1083#1100#1085#1086#1077' '#1088#1072#1089#1087#1086#1083#1086#1078#1077#1085#1080#1077' '#1089#1083#1086#1077#1074
     Checked = True
     State = cbChecked
-    TabOrder = 47
+    TabOrder = 43
     OnClick = CheckBox4Click
   end
   object CheckBoxinss: TCheckBox
@@ -826,7 +797,7 @@ object mainForm: TmainForm
     Width = 129
     Height = 14
     Caption = #1042#1085#1091#1090#1088#1077#1085#1085#1103#1103' '#1074#1086#1083#1085#1072
-    TabOrder = 48
+    TabOrder = 44
     OnClick = CheckBoxinssClick
   end
   object Editinss: TEdit
@@ -834,7 +805,7 @@ object mainForm: TmainForm
     Top = 232
     Width = 226
     Height = 21
-    TabOrder = 49
+    TabOrder = 45
     Text = '0'
   end
   object RadioGroup1: TRadioGroup
@@ -847,14 +818,14 @@ object mainForm: TmainForm
     Items.Strings = (
       #1057#1090#1091#1087#1077#1085#1100#1082#1072
       #1057#1080#1085#1091#1089#1086#1080#1076#1072#1083#1100#1085#1099#1081)
-    TabOrder = 50
+    TabOrder = 46
   end
   object Editbsh: TEdit
     Left = 464
     Top = 280
     Width = 226
     Height = 21
-    TabOrder = 51
+    TabOrder = 47
     Text = '0'
   end
   object CheckBoxbsh: TCheckBox
@@ -863,7 +834,7 @@ object mainForm: TmainForm
     Width = 129
     Height = 19
     Caption = #1048#1085#1076#1077#1085#1090#1086#1088
-    TabOrder = 52
+    TabOrder = 48
     OnClick = CheckBoxbshClick
   end
   object CheckBoxStakan: TCheckBox
@@ -872,7 +843,7 @@ object mainForm: TmainForm
     Width = 129
     Height = 17
     Caption = #1057#1090#1072#1082#1072#1085
-    TabOrder = 53
+    TabOrder = 49
     OnClick = CheckBoxStakanClick
   end
   object ComboBoxBuild: TComboBox
@@ -882,7 +853,7 @@ object mainForm: TmainForm
     Height = 21
     Style = csDropDownList
     ItemIndex = 0
-    TabOrder = 54
+    TabOrder = 50
     Text = '0'
     Visible = False
     Items.Strings = (
@@ -897,16 +868,16 @@ object mainForm: TmainForm
     Width = 67
     Height = 17
     Caption = 'max(sqI2p)=0'
-    TabOrder = 55
+    TabOrder = 51
   end
   object BeautyCBox: TCheckBox
-    Left = 396
+    Left = 388
     Top = 485
     Width = 61
     Height = 17
     Caption = #1050#1088#1072#1089#1086#1090#1072
     Enabled = False
-    TabOrder = 56
+    TabOrder = 52
   end
   object CheckBox2: TCheckBox
     Left = 562
@@ -920,7 +891,7 @@ object mainForm: TmainForm
     Font.Name = 'Calibri'
     Font.Style = []
     ParentFont = False
-    TabOrder = 57
+    TabOrder = 53
   end
   object Edit1: TEdit
     Left = 562
@@ -928,7 +899,7 @@ object mainForm: TmainForm
     Width = 121
     Height = 21
     Enabled = False
-    TabOrder = 58
+    TabOrder = 54
     Text = '100'
   end
   object InputEdit1: TSpinEdit
@@ -941,7 +912,7 @@ object mainForm: TmainForm
     MinValue = 0
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 59
+    TabOrder = 55
     Value = 0
   end
   object AltInpCBox: TCheckBox
@@ -953,15 +924,15 @@ object mainForm: TmainForm
     Caption = #1040#1083#1100#1090'. '#1088#1077#1078#1080#1084' '#1079#1072#1075#1083'.'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 60
+    TabOrder = 56
   end
   object CheckBox5: TCheckBox
-    Left = 335
+    Left = 326
     Top = 485
     Width = 55
     Height = 17
     Caption = #1053#1072#1075#1088#1077#1074
-    TabOrder = 61
+    TabOrder = 57
     OnClick = CheckBox5Click
   end
   object Button4: TButton
@@ -970,10 +941,36 @@ object mainForm: TmainForm
     Width = 204
     Height = 25
     Caption = #1048#1079#1084#1077#1085#1080#1090#1100' '#1089#1074#1086#1081#1089#1090#1074#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1072
-    TabOrder = 62
+    TabOrder = 58
     OnClick = Button4Click
   end
-  object SaveDialog1: TSaveDialog
+  object DirEdit: TEdit
+    Left = 407
+    Top = 562
+    Width = 138
+    Height = 21
+    TabOrder = 59
+  end
+  object CinemaCBox: TCheckBox
+    Left = 407
+    Top = 589
+    Width = 51
+    Height = 17
+    Caption = #1050#1080#1085#1086':'
+    TabOrder = 60
+  end
+  object CinemaEdit: TSpinEdit
+    Left = 464
+    Top = 585
+    Width = 81
+    Height = 22
+    MaxValue = 1000
+    MinValue = 10
+    TabOrder = 61
+    Value = 0
+  end
+  object SaveDialog: TSaveDialog
+    Options = [ofHideReadOnly, ofNoNetworkButton, ofEnableSizing]
     Left = 448
     Top = 424
   end

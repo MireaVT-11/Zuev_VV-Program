@@ -3,9 +3,8 @@ unit MatEdit;
 interface
 
 uses
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics, System.Generics.Collections,
-  Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
+  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
+  System.Generics.Collections, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
 
 type
   TMaterial = record
@@ -39,7 +38,7 @@ type
     { Private declarations }
   public
     matarr: array of TMaterial;
-    procedure SetLen(n:Integer);
+    procedure SetLen(n: Integer);
   end;
 
 var
@@ -49,7 +48,7 @@ implementation
 
 {$R *.dfm}
 
-function C2T(cl:TColor):string;
+function C2T(cl: TColor): string;
 var
   c: Integer;
   rgb: array [0 .. 3] of byte absolute c;
@@ -58,30 +57,31 @@ begin
   Result := Format('%.2x%.2x%.2x', [rgb[0], rgb[1], rgb[2]]);
 end;
 
-function T2C(s:string):TColor;
+function T2C(s: string): TColor;
 var
   c: Integer;
   rgb: array [0 .. 3] of byte absolute c;
 begin
-  if not TryStrToInt('$'+s,c) then Exit(0);
-  Result:=rgb[0]shl 16+rgb[1]shl 8+rgb[2];
+  if not TryStrToInt('$' + s, c) then
+    Exit(0);
+  Result := rgb[0] shl 16 + rgb[1] shl 8 + rgb[2];
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
   i: Integer;
 begin
-  i:=ComboBox1.ItemIndex;
-  matarr[i].G:=StrToFloat(GEdit.Text)*1e9;
-  matarr[i].ro0:=StrToFloat(ro0Edit.Text);
-  matarr[i].sigma0:=StrToFloat(sigma0Edit.Text)*1e9;
-  matarr[i].k:=StrToFloat(kEdit.Text)*1e9;
-  matarr[i].alpha:=StrToFloat(alphaEdit.Text)*1e9;
-  matarr[i].sigma1:=StrToFloat(sigma1Edit.Text)*1e9;
-  matarr[i].k1:=StrToFloat(k1Edit.Text);
-  matarr[i].ctep:=StrToFloat(ctepEdit.Text);
-  matarr[i].gammatep:=StrToFloat(gammatepEdit.Text);
-  matarr[i].Color:=T2C(LabeledEdit2.Text);
+  i := ComboBox1.ItemIndex;
+  matarr[i].G := StrToFloat(GEdit.Text) * 1E9;
+  matarr[i].ro0 := StrToFloat(ro0Edit.Text);
+  matarr[i].sigma0 := StrToFloat(sigma0Edit.Text) * 1E9;
+  matarr[i].k := StrToFloat(kEdit.Text) * 1E9;
+  matarr[i].alpha := StrToFloat(alphaEdit.Text) * 1E9;
+  matarr[i].sigma1 := StrToFloat(sigma1Edit.Text) * 1E9;
+  matarr[i].k1 := StrToFloat(k1Edit.Text);
+  matarr[i].ctep := StrToFloat(ctepEdit.Text);
+  matarr[i].gammatep := StrToFloat(gammatepEdit.Text);
+  matarr[i].Color := T2C(LabeledEdit2.Text);
   ComboBox1Change(self);
 end;
 
@@ -96,20 +96,20 @@ var
 begin
   t := matarr[ComboBox1.ItemIndex];
   LabeledEdit2.Text := C2T(t.Color);
-  GEdit.Text:=FloatToStr(t.G/1e9);
-  ro0Edit.Text:=FloatToStr(t.ro0);
-  sigma0Edit.Text:=FloatToStr(t.sigma0/1e9);
-  kEdit.Text:=FloatToStr(t.k/1e9);
-  alphaEdit.Text:=FloatToStr(t.alpha/1e9);
-  sigma1Edit.Text:=FloatToStr(t.sigma1/1e9);
-  k1Edit.Text:=FloatToStr(t.k1);
-  ctepEdit.Text:=FloatToStr(t.ctep);
-  gammatepEdit.Text:=FloatToStr(t.gammatep);
+  GEdit.Text := FloatToStr(t.G / 1E9);
+  ro0Edit.Text := FloatToStr(t.ro0);
+  sigma0Edit.Text := FloatToStr(t.sigma0 / 1E9);
+  kEdit.Text := FloatToStr(t.k / 1E9);
+  alphaEdit.Text := FloatToStr(t.alpha / 1E9);
+  sigma1Edit.Text := FloatToStr(t.sigma1 / 1E9);
+  k1Edit.Text := FloatToStr(t.k1);
+  ctepEdit.Text := FloatToStr(t.ctep);
+  gammatepEdit.Text := FloatToStr(t.gammatep);
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
 begin
-  ComboBox1.ItemIndex:=0;
+  ComboBox1.ItemIndex := 0;
   ComboBox1Change(self);
 end;
 
@@ -120,7 +120,7 @@ end;
 
 procedure TForm1.SetLen(n: Integer);
 begin
-  SetLength(matarr,n);
+  SetLength(matarr, n);
 end;
 
 end.

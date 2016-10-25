@@ -17,8 +17,8 @@ __fastcall TgraphForm::TgraphForm(TComponent* Owner) : TForm(Owner) {
 
 void __fastcall TgraphForm::FormKeyDown(TObject *, WORD &, TShiftState) {
 	if (graphForm->WindowState == wsMaximized) {
-		//graphForm->ClientWidth = Screen->Width / iLoveMagic;
-		//graphForm->ClientHeight = Screen->Height / iLoveMagic;
+		// graphForm->ClientWidth = Screen->Width / iLoveMagic;
+		// graphForm->ClientHeight = Screen->Height / iLoveMagic;
 
 		graphForm->BorderStyle = bsSizeToolWin;
 		graphForm->WindowState = wsNormal;
