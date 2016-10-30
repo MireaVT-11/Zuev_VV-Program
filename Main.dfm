@@ -967,7 +967,7 @@ object mainForm: TmainForm
     MaxValue = 1000
     MinValue = 10
     TabOrder = 61
-    Value = 0
+    Value = 10
   end
   object SaveDialog: TSaveDialog
     Options = [ofHideReadOnly, ofNoNetworkButton, ofEnableSizing]

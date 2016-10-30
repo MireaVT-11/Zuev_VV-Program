@@ -590,9 +590,9 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		graphForm->Visible = true;
 
 		WidthCoef1 = 0.;
-		HeightCoef1 = height - 20; // width=640, height=480
-		HeightCoef = 0.9 * height / HeightCoef2;
-		WidthCoef = 0.9 * width / WidthCoef2;
+		HeightCoef1 = height - 40; // width=640, height=480
+		HeightCoef = 0.85 * height / HeightCoef2;
+		WidthCoef = 0.85 * width / WidthCoef2;
 	}
 
 	// *****************************************************************
@@ -787,20 +787,28 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 #endif
 	auto capt = Button2->Caption;
 	// Сохранение данных, вариант 3.1
-	UnicodeString s = "\" \"";
+	UnicodeString s = "\"t, ms\"";
 	for (int i = 1; i <= n4; ++i) {
 		s += UnicodeString(";\"") + FloatToStr((double)((int)((double)(i - 1) / (double)(n4 - 1) * 1000.0) / 10.0)) +
 			UnicodeString("%\""); // так надо
 	}
 	slT->Add(s);
-	UnicodeString path = DirEdit->Text + "#Results\\" + Strutils::ReplaceStr(TimeToStr(Sysutils::Time()), ":",
-		"") + "\\";
+	UnicodeString path;
+	int dirnmb = 0;
+	do {
+		path = DirEdit->Text + "#Results\\" + IntToStr(dirnmb++) + Strutils::ReplaceStr(TimeToStr(Sysutils::Time()),
+			":", "") + "\\";
+	}
+	while (Sysutils::DirectoryExists(path));
+
 	// ShellExecute(NULL, NULL, (const wchar_t*)"cmd.exe", "md \""+path+"\\Cinema\"", "C:\\", SW_HIDE); //Не работает!
-	MkDir(DirEdit->Text + "#Results\\"); // Ура!!! Работает!!
+	if (!Sysutils::DirectoryExists(DirEdit->Text + "#Results\\"))
+		MkDir(DirEdit->Text + "#Results\\"); // Ура!!! Работает!!
 	MkDir(path);
+	// if (CinemaCBox->Checked) //пусть лучше будет всегда
 	MkDir(path + "Cinema\\");
 	/* CreateDir(path+"Cinema"); */  // Не работает!!!!
-
+	T_rec = T0;
 	dtime = dtimepr;
 	tfinish = nt * dtimepr;
 	if (!NoAnim)
@@ -1074,16 +1082,16 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 				sqI2p[elementWithMaximalDeformationInTarget - 2]);
 		}
 		if (!(n % (nt / 100))) {
-			s = "\"" + FloatToStr(RoundTo(timepr * 1000, -5)) + " ms\"";
+			s = FloatToStr(RoundTo(timepr * 1000, -5));
 			// <-- (2015 год) Проверить здесь
 			for (int i = 1; i <= n4; ++i)
-				s += ";\"" + FloatToStr(RoundTo(T[TElemTarget[i]], -2)) + "\"";
+				s += ";" + FloatToStr(RoundTo(T[TElemTarget[i]], -2));
 			slT->Add(s);
 		}
 		if (!NoAnim) {
-			if (!(n % (nt / 1000))) {
+			if (!(n % (nt / Min(1000,nt)))) {
 				bool cinema = CinemaCBox->Checked && !(n % (nt / CinemaEdit->Value));
-				threegraphs(n == nt, nt / CinemaEdit->Value, cinema, path);
+				threegraphs(false, n / (nt / CinemaEdit->Value), cinema, path);
 				graphForm->Caption = FloatToStr(RoundTo(n * 100. / nt, -1)) + "%|"; // <-- (2015 год) Проверить здесь
 				graphForm->Caption = graphForm->Caption + FloatToStr(RoundTo(T_max, 0)) + "|" +
 					FloatToStr(RoundTo(T_rec, 0));
@@ -1099,56 +1107,41 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			StaticText1->Caption = "max(sqI2p)=" + FloatToStr(RoundTo(m_sqI2p, -4));
 
 	}
+	threegraphs(true, 0, false, path);
 	slT->SaveToFile(path + "/T_all_time.csv");
 	slT->Clear();
 	slT->Add("t=" + dtimeprEdit->Text);
-	slT->Add("alpha1=" + FloatToStr(Material[matstrat1Box->ItemIndex + 1].alpha / GPa));
 	slT->Add("alpha0=" + FloatToStr(Material[matstrat0Box->ItemIndex + 1].alpha / GPa));
+	slT->Add("alpha1=" + FloatToStr(Material[matstrat1Box->ItemIndex + 1].alpha / GPa));
 	slT->Add("V=" + vindentEdit->Text);
+	slT->Add("size0=" + rad0Edit->Text + "x" + h0Edit->Text);
+	slT->Add("size1=" + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text + ")");
 	slT->SaveToFile(path + "/#.txt");
+
+	slT->Clear();
+	slT->Add("\"R, %\";\"T, K\";\"sqI2p\"");
+	for (int i = 1; i <= n4; ++i) {
+		slT->Add(FloatToStr((double)(i - 1) / (double)(n4 - 1) * 100) + "%;" +
+			FloatToStr((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2) + ";" + FloatToStr(sqI2p[TElemTarget[i]]));
+	}
+	slT->SaveToFile(path + "/T_final.csv");
+
+	const int dataSize = 11;
+	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p, T};
+	slT->Clear();
+	slT->Add
+		("\"R, %\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\";\"T\""
+		);
+	for (int i = 1; i <= n4; ++i) {
+		UnicodeString s = FloatToStr((double)(i - 1) / (double)(n4 - 1) * 100) + "%";
+		for (int j = 0; j < dataSize; ++j) {
+			s += ";" + (FloatToStr(data[j][TElemTarget[i]]));
+		}
+		slT->Add(s);
+	}
+	slT->SaveToFile(path + "/data_final.csv");
 	delete slT;
 
-	// BEGIN магия
-	struct SaveTempAndI2p {
-		ofstream out;
-
-		SaveTempAndI2p(UnicodeString path) : out((const wchar_t*)(path + UnicodeString("/T_final.csv")).data()) {;
-		}
-
-		void operator()(long double T[], long double sqI2p[], int cut[], int size) {
-			out << "\"R, %\";\"T, K\";\"sqI2p\"" << endl;
-			for (int i = 1; i <= size; ++i) {
-				out << "\"" << double(i - 1) / double(size - 1) * 100 << "\";\"" << T[cut[i]] << "\";\"" << sqI2p
-					[cut[i]] << "\"" << endl;
-			}
-		}
-	} sti2p(path);
-
-	sti2p(T, sqI2p, TElemTarget, n4);
-
-	struct SaveDef {
-		ofstream out;
-
-		SaveDef(UnicodeString path) : out((const wchar_t*)(path + UnicodeString("/data_final.csv")).data()) {;
-		}
-
-		void operator()(char *title, long double **data, int dataSize, int cut[], int cutSize) {
-			out << title << endl;
-			for (int i = 1; i <= cutSize; ++i) {
-				out << "\"" << double(i - 1) / double(cutSize - 1)*100;
-				for (int j = 0; j < dataSize; ++j) {
-					out << "\";\"" << data[j][cut[i]];
-				};
-				out << "\"" << endl;
-			}
-		}
-	} sd(path);
-
-	const int magicNomber = 11;
-	long double *data[magicNomber] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p, T};
-	sd("\"R, %\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\";\"T\""
-		, data, magicNomber, TElemTarget, n4);
-	// END магия
 	Button2->Caption = capt;
 	// fclose(file);
 	// fclose(file1);
