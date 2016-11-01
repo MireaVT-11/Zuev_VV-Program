@@ -106,7 +106,6 @@ __published: // IDE-managed Components
 	TButton *Button1;
 	TBevel *Bevel8;
 	TButton *Button2;
-	TSaveDialog *SaveDialog;
 	TButton *Button3;
 	TLabel *Label8;
 	TEdit *ntEdit;

@@ -876,7 +876,9 @@ object mainForm: TmainForm
     Width = 61
     Height = 17
     Caption = #1050#1088#1072#1089#1086#1090#1072
+    Checked = True
     Enabled = False
+    State = cbChecked
     TabOrder = 52
   end
   object CheckBox2: TCheckBox
@@ -968,11 +970,6 @@ object mainForm: TmainForm
     MinValue = 10
     TabOrder = 61
     Value = 10
-  end
-  object SaveDialog: TSaveDialog
-    Options = [ofHideReadOnly, ofNoNetworkButton, ofEnableSizing]
-    Left = 448
-    Top = 424
   end
   object BindingsList1: TBindingsList
     Methods = <>

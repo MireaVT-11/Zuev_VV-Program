@@ -538,9 +538,10 @@ bool test_k(int k) {
 
 // Нажатие книпки "Пуск". Основная функция.
 void __fastcall TmainForm::RefreshClick(TObject *Sender) {
-	// auto slAll = new TStringList();
-	auto slT = new TStringList();
+	UnicodeString dtstamp;
+	DateTimeToString(dtstamp,"yymmddhhnnss",Sysutils::Now());
 	Application->ProcessMessages();
+	auto slT = new TStringList();
 	graphForm->Canvas->Brush->Color = clWhite;
 	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
 	FILE *file, *file1, *file2, *file3;
@@ -796,8 +797,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	UnicodeString path;
 	int dirnmb = 0;
 	do {
-		path = DirEdit->Text + "#Results\\" + IntToStr(dirnmb++) + Strutils::ReplaceStr(TimeToStr(Sysutils::Time()),
-			":", "") + "\\";
+		path = DirEdit->Text + "#Results\\exper" + IntToStr(dirnmb++) + dtstamp + "\\";
 	}
 	while (Sysutils::DirectoryExists(path));
 
@@ -812,7 +812,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	dtime = dtimepr;
 	tfinish = nt * dtimepr;
 	if (!NoAnim)
-		threegraphs(false, 0, false, "");
+		threegraphs(true, 0, false, path);
 	for (auto n = 0; n <= nt; n++) {
 		if (UnlimStop) {
 			return;
@@ -1107,7 +1107,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			StaticText1->Caption = "max(sqI2p)=" + FloatToStr(RoundTo(m_sqI2p, -4));
 
 	}
-	threegraphs(true, 0, false, path);
+	threegraphs(true, 1, false, path);
 	slT->SaveToFile(path + "/T_all_time.csv");
 	slT->Clear();
 	slT->Add("t=" + dtimeprEdit->Text);
@@ -2416,11 +2416,11 @@ void draw() {
 	case 2:
 	case 3:
 	case 4:
-		graficForm->Chart1->BottomAxis->Title->Caption = "Узлы";
+		graficForm->Chart1->BottomAxis->Title->Caption = (UTF8String)"Узлы";
 		qwer++;
 		break;
 	default:
-		graficForm->Chart1->BottomAxis->Title->Caption = "Элементы";
+		graficForm->Chart1->BottomAxis->Title->Caption = (UTF8String)"Элементы";
 	}
 
 	for (int n = 0; n < numSeries; n++) {
@@ -2464,10 +2464,10 @@ void __fastcall TmainForm::CheckBoxb2Click(TObject *) {
 		CheckBoxbs->Checked = false;
 		CheckBoxb->Checked = false;
 		vb2 = StrToFloat(Editb2->Text);
-		tbs = StrToInt(InputBox("Ввод времени старта первой волны", "t =", "0"));
-		tbc = StrToInt(InputBox("Ввод времени окончания первой волны", "t =", "5"));
-		tbs2 = StrToInt(InputBox("Ввод времени старта второй волны", "t =", "5"));
-		tbc2 = StrToInt(InputBox("Ввод времени окончания второй волны", "t =", "10"));
+		tbs = StrToInt(InputBox((UTF8String)"Ввод времени старта первой волны", "t =", "0"));
+		tbc = StrToInt(InputBox((UTF8String)"Ввод времени окончания первой волны", "t =", "5"));
+		tbs2 = StrToInt(InputBox((UTF8String)"Ввод времени старта второй волны", "t =", "5"));
+		tbc2 = StrToInt(InputBox((UTF8String)"Ввод времени окончания второй волны", "t =", "10"));
 	}
 }
 // ---------------------------------------------------------------------------
@@ -2481,10 +2481,10 @@ void __fastcall TmainForm::CheckBoxn2Click(TObject *) {
 		CheckBoxnp2->Checked = false;
 		CheckBoxnp3->Checked = false;
 		vn2 = StrToFloat(Editn2->Text);
-		tns = StrToInt(InputBox("Ввод времени старта первой волны", "t =", "0"));
-		tnc = StrToInt(InputBox("Ввод времени окончания первой волны", "t =", "5"));
-		tns2 = StrToInt(InputBox("Ввод времени старта второй волны", "t =", "5"));
-		tnc2 = StrToInt(InputBox("Ввод времени окончания второй волны", "t =", "10"));
+		tns = StrToInt(InputBox((UTF8String)"Ввод времени старта первой волны", "t =", "0"));
+		tnc = StrToInt(InputBox((UTF8String)"Ввод времени окончания первой волны", "t =", "5"));
+		tns2 = StrToInt(InputBox((UTF8String)"Ввод времени старта второй волны", "t =", "5"));
+		tnc2 = StrToInt(InputBox((UTF8String)"Ввод времени окончания второй волны", "t =", "10"));
 	}
 }
 // ---------------------------------------------------------------------------
@@ -2498,8 +2498,8 @@ void __fastcall TmainForm::CheckBoxno2Click(TObject *) {
 		CheckBoxnp2->Checked = false;
 		CheckBoxnp3->Checked = false;
 		vn2 = StrToFloat(Editn2->Text);
-		tnc = StrToInt(InputBox("Ввод времени окончания первой волны", "t =", "5"));
-		tnc2 = StrToInt(InputBox("Ввод времени окончания второй волны", "t =", "10"));
+		tnc = StrToInt(InputBox((UTF8String)"Ввод времени окончания первой волны", "t =", "5"));
+		tnc2 = StrToInt(InputBox((UTF8String)"Ввод времени окончания второй волны", "t =", "10"));
 	}
 }
 // ---------------------------------------------------------------------------
@@ -2625,8 +2625,8 @@ void __fastcall TmainForm::CheckBoxnp2Click(TObject *) {
 void __fastcall TmainForm::CheckBox4Click(TObject *) {
 	if (CheckBox4->Checked) {
 		CheckBox3->Checked = false;
-		Label17->Caption = "высоты слоёв основания";
-		Label11->Caption = "радиус основания";
+		Label17->Caption = (UTF8String)"высоты слоёв основания";
+		Label11->Caption = (UTF8String)"радиус основания";
 		AltInpCBox->Enabled = true;
 		InputEdit1->Enabled = true;
 		// h2iEdit1->Text = "0.006";
@@ -2635,8 +2635,8 @@ void __fastcall TmainForm::CheckBox4Click(TObject *) {
 	}
 	else {
 		CheckBox3->Checked = true;
-		Label17->Caption = "Толщина кольца слоя основания";
-		Label11->Caption = "Высота основания";
+		Label17->Caption = (UTF8String)"Толщина кольца слоя основания";
+		Label11->Caption = (UTF8String)"Высота основания";
 		InputEdit1->Enabled = false;
 		AltInpCBox->Enabled = false;
 	}
@@ -2646,16 +2646,16 @@ void __fastcall TmainForm::CheckBox4Click(TObject *) {
 void __fastcall TmainForm::CheckBox3Click(TObject *) {
 	if (CheckBox3->Checked) {
 		CheckBox4->Checked = false;
-		Label17->Caption = "Толщина кольца слоя основания";
-		Label11->Caption = "Высота основания";
+		Label17->Caption = (UTF8String)"Толщина кольца слоя основания";
+		Label11->Caption = (UTF8String)"Высота основания";
 		// h2iEdit1->Text = "0.009";
 		// rad1Edit->Text = "0.006";
 		// CheckBox4->State = cbUnchecked;
 	}
 	else {
 		CheckBox4->Checked = true;
-		Label17->Caption = "высоты слоёв основания";
-		Label11->Caption = "радиус основания";
+		Label17->Caption = (UTF8String)"высоты слоёв основания";
+		Label11->Caption = (UTF8String)"радиус основания";
 	}
 }
 
