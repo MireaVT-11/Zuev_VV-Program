@@ -794,10 +794,10 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			UnicodeString("%\""); // так надо
 	}
 	slT->Add(s);
-	UnicodeString path;
+	UnicodeString path, exstamp;
 	int dirnmb = 0;
 	do {
-		path = DirEdit->Text + "#Results\\exper" + IntToStr(dirnmb++) + dtstamp + "\\";
+		path = DirEdit->Text + "#Results\\exper" + (exstamp = (IntToStr(dirnmb++) + dtstamp)) + "\\";
 	}
 	while (Sysutils::DirectoryExists(path));
 
@@ -1108,7 +1108,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 
 	}
 	threegraphs(true, 1, false, path);
-	slT->SaveToFile(path + "/T_all_time.csv");
+	slT->SaveToFile(path + "/T_all_time."+exstamp+".csv");
 	slT->Clear();
 	slT->Add("t=" + dtimeprEdit->Text);
 	slT->Add("alpha0=" + FloatToStr(Material[matstrat0Box->ItemIndex + 1].alpha / GPa));
@@ -1124,7 +1124,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		slT->Add(FloatToStr((double)(i - 1) / (double)(n4 - 1) * 100) + "%;" +
 			FloatToStr((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2) + ";" + FloatToStr(sqI2p[TElemTarget[i]]));
 	}
-	slT->SaveToFile(path + "/T_final.csv");
+	slT->SaveToFile(path + "/T_final."+exstamp+".csv");
 
 	const int dataSize = 11;
 	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p, T};
@@ -1139,7 +1139,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		}
 		slT->Add(s);
 	}
-	slT->SaveToFile(path + "/data_final.csv");
+	slT->SaveToFile(path + "/data_final."+exstamp+".csv");
 	delete slT;
 
 	Button2->Caption = capt;
