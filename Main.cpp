@@ -539,7 +539,7 @@ bool test_k(int k) {
 // Нажатие книпки "Пуск". Основная функция.
 void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	UnicodeString dtstamp;
-	DateTimeToString(dtstamp,"yymmddhhnnss",Sysutils::Now());
+	DateTimeToString(dtstamp, "yymmddhhnnss", Sysutils::Now());
 	Application->ProcessMessages();
 	auto slT = new TStringList();
 	graphForm->Canvas->Brush->Color = clWhite;
@@ -1089,7 +1089,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			slT->Add(s);
 		}
 		if (!NoAnim) {
-			if (!(n % (nt / Min(1000,nt)))) {
+			if (!(n % (nt / Min(1000, nt)))) {
 				bool cinema = CinemaCBox->Checked && !(n % (nt / CinemaEdit->Value));
 				threegraphs(false, n / (nt / CinemaEdit->Value), cinema, path);
 				graphForm->Caption = FloatToStr(RoundTo(n * 100. / nt, -1)) + "%|"; // <-- (2015 год) Проверить здесь
@@ -1108,7 +1108,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 
 	}
 	threegraphs(true, 1, false, path);
-	slT->SaveToFile(path + "/T_all_time."+exstamp+".csv");
+	slT->SaveToFile(path + "/T_all_time." + exstamp + ".csv");
 	slT->Clear();
 	slT->Add("t=" + dtimeprEdit->Text);
 	slT->Add("alpha0=" + FloatToStr(Material[matstrat0Box->ItemIndex + 1].alpha / GPa));
@@ -1124,7 +1124,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		slT->Add(FloatToStr((double)(i - 1) / (double)(n4 - 1) * 100) + "%;" +
 			FloatToStr((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2) + ";" + FloatToStr(sqI2p[TElemTarget[i]]));
 	}
-	slT->SaveToFile(path + "/T_final."+exstamp+".csv");
+	slT->SaveToFile(path + "/T_final." + exstamp + ".csv");
 
 	const int dataSize = 11;
 	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p, T};
@@ -1139,7 +1139,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		}
 		slT->Add(s);
 	}
-	slT->SaveToFile(path + "/data_final."+exstamp+".csv");
+	slT->SaveToFile(path + "/data_final." + exstamp + ".csv");
 	delete slT;
 
 	Button2->Caption = capt;
@@ -1659,7 +1659,7 @@ TCanvas *holst;
 TRect rect;
 bool beauty;
 
-TColor TempToColor(long double T);
+TColor TempToColor(long double T, bool bw);
 
 void _fastcall TmainForm::threegraphs(bool save, int i, bool cinema, UnicodeString path) {
 	rect = Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight);
@@ -1685,7 +1685,7 @@ void _fastcall TmainForm::threegraphs(bool save, int i, bool cinema, UnicodeStri
 
 // *****************************************************************
 // ПРОЦЕДУРА ПОСТРОЕНИЯ ЭЛЕМЕНТА (ТРЕУГОЛЬНИКА)
-TColor TempToColor(long double T) {
+TColor TempToColor(long double T, bool bw) {
 	struct MyRGB {
 		int r, g, b;
 		long double T;
@@ -1693,7 +1693,7 @@ TColor TempToColor(long double T) {
 		TColor color() {
 			return static_cast<TColor>(RGB(r, g, b));
 		}
-	} TG[5] = { {0, 0, 0, 0.}, {70, 70, 70, 300.}, {175, 43, 30, 350.}, {255, 255, 0, 400.}, {255, 255, 255, T_max}};
+	} TG[5] = { {0, 0, 0, 0.}, {(bw) ? 20 : 70, (bw) ? 20 : 70, (bw) ? 20 : 70, 300.}, {(bw) ? 150 : 175, (bw) ? 150 : 43, (bw) ? 150 : 30, 350.}, {(bw) ? 220 : 255, (bw) ? 220 : 255, (bw) ? 220 : 0, 400.}, {255, 255, 255, T_max}};
 	if (T >= TG[4].T) {
 		return TG[4].color();
 	}
@@ -1716,32 +1716,33 @@ TColor TempToColor(long double T) {
 void threeangle(int k) {
 	TColor DefColor, HotColor;
 	TPoint poly[3];
-	holst->Pen->Color = static_cast<TColor>(RGB(30, 30, 30));
-	DefColor = static_cast<TColor>(Material[matelm[k]].Color);
+	bool bw = mainForm->BWCBox->Checked;
+	holst->Pen->Color = (bw) ? clBlack : static_cast<TColor>(RGB(30, 30, 30));
+	DefColor = (bw) ? clWhite : static_cast<TColor>(Material[matelm[k]].Color);
 	if (Colorletch[k - 1] != 0) {
 		if (I2p[k] > 0) {
 			if (matelm[k] != 9)
-				DefColor = clYellow;
+				DefColor = (bw) ? clGray : clYellow;
 		}
 		// if (I2p[k]>0.01)
 		if (Material[matelm[k]].sigma1 > Material[matelm[k]].sigma0 - abs(Material[matelm[k]].alpha * I2p[k])) {
 			if (matelm[k] != 9) {
-				DefColor = clRed;
+				DefColor = (bw) ? clBlack : clRed;
 				Colorletch[k - 1] = 0;
 			}
 		}
 	}
 	else
-		DefColor = clRed;
+		DefColor = (bw) ? clBlack : clRed;
 	if (mainForm->CheckBox5->Checked) {
 		if (beauty) {
 			if (k % 2 == 0)
-				HotColor = TempToColor((T[k] + T[k - 1]) / 2);
+				HotColor = TempToColor((T[k] + T[k - 1]) / 2, bw);
 			else
-				HotColor = TempToColor((T[k] + T[k + 1]) / 2);
+				HotColor = TempToColor((T[k] + T[k + 1]) / 2, bw);
 		}
 		else
-			HotColor = TempToColor(T[k]);
+			HotColor = TempToColor(T[k], bw);
 	}
 	else
 		HotColor = DefColor;
@@ -1754,7 +1755,7 @@ void threeangle(int k) {
 	// holst->Pen->Color = DefColor;
 	holst->Polygon(poly, 2);
 	if (mainForm->CheckBox5->Checked)
-		holst->Pen->Color = static_cast<TColor>(Material[matelm[k]].Color);
+		holst->Pen->Color = (bw) ? clBlack : static_cast<TColor>(Material[matelm[k]].Color);
 	for (int il = 0; il <= 2; il++) {
 		poly[il] = Point((graphForm->ClientWidth - WidthCoef1 - rcoord[itop[il + 1][k]] * WidthCoef) / 2,
 			HeightCoef1 - zcoord[itop[il + 1][k]] * HeightCoef);

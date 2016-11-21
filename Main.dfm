@@ -971,6 +971,14 @@ object mainForm: TmainForm
     TabOrder = 61
     Value = 10
   end
+  object BWCBox: TCheckBox
+    Left = 407
+    Top = 613
+    Width = 97
+    Height = 17
+    Caption = #1063'/'#1073' '#1075#1088#1072#1092#1080#1082#1072
+    TabOrder = 62
+  end
   object BindingsList1: TBindingsList
     Methods = <>
     OutputConverters = <>
