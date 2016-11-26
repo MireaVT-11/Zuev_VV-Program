@@ -8,11 +8,11 @@
 #include <Vcl.Themes.hpp>
 USEFORM("Save.cpp", saveForm);
 USEFORM("NewMaterial.cpp", newMaterialForm);
+USEFORMNS("MatEdit.pas", Matedit, Form1);
 USEFORM("Graph.cpp", graphForm);
 USEFORM("Grafic.cpp", graficForm);
 USEFORM("Main.cpp", mainForm);
-USEFORMNS("MatEdit.pas", Matedit, Form1);
-
+//---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int) {
 	try {
 		Application->Initialize();

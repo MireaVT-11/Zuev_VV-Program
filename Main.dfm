@@ -979,6 +979,15 @@ object mainForm: TmainForm
     Caption = #1063'/'#1073' '#1075#1088#1072#1092#1080#1082#1072
     TabOrder = 62
   end
+  object LineButton: TButton
+    Left = 407
+    Top = 636
+    Width = 138
+    Height = 22
+    Caption = #1051#1080#1085#1077#1081#1082#1080
+    TabOrder = 63
+    OnClick = LineButtonClick
+  end
   object BindingsList1: TBindingsList
     Methods = <>
     OutputConverters = <>

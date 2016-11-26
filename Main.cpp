@@ -10,6 +10,7 @@
 
 #include "Main.h"
 #include "Matedit.hpp";
+#include "Extendedutils.hpp"
 
 #include "lagrangepolynomial.h"
 
@@ -42,7 +43,7 @@ long double sigma1s[nel];
 long double T[nel];
 long double T_old[nel];
 long double T0 = Cels2Kelvin(20);
-long double T_max = Cels2Kelvin(1200);
+long double T_max = Cels2Kelvin(700);
 long double T_rec = T0;
 long double T_plast[nel];
 long double T_elast[nel];
@@ -1693,7 +1694,10 @@ TColor TempToColor(long double T, bool bw) {
 		TColor color() {
 			return static_cast<TColor>(RGB(r, g, b));
 		}
-	} TG[5] = { {0, 0, 0, 0.}, {(bw) ? 20 : 70, (bw) ? 20 : 70, (bw) ? 20 : 70, 300.}, {(bw) ? 150 : 175, (bw) ? 150 : 43, (bw) ? 150 : 30, 350.}, {(bw) ? 220 : 255, (bw) ? 220 : 255, (bw) ? 220 : 0, 400.}, {255, 255, 255, T_max}};
+	} TG[5] = {
+		{0, 0, 0, 0.}, {(bw) ? 20 : 70, (bw) ? 20 : 70, (bw) ? 20 : 70, 300.},
+		{(bw) ? 150 : 175, (bw) ? 150 : 43, (bw) ? 150 : 30, 350.},
+		{(bw) ? 220 : 255, (bw) ? 220 : 255, (bw) ? 220 : 0, 400.}, {255, 255, 255, T_max}};
 	if (T >= TG[4].T) {
 		return TG[4].color();
 	}
@@ -2703,5 +2707,35 @@ void __fastcall TmainForm::CheckBox5Click(TObject *Sender) {
 // ---------------------------------------------------------------------------
 
 void __fastcall TmainForm::ntEditChange(TObject *Sender) {;
+}
+
+// ---------------------------------------------------------------------------
+void __fastcall TmainForm::LineButtonClick(TObject *Sender) {
+	TBitmap *bmp = new TBitmap();
+	bmp->PixelFormat = pf24bit;
+	bmp->SetSize((int)T_max + 20, 87);
+	holst = bmp->Canvas;
+	int x = 10, y = 10;
+	holst->MoveTo(x, y);
+	for (long double i = 0; i < T_max; i -= -1.) // Муа-ха-ха-ха
+	{
+		holst->Pen->Color = TempToColor(i, BWCBox->Checked);
+		holst->LineTo(x++, y + 30);
+		holst->MoveTo(x, y);
+	}
+	holst->Pen->Color = clBlack;
+	holst->MoveTo(++x,y-2);
+	holst->LineTo(8,y-2);
+	holst->LineTo(8,y+31);
+	holst->LineTo(x,y+31);
+	holst->LineTo(x,y-2);
+	holst->Font->Name = "Times New Roman";
+	holst->Font->Size = 26;
+	holst->TextOutW(5, 45, GetScPref(0, 0, "K"));
+	holst->TextOutW((int)T_max + 15 - holst->TextWidth(GetScPref(T_max, 0, "K")), 45, GetScPref(T_max, 0, "K"));
+	if (!Sysutils::DirectoryExists(DirEdit->Text + "#Results\\"))
+		MkDir(DirEdit->Text + "#Results\\");
+	bmp->SaveToFile(DirEdit->Text + "#Results\\" + ((BWCBox->Checked) ? "bwline.bmp" : "colorline.bmp"));
+	delete bmp;
 }
 // ---------------------------------------------------------------------------

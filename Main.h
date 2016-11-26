@@ -159,6 +159,7 @@ __published: // IDE-managed Components
 	TCheckBox *CinemaCBox;
 	TSpinEdit *CinemaEdit;
 	TCheckBox *BWCBox;
+	TButton *LineButton;
 
 	void __fastcall RefreshClick(TObject *Sender);
 	void __fastcall FormCreate(TObject *Sender);
@@ -187,6 +188,7 @@ __published: // IDE-managed Components
 	void __fastcall Button4Click(TObject *Sender);
 	void __fastcall CheckBox5Click(TObject *Sender);
 	void __fastcall ntEditChange(TObject *Sender);
+	void __fastcall LineButtonClick(TObject *Sender);
 
 private: // User declarations
 	void __fastcall BaseLoop(TObject *Sender, int k);
