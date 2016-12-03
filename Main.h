@@ -160,6 +160,7 @@ __published: // IDE-managed Components
 	TSpinEdit *CinemaEdit;
 	TCheckBox *BWCBox;
 	TButton *LineButton;
+	TCheckBox *CBoxPoints;
 
 	void __fastcall RefreshClick(TObject *Sender);
 	void __fastcall FormCreate(TObject *Sender);

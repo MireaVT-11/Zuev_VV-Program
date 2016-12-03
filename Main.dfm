@@ -988,6 +988,14 @@ object mainForm: TmainForm
     TabOrder = 63
     OnClick = LineButtonClick
   end
+  object CBoxPoints: TCheckBox
+    Left = 562
+    Top = 664
+    Width = 126
+    Height = 17
+    Caption = #1058#1086#1095#1082#1080' '#1074' '#1091#1076#1072#1088#1085#1080#1082#1077
+    TabOrder = 64
+  end
   object BindingsList1: TBindingsList
     Methods = <>
     OutputConverters = <>

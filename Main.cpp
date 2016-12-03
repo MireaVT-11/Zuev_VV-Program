@@ -7,6 +7,7 @@
 #include <System.Threading.hpp>
 #include <System.SyncObjs.hpp>
 #include <System.Math.hpp>
+#include <System.Classes.hpp>
 
 #include "Main.h"
 #include "Matedit.hpp";
@@ -265,6 +266,8 @@ long double HeightCoef1;
 long double WidthCoef1;
 long double HeightCoef2;
 long double WidthCoef2;
+
+int point1 = 0, point2 = 0, point3 = 0;
 
 // ---------------------------------------------------------------------------
 __fastcall TmainForm::TmainForm(TComponent* Owner) : TForm(Owner) {
@@ -543,6 +546,9 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	DateTimeToString(dtstamp, "yymmddhhnnss", Sysutils::Now());
 	Application->ProcessMessages();
 	auto slT = new TStringList();
+	auto slData1 = new TStringList();
+	auto slData2 = new TStringList();
+	auto slData3 = new TStringList();
 	graphForm->Canvas->Brush->Color = clWhite;
 	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
 	FILE *file, *file1, *file2, *file3;
@@ -604,6 +610,19 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	topcoord(); // rcoord,zcoord,sizepic
 	squareall(); // rcent,square
 	masses(); // amaselm,amasstop
+	int zcl = InputEdit1->Value;
+	if (CBoxPoints->Checked) {
+		//точки в ударнике
+		point1 = 2 * (n2 - zcl) * n4 + 2;
+		point2 = 2 * (n2 - zcl + 1) * n4 - 2 * (n4 - n3);
+		point3 = 2 * (n2) * n4 - 2 * (n4 - n3);
+	}
+	else{
+		//точки в мишени
+		point1 = 2 * (n2 - zcl - 1) * n4 + 2;
+		point2 = 2 * (n2 - zcl) * n4 - 2 * (n4 - n3 - 1);
+		point3 = 2 * (n2) * n4 - 2 * (n4 - n3 - 1);
+	}
 	if (CheckBox2->Checked) {
 		Material[1].alpha = StrToFloat(Edit1->Text) * GPa;
 	}
@@ -669,7 +688,6 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	// ЗАДАНИЕ НАЧАЛЬНОЙ СКОРОСТИ СОУДАРЕНИЯ
 	if (CheckBoxs->Checked) // Движение снаряда
 	{
-		int zcl = InputEdit1->Value;
 		if (!AltInpCBox->Checked)
 			zcl = 0;
 		for (int i = (n2 - zcl) * (n4 + 1) + 1; i <= (n2 - zcl) * (n4 + 1) + n3 + 1; i++) {
@@ -795,6 +813,12 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			UnicodeString("%\""); // так надо
 	}
 	slT->Add(s);
+	slData1->Add
+		("\"t, ms\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
+	slData2->Add
+		("\"t, ms\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
+	slData3->Add
+		("\"t, ms\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
 	UnicodeString path, exstamp;
 	int dirnmb = 0;
 	do {
@@ -814,6 +838,8 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	tfinish = nt * dtimepr;
 	if (!NoAnim)
 		threegraphs(true, 0, false, path);
+	const int dataSize = 11;
+	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p, T};
 	for (auto n = 0; n <= nt; n++) {
 		if (UnlimStop) {
 			return;
@@ -1084,10 +1110,22 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		}
 		if (!(n % (nt / 100))) {
 			s = FloatToStr(RoundTo(timepr * 1000, -5));
-			// <-- (2015 год) Проверить здесь
 			for (int i = 1; i <= n4; ++i)
 				s += ";" + FloatToStr(RoundTo(T[TElemTarget[i]], -2));
 			slT->Add(s);
+			s = FloatToStr(RoundTo(timepr * 1000, -5));
+			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
+				s += ";" + FloatToStr(data[i][point1]);
+			slData1->Add(s);
+			s = FloatToStr(RoundTo(timepr * 1000, -5));
+			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
+				s += ";" + FloatToStr(data[i][point2]);
+			slData2->Add(s);
+			s = FloatToStr(RoundTo(timepr * 1000, -5));
+			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
+				s += ";" + FloatToStr(data[i][point3]);
+			slData3->Add(s);
+
 		}
 		if (!NoAnim) {
 			if (!(n % (nt / Min(1000, nt)))) {
@@ -1109,14 +1147,28 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 
 	}
 	threegraphs(true, 1, false, path);
+	slData1->SaveToFile(path + "/data_all.point1." + exstamp + ".csv");
+	delete slData1;
+	slData2->SaveToFile(path + "/data_all.point2." + exstamp + ".csv");
+	delete slData2;
+	slData3->SaveToFile(path + "/data_all.point3." + exstamp + ".csv");
+	delete slData3;
 	slT->SaveToFile(path + "/T_all_time." + exstamp + ".csv");
 	slT->Clear();
-	slT->Add("t=" + dtimeprEdit->Text);
-	slT->Add("alpha0=" + FloatToStr(Material[matstrat0Box->ItemIndex + 1].alpha / GPa));
-	slT->Add("alpha1=" + FloatToStr(Material[matstrat1Box->ItemIndex + 1].alpha / GPa));
-	slT->Add("V=" + vindentEdit->Text);
-	slT->Add("size0=" + rad0Edit->Text + "x" + h0Edit->Text);
-	slT->Add("size1=" + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text + ")");
+	slT->Add("t\t= " + GetScPref(StrToFloat(dtimeprEdit->Text), 2, "с"));
+	slT->Add("alpha0\t= " + GetScPref(Material[matstrat0Box->ItemIndex + 1].alpha, 2, "Па"));
+	slT->Add("alpha1\t= " + GetScPref(Material[matstrat1Box->ItemIndex + 1].alpha, 2, "Па"));
+	if (matstrat2Box->Enabled)
+		slT->Add("alpha2\t= " + GetScPref(Material[matstrat2Box->ItemIndex + 1].alpha, 2, "Па"));
+	if (matstrat3Box->Enabled)
+		slT->Add("alpha3\t= " + GetScPref(Material[matstrat3Box->ItemIndex + 1].alpha, 2, "Па"));
+	if (CheckBoxs->Checked)
+		slT->Add("V\t= " + vindentEdit->Text + " м/с");
+	if (CheckBoxbsh->Checked)
+		slT->Add("V\t= " + Editbsh->Text + " м/с");
+	slT->Add("size0\t= " + rad0Edit->Text + "x" + h0Edit->Text + " (м)");
+	slT->Add("size1\t= " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text +
+		") (м)");
 	slT->SaveToFile(path + "/#.txt");
 
 	slT->Clear();
@@ -1127,12 +1179,9 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	}
 	slT->SaveToFile(path + "/T_final." + exstamp + ".csv");
 
-	const int dataSize = 11;
-	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p, T};
 	slT->Clear();
 	slT->Add
-		("\"R, %\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\";\"T\""
-		);
+		("\"R, %\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\";\"T\"");
 	for (int i = 1; i <= n4; ++i) {
 		UnicodeString s = FloatToStr((double)(i - 1) / (double)(n4 - 1) * 100) + "%";
 		for (int j = 0; j < dataSize; ++j) {
@@ -1767,7 +1816,7 @@ void threeangle(int k) {
 	holst->Brush->Color = HotColor;
 	// holst->Pen->Color = HotColor;
 	holst->Polygon(poly, 2);
-	/* if(test_k(k))
+	/* if(k==point1 || k==point2 || k==point3)
 	 holst->TextOutW((poly[0].x+poly[1].x+poly[2].x)/3-4, (poly[0].y+poly[1].y+poly[2].y)/3-4,IntToStr(k)); */
 	// holst->Brush->Color = clBlack;
 }
@@ -2724,11 +2773,11 @@ void __fastcall TmainForm::LineButtonClick(TObject *Sender) {
 		holst->MoveTo(x, y);
 	}
 	holst->Pen->Color = clBlack;
-	holst->MoveTo(++x,y-2);
-	holst->LineTo(8,y-2);
-	holst->LineTo(8,y+31);
-	holst->LineTo(x,y+31);
-	holst->LineTo(x,y-2);
+	holst->MoveTo(++x, y - 2);
+	holst->LineTo(8, y - 2);
+	holst->LineTo(8, y + 31);
+	holst->LineTo(x, y + 31);
+	holst->LineTo(x, y - 2);
 	holst->Font->Name = "Times New Roman";
 	holst->Font->Size = 26;
 	holst->TextOutW(5, 45, GetScPref(0, 0, "K"));
