@@ -30,3 +30,4 @@ void __fastcall TgraphForm::FormClose(TObject *, TCloseAction &) {
 	Application->Terminate();
 }
 // ---------------------------------------------------------------------------
+

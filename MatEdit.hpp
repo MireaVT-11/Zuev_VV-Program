@@ -1,8 +1,8 @@
 ﻿// CodeGear C++Builder
-// Copyright (c) 1995, 2015 by Embarcadero Technologies, Inc.
+// Copyright (c) 1995, 2016 by Embarcadero Technologies, Inc.
 // All rights reserved
 
-// (DO NOT EDIT: machine generated header) 'MatEdit.pas' rev: 30.00 (Windows)
+// (DO NOT EDIT: machine generated header) 'MatEdit.pas' rev: 31.00 (Windows)
 
 #ifndef MateditHPP
 #define MateditHPP
@@ -26,6 +26,11 @@
 #include <Vcl.Dialogs.hpp>
 #include <Vcl.StdCtrls.hpp>
 #include <Vcl.ExtCtrls.hpp>
+#include <Xml.xmldom.hpp>
+#include <Xml.XMLIntf.hpp>
+#include <Xml.Win.msxmldom.hpp>
+#include <Xml.XMLDoc.hpp>
+#include <Xml.adomxmldom.hpp>
 
 //-- user supplied -----------------------------------------------------------
 
@@ -47,7 +52,7 @@ public:
 	System::Extended k1;
 	System::Extended ctep;
 	System::Extended gammatep;
-	System::AnsiString Name;
+	System::UnicodeString Name;
 	int Color;
 };
 
@@ -77,6 +82,8 @@ __published:
 	Vcl::Extctrls::TLabeledEdit* ctepEdit;
 	Vcl::Extctrls::TLabeledEdit* alphaEdit;
 	Vcl::Stdctrls::TButton* Button1;
+	Xml::Xmldoc::TXMLDocument* MatDB;
+	Vcl::Stdctrls::TCheckBox* CheckBox1;
 	void __fastcall ColorListBox1Click(System::TObject* Sender);
 	void __fastcall ComboBox1Change(System::TObject* Sender);
 	void __fastcall FormShow(System::TObject* Sender);
@@ -86,6 +93,7 @@ __published:
 public:
 	_TForm1__1 matarr;
 	void __fastcall SetLen(int n);
+	void __fastcall ReadFromFile(System::UnicodeString path);
 public:
 	/* TCustomForm.Create */ inline __fastcall virtual TForm1(System::Classes::TComponent* AOwner) : Vcl::Forms::TForm(AOwner) { }
 	/* TCustomForm.CreateNew */ inline __fastcall virtual TForm1(System::Classes::TComponent* AOwner, int Dummy) : Vcl::Forms::TForm(AOwner, Dummy) { }
@@ -99,6 +107,8 @@ public:
 
 //-- var, const, procedure ---------------------------------------------------
 extern DELPHI_PACKAGE TForm1* Form1;
+extern DELPHI_PACKAGE System::UnicodeString __fastcall C2T(System::Uitypes::TColor cl);
+extern DELPHI_PACKAGE System::Uitypes::TColor __fastcall T2C(System::UnicodeString s);
 }	/* namespace Matedit */
 #if !defined(DELPHIHEADER_NO_IMPLICIT_NAMESPACE_USE) && !defined(NO_USING_NAMESPACE_MATEDIT)
 using namespace Matedit;

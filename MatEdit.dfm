@@ -33,7 +33,7 @@ object Form1: TForm1
     Left = 240
     Top = 48
     Width = 121
-    Height = 228
+    Height = 197
     TabStop = False
     Style = [cbStandardColors, cbExtendedColors]
     TabOrder = 0
@@ -177,8 +177,25 @@ object Form1: TForm1
     Top = 251
     Width = 216
     Height = 25
-    Caption = #1047#1072#1087#1080#1089#1072#1090#1100' '#1080#1079#1084#1077#1085#1077#1085#1080#1103
+    Caption = #1047#1072#1087#1086#1084#1085#1080#1090#1100' '#1080#1079#1084#1077#1085#1077#1085#1080#1103
     TabOrder = 12
     OnClick = Button1Click
+  end
+  object CheckBox1: TCheckBox
+    Left = 240
+    Top = 256
+    Width = 121
+    Height = 17
+    Hint = #1042#1085#1080#1084#1072#1085#1080#1077'! '#1052#1086#1078#1077#1090' '#1080#1089#1087#1086#1088#1090#1080#1090#1100' '#1092#1072#1081#1083'! '#1051#1091#1095#1096#1077' '#1085#1077' '#1085#1072#1076#1086'!'
+    Caption = #1047#1072#1087#1080#1089#1072#1090#1100' '#1074' '#1092#1072#1081#1083
+    ParentShowHint = False
+    ShowHint = True
+    TabOrder = 13
+  end
+  object MatDB: TXMLDocument
+    Options = [doNodeAutoCreate, doNodeAutoIndent, doAttrNull, doAutoPrefix, doNamespaceDecl]
+    Left = 152
+    Top = 8
+    DOMVendorDesc = 'ADOM XML v4'
   end
 end

@@ -13,8 +13,6 @@
 #include "Matedit.hpp";
 #include "Extendedutils.hpp"
 
-#include "lagrangepolynomial.h"
-
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 
@@ -199,15 +197,15 @@ int nt;
 int it1;
 int it2;
 int it3;
-int MatCount = 9;
+//int MatCount = 9;
 int UElemIndex;
 
-bool NoAnim = false;
+// bool NoAnim = false;
 bool UnlimStop = false;
 
 int nforgraf = 0;
 
-TMaterial Material[100];
+DynamicArray<TMaterial>Material;
 
 long double step;
 long double aa[30][30];
@@ -326,8 +324,8 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 
 	// КОМПОНЕНТЫ ТЕНЗОРА СКОРОСТЕЙ ДЕФОРМАЦИЙ
 	long double epsdotrr = ((z2 - z3) * u1 + (z3 - z1) * u2 + (z1 - z2) * u3) / (as[k] + aks[k]) + dTptime; // ;
-	long double epsdotrz = ((r3 - r2) * u1 + (r1 - r3) * u2 + (r2 - r1) * u3 + (z2 - z3) * v1 + (z3 - z1) * v2 +
-		(z1 - z2) * v3) / (2. * (as[k] + aks[k])) + dTptime; // ;
+	long double epsdotrz = ((r3 - r2) * u1 + (r1 - r3) * u2 + (r2 - r1) * u3 + (z2 - z3) * v1 + (z3 - z1) * v2 + (z1 - z2) * v3) /
+		(2. * (as[k] + aks[k])) + dTptime; // ;
 	long double epsdotzz = ((r3 - r2) * v1 + (r1 - r3) * v2 + (r2 - r1) * v3) / (as[k] + aks[k]) + dTptime; // ;
 	long double epsdottt = -epsdotrr - epsdotzz + vdif; // + dTptime;
 
@@ -348,8 +346,8 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	stt[k] = -srr[k] - szz[k];
 
 	// КОМПОНЕНТЫ ДЕВИАТОРА ТЕНЗОРА НАПРЯЖЕНИЙ С УЧЁТОМ ПОВОРОТА
-	long double sin2omega = dtime / (as[k] + aks[k]) * ((z2 - z3) * v1 + (z3 - z1) * v2 + (z1 - z2) * v3 -
-		(r3 - r2) * u1 - (r1 - r3) * u2 - (r2 - r1) * u3);
+	long double sin2omega = dtime / (as[k] + aks[k]) * ((z2 - z3) * v1 + (z3 - z1) * v2 + (z1 - z2) * v3 - (r3 - r2) * u1 -
+		(r1 - r3) * u2 - (r2 - r1) * u3);
 	long double cos2omega = sqrtl(powl(1 - sin2omega, 2));
 	long double srrt = 0.5 * (srr[k] + szz[k]) + 0.5 * (srr[k] - szz[k]) * cos2omega - srz[k] * sin2omega;
 	long double szzt = 0.5 * (srr[k] + szz[k]) - 0.5 * (srr[k] - szz[k]) * cos2omega + srz[k] * sin2omega;
@@ -374,8 +372,7 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	long double Heps = 2. * Gs[k];
 	if (sigma1s[k] < alf * p[k] + sigma0s[k] - alphas[k] * I2p[k]) {
 		Heps = 2. * Gs[k] + ks[k] * powl(k1s[k], 2) - k1s[k] * k1s[k] / ks[k] -
-			alphas[k] / F[k] * (srr[k] * (epsrrp[k] - epsttp[k]) + szz[k] * (epszzp[k] - epsttp[k]) +
-			2. * srz[k] * epsrzp[k]);
+			alphas[k] / F[k] * (srr[k] * (epsrrp[k] - epsttp[k]) + szz[k] * (epszzp[k] - epsttp[k]) + 2. * srz[k] * epsrzp[k]);
 	}
 
 	// то что было в новой версии
@@ -397,8 +394,8 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 
 	// ПРОИЗВОДНАЯ ФУНКЦИИ ДЕФОРМИРОВАНИЯ ПО ВРЕМЕНИ
 	// (2015 год) За такое надо руки отрывать!
-	psidot[k] = 2.e0 * Gs[k] / F[k] * (srr[k] * (epsdotrr - epsdottt) + szz[k] * (epsdotzz - epsdottt) +
-		2.e0 * srz[k] * epsdotrz) - ks[k] * alf * k1s[k] * (epsdotrr + epsdotzz + epsdottt);
+	psidot[k] = 2.e0 * Gs[k] / F[k] * (srr[k] * (epsdotrr - epsdottt) + szz[k] * (epsdotzz - epsdottt) + 2.e0 * srz[k] * epsdotrz)
+		- ks[k] * alf * k1s[k] * (epsdotrr + epsdotzz + epsdottt);
 
 	// то что было в новой версии
 	/*
@@ -486,9 +483,8 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 
 	// ЭНЕРГИЯ
 	ener[k] = ener[k] + rcent[k] * dtime * (sigmarr[k] * ((z1 - z2) * u3 + (z2 - z3) * u1 + (z3 - z1) * u2) +
-		sigmazz[k] * ((r2 - r1) * v3 + (r1 - r3) * v2 + (r3 - r2) * v1) +
-		sigmarz[k] * ((r2 - r1) * u3 + (r1 - r3) * u2 + (r3 - r2) * u1 + (z1 - z2) * v3 + (z2 - z3) * v1 +
-		(z3 - z1) * v2) +
+		sigmazz[k] * ((r2 - r1) * v3 + (r1 - r3) * v2 + (r3 - r2) * v1) + sigmarz[k] * ((r2 - r1) * u3 + (r1 - r3) * u2 +
+		(r3 - r2) * u1 + (z1 - z2) * v3 + (z2 - z3) * v1 + (z3 - z1) * v2) +
 		// (2015 год) А мне нравится 3.e0. В этом числе есть глубокая загадочность
 		sigmatt[k] * square[k] * (u1 + u2 + u3) / (3.e0 * rcent[k])) / amaselm[k];
 
@@ -551,57 +547,57 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	auto slData3 = new TStringList();
 	graphForm->Canvas->Brush->Color = clWhite;
 	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
-	FILE *file, *file1, *file2, *file3;
-	if (!NoAnim) {
-		// (2015 год) Исправить или лучше даже переписать
-		// file = fopen(AnsiString(FileEdit->Text).c_str(),
-		// AnsiString("wt").c_str());
-		// file1 = fopen(AnsiString(FileEdit->Text).c_str(),
-		// AnsiString("wt").c_str());
-		// file2 = fopen(AnsiString(FileEdit->Text).c_str(),
-		// AnsiString("wt").c_str());
-		// file3 = fopen(AnsiString(FileEdit->Text).c_str(),
-		// AnsiString("wt").c_str());
-	}
+	/* FILE *file, *file1, *file2, *file3;
+	 if (!NoAnim) {
+	 // (2015 год) Исправить или лучше даже переписать
+	 // file = fopen(AnsiString(FileEdit->Text).c_str(),
+	 // AnsiString("wt").c_str());
+	 // file1 = fopen(AnsiString(FileEdit->Text).c_str(),
+	 // AnsiString("wt").c_str());
+	 // file2 = fopen(AnsiString(FileEdit->Text).c_str(),
+	 // AnsiString("wt").c_str());
+	 // file3 = fopen(AnsiString(FileEdit->Text).c_str(),
+	 // AnsiString("wt").c_str());
+	 } */
 	GPa = 1.e9;
 	// *****************************************************************
 	// ЗАДАНИЕ НАЧАЛЬНЫХ ДАННЫХ (Считывание информации с формы)
 	GetBeginValue();
 	// ****************************************
 	step = nt / 10.;
-	if (!NoAnim) {
-		graphForm->Canvas->Brush->Color = clWhite;
-		graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
+	// if (!NoAnim) {
+	graphForm->Canvas->Brush->Color = clWhite;
+	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
 
-		if (CheckBox1->Checked) {
-			// graphForm->ClientWidth = Screen->Width;
-			// graphForm->ClientHeight = Screen->Height;
-			graphForm->BorderStyle = bsNone;
-			graphForm->WindowState = wsMaximized;
-			assert(graphForm->ClientWidth != Screen->Width);
-		}
-		if (CheckBox4->Checked) {
-			HeightCoef2 = h0 + h2i[1] + h2i[2] + h2i[3];
-			WidthCoef2 = max(radius1, radius0);
-		}
-		if (CheckBox3->Checked) {
-			HeightCoef2 = radius1 + h0;
-			WidthCoef2 = 0.7 * max(h2i[1] + h2i[2] + h2i[3], radius0);
-		}
-
-		int width = graphForm->ClientWidth;
-		int height = graphForm->ClientHeight;
-
-		graphForm->Left = 0;
-		graphForm->Top = 0;
-		graphForm->Canvas->Pen->Color = clBlack;
-		graphForm->Visible = true;
-
-		WidthCoef1 = 0.;
-		HeightCoef1 = height - 40; // width=640, height=480
-		HeightCoef = 0.85 * height / HeightCoef2;
-		WidthCoef = 0.85 * width / WidthCoef2;
+	if (CheckBox1->Checked) {
+		// graphForm->ClientWidth = Screen->Width;
+		// graphForm->ClientHeight = Screen->Height;
+		graphForm->BorderStyle = bsNone;
+		graphForm->WindowState = wsMaximized;
+		assert(graphForm->ClientWidth != Screen->Width);
 	}
+	if (CheckBox4->Checked) {
+		HeightCoef2 = h0 + h2i[1] + h2i[2] + h2i[3];
+		WidthCoef2 = max(radius1, radius0);
+	}
+	if (CheckBox3->Checked) {
+		HeightCoef2 = radius1 + h0;
+		WidthCoef2 = 0.7 * max(h2i[1] + h2i[2] + h2i[3], radius0);
+	}
+
+	int width = graphForm->ClientWidth;
+	int height = graphForm->ClientHeight;
+
+	graphForm->Left = 0;
+	graphForm->Top = 0;
+	graphForm->Canvas->Pen->Color = clBlack;
+	graphForm->Visible = true;
+
+	WidthCoef1 = 0.;
+	HeightCoef1 = height - 40; // width=640, height=480
+	HeightCoef = 0.85 * height / HeightCoef2;
+	WidthCoef = 0.85 * width / WidthCoef2;
+	// }
 
 	// *****************************************************************
 	sizeofelement(); // n2,dr0,dr1,dz0,dz2(i),numbertop,numberelem
@@ -612,13 +608,13 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	masses(); // amaselm,amasstop
 	int zcl = InputEdit1->Value;
 	if (CBoxPoints->Checked) {
-		//точки в ударнике
+		// точки в ударнике
 		point1 = 2 * (n2 - zcl) * n4 + 2;
 		point2 = 2 * (n2 - zcl + 1) * n4 - 2 * (n4 - n3);
 		point3 = 2 * (n2) * n4 - 2 * (n4 - n3);
 	}
-	else{
-		//точки в мишени
+	else {
+		// точки в мишени
 		point1 = 2 * (n2 - zcl - 1) * n4 + 2;
 		point2 = 2 * (n2 - zcl) * n4 - 2 * (n4 - n3 - 1);
 		point3 = 2 * (n2) * n4 - 2 * (n4 - n3 - 1);
@@ -805,7 +801,6 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	for (int k = 1; k <= numberelem; k++)
 		InitLoop(Sender, k);
 #endif
-	auto capt = Button2->Caption;
 	// Сохранение данных, вариант 3.1
 	UnicodeString s = "\"t, ms\"";
 	for (int i = 1; i <= n4; ++i) {
@@ -836,8 +831,8 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	T_rec = T0;
 	dtime = dtimepr;
 	tfinish = nt * dtimepr;
-	if (!NoAnim)
-		threegraphs(true, 0, false, path);
+	// if (!NoAnim)
+	threegraphs(true, 0, false, path);
 	const int dataSize = 11;
 	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p, T};
 	for (auto n = 0; n <= nt; n++) {
@@ -845,11 +840,12 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			return;
 		}
 		timepr = n * dtimepr;
-		Application->ProcessMessages(); // (2015 год) О господь!!!
+		// Application->ProcessMessages(); // (2015 год) О господь!!!  //Уехало пониже.
 		if (tim + 2. * dtime > timepr && tim + dtime < timepr)
 			dtime = 0.51 * (timepr - tim);
 		while (tim < timepr) {
 		L1:
+			Application->ProcessMessages();
 			newspeed(); // speedr1,speedz1
 			// ************************************************************
 			// УСЛОВИЯ ЗАКРЕПЛЕНИЯ
@@ -991,25 +987,20 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			{
 				for (int i = 0; i < n4; i++) {
 					if (rcoord[i] <= radius1 / 4.) {
-						speedz[i] =
-							abs(vindent * sin(M_PI_2 * 8. * rcoord[i] / radius1) * sin(M_PI_2 - M_PI_2 * n / nt));
+						speedz[i] = abs(vindent * sin(M_PI_2 * 8. * rcoord[i] / radius1) * sin(M_PI_2 - M_PI_2 * n / nt));
 					}
 					else {
 						if ((rcoord[i] > radius1 / 4.) && (rcoord[i] <= radius1 / 2.)) {
-							speedz[i] =
-								abs(vn2 * sin(M_PI_2 * 4. * rcoord[i] / radius1) * sin(M_PI_2 - M_PI_2 * n / nt));
+							speedz[i] = abs(vn2 * sin(M_PI_2 * 4. * rcoord[i] / radius1) * sin(M_PI_2 - M_PI_2 * n / nt));
 						}
 						else {
 							if ((rcoord[i] > radius1 / 2.) && (rcoord[i] <= 3. * radius1 / 4.)) {
 								speedz[i] =
-									abs(vindent * sin(M_PI_2 * 8. * rcoord[i] / (3. * radius1)) * sin
-									(M_PI_2 - M_PI_2 * n / nt));
+									abs(vindent * sin(M_PI_2 * 8. * rcoord[i] / (3. * radius1)) * sin(M_PI_2 - M_PI_2 * n / nt));
 							}
 							else {
 								if ((rcoord[i] > 3. * radius1 / 4.) && (rcoord[i] <= radius1)) {
-									speedz[i] =
-										abs(vn2 * sin(M_PI_2 * 2. * rcoord[i] / radius1) * sin
-										(M_PI_2 - M_PI_2 * n / nt));
+									speedz[i] = abs(vn2 * sin(M_PI_2 * 2. * rcoord[i] / radius1) * sin(M_PI_2 - M_PI_2 * n / nt));
 								}
 							}
 						}
@@ -1105,8 +1096,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 				BaseLoop(Sender, k);
 #endif
 			int elementWithMaximalDeformationInTarget = 2 * n4 * (n2 - 1) + 2 * (n3 + 1) + 2; // убейте меня, пожалуйста
-			m_sqI2p = max(sqI2p[elementWithMaximalDeformationInTarget],
-				sqI2p[elementWithMaximalDeformationInTarget - 2]);
+			m_sqI2p = max(sqI2p[elementWithMaximalDeformationInTarget], sqI2p[elementWithMaximalDeformationInTarget - 2]);
 		}
 		if (!(n % (nt / 100))) {
 			s = FloatToStr(RoundTo(timepr * 1000, -5));
@@ -1115,36 +1105,36 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			slT->Add(s);
 			s = FloatToStr(RoundTo(timepr * 1000, -5));
 			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
-				s += ";" + FloatToStr(data[i][point1]);
+					s += ";" + FloatToStr(data[i][point1]);
 			slData1->Add(s);
 			s = FloatToStr(RoundTo(timepr * 1000, -5));
 			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
-				s += ";" + FloatToStr(data[i][point2]);
+					s += ";" + FloatToStr(data[i][point2]);
 			slData2->Add(s);
 			s = FloatToStr(RoundTo(timepr * 1000, -5));
 			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
-				s += ";" + FloatToStr(data[i][point3]);
+					s += ";" + FloatToStr(data[i][point3]);
 			slData3->Add(s);
 
 		}
-		if (!NoAnim) {
-			if (!(n % (nt / Min(1000, nt)))) {
-				bool cinema = CinemaCBox->Checked && !(n % (nt / CinemaEdit->Value));
-				threegraphs(false, n / (nt / CinemaEdit->Value), cinema, path);
-				graphForm->Caption = FloatToStr(RoundTo(n * 100. / nt, -1)) + "%|"; // <-- (2015 год) Проверить здесь
-				graphForm->Caption = graphForm->Caption + FloatToStr(RoundTo(T_max, 0)) + "|" +
-					FloatToStr(RoundTo(T_rec, 0));
-			}
+		// if (!NoAnim) {
+		if (!(n % (nt / Min(1000, nt)))) {
+			bool cinema = CinemaCBox->Checked && !(n % (nt / CinemaEdit->Value));
+			threegraphs(false, n / (nt / CinemaEdit->Value), cinema, path);
+			graphForm->Caption = FloatToStr(RoundTo(n * 100. / nt, -1)) + "%|"; // <-- (2015 год) Проверить здесь
+			graphForm->Caption = graphForm->Caption + FloatToStr(RoundTo(T_max, 0)) + "|" + FloatToStr(RoundTo(T_rec, 0));
 		}
-		else {
-			if (!(n % (nt / 100)))
-				Button2->Caption = FloatToStr(RoundTo(n * 100. / nt, 0)) + "%";
-			if (!(n % (nt / (numSeries - 1))))
-				GraficRefresh(nforgraf++);
-		}
-		if (!(n % (nt >> 7)))
+		// }
+		/* else {
+		if (!(n % (nt / 100)))
+		 Button2->Caption = FloatToStr(RoundTo(n * 100. / nt, 0)) + "%";
+		 if (!(n % (nt / (numSeries - 1))))
+		 GraficRefresh(nforgraf++);
+		 //Теперь без картинок нельзя!
+		 } */
+		if (!(n % (nt >> 7))){
 			StaticText1->Caption = "max(sqI2p)=" + FloatToStr(RoundTo(m_sqI2p, -4));
-
+		}
 	}
 	threegraphs(true, 1, false, path);
 	slData1->SaveToFile(path + "/data_all.point1." + exstamp + ".csv");
@@ -1156,19 +1146,18 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	slT->SaveToFile(path + "/T_all_time." + exstamp + ".csv");
 	slT->Clear();
 	slT->Add("t\t= " + GetScPref(StrToFloat(dtimeprEdit->Text), 2, "с"));
-	slT->Add("alpha0\t= " + GetScPref(Material[matstrat0Box->ItemIndex + 1].alpha, 2, "Па"));
-	slT->Add("alpha1\t= " + GetScPref(Material[matstrat1Box->ItemIndex + 1].alpha, 2, "Па"));
+	slT->Add("alpha0\t= " + GetScPref(Material[matstrat0Box->ItemIndex].alpha, 2, "Па"));
+	slT->Add("alpha1\t= " + GetScPref(Material[matstrat1Box->ItemIndex].alpha, 2, "Па"));
 	if (matstrat2Box->Enabled)
-		slT->Add("alpha2\t= " + GetScPref(Material[matstrat2Box->ItemIndex + 1].alpha, 2, "Па"));
+		slT->Add("alpha2\t= " + GetScPref(Material[matstrat2Box->ItemIndex].alpha, 2, "Па"));
 	if (matstrat3Box->Enabled)
-		slT->Add("alpha3\t= " + GetScPref(Material[matstrat3Box->ItemIndex + 1].alpha, 2, "Па"));
+		slT->Add("alpha3\t= " + GetScPref(Material[matstrat3Box->ItemIndex].alpha, 2, "Па"));
 	if (CheckBoxs->Checked)
 		slT->Add("V\t= " + vindentEdit->Text + " м/с");
 	if (CheckBoxbsh->Checked)
 		slT->Add("V\t= " + Editbsh->Text + " м/с");
 	slT->Add("size0\t= " + rad0Edit->Text + "x" + h0Edit->Text + " (м)");
-	slT->Add("size1\t= " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text +
-		") (м)");
+	slT->Add("size1\t= " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text + ") (м)");
 	slT->SaveToFile(path + "/#.txt");
 
 	slT->Clear();
@@ -1192,7 +1181,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	slT->SaveToFile(path + "/data_final." + exstamp + ".csv");
 	delete slT;
 
-	Button2->Caption = capt;
+	// Button2->Caption = capt;
 	// fclose(file);
 	// fclose(file1);
 	// fclose(file2);
@@ -1481,8 +1470,9 @@ void topology() {
 				matelm[kv] = tmat;
 			}
 			else {
-				matelm[kn] = 9; // (Ales'hon'ne 15.2.5) 9 - это воздух
-				matelm[kv] = 9; // (Ales'hon'ne 15.2.5) но только здесь
+                //Теперь воздух - это 0!!!
+				matelm[kn] = 0; // (Ales'hon'ne 15.2.5) 9 - это воздух
+				matelm[kv] = 0; // (Ales'hon'ne 15.2.5) но только здесь
 			}
 			if (mainForm->ComboBoxBuild->ItemIndex == 1) {
 				if ((l > ((n3 - 10) * (n1))) * (l < ((n3 - 8) * (n1))))
@@ -1745,8 +1735,8 @@ TColor TempToColor(long double T, bool bw) {
 		}
 	} TG[5] = {
 		{0, 0, 0, 0.}, {(bw) ? 20 : 70, (bw) ? 20 : 70, (bw) ? 20 : 70, 300.},
-		{(bw) ? 150 : 175, (bw) ? 150 : 43, (bw) ? 150 : 30, 350.},
-		{(bw) ? 220 : 255, (bw) ? 220 : 255, (bw) ? 220 : 0, 400.}, {255, 255, 255, T_max}};
+		{(bw) ? 150 : 175, (bw) ? 150 : 43, (bw) ? 150 : 30, 350.}, {(bw) ? 220 : 255, (bw) ? 220 : 255, (bw) ? 220 : 0, 400.},
+		{255, 255, 255, T_max}};
 	if (T >= TG[4].T) {
 		return TG[4].color();
 	}
@@ -1774,12 +1764,12 @@ void threeangle(int k) {
 	DefColor = (bw) ? clWhite : static_cast<TColor>(Material[matelm[k]].Color);
 	if (Colorletch[k - 1] != 0) {
 		if (I2p[k] > 0) {
-			if (matelm[k] != 9)
+			if (matelm[k] != 0)
 				DefColor = (bw) ? clGray : clYellow;
 		}
 		// if (I2p[k]>0.01)
 		if (Material[matelm[k]].sigma1 > Material[matelm[k]].sigma0 - abs(Material[matelm[k]].alpha * I2p[k])) {
-			if (matelm[k] != 9) {
+			if (matelm[k] != 0) {
 				DefColor = (bw) ? clBlack : clRed;
 				Colorletch[k - 1] = 0;
 			}
@@ -1862,142 +1852,176 @@ void newspeed() {
 
 void __fastcall TmainForm::FormCreate(TObject *) {
 	DirEdit->Text = ExtractFilePath(Application->ExeName);
+	auto path = DirEdit->Text + "materials.xml";
+	TForm1* form = new TForm1(this);
+	form->ReadFromFile(path);
+    Material.set_length(form->matarr.Length);
+	for (int i = 1; i < form->matarr.Length; ++i)
+		Material[i] = form->matarr[i];
+	delete form;
+
+    Material[0].Name = "Воздух";
+	Material[0].Color = clWhite;
+	Material[0].ro0 = 1.2;
+	Material[0].G = 0.0001 * GPa;
+	Material[0].sigma0 = 1000;
+	Material[0].k1 = 1;
+	Material[0].k = 0.00001 * GPa;
+	Material[0].alpha = 0 * GPa;
+	Material[0].sigma1 = 0.00001 * GPa;
+	Material[0].ctep = 0.0;
+	Material[0].gammatep = 0.0;
+
+	matstrat0Box->Items->Clear();
+	matstrat1Box->Items->Clear();
+	matstrat2Box->Items->Clear();
+	matstrat3Box->Items->Clear();
+	for (auto i = 0; i < Material.Length; ++i) {
+		matstrat0Box->Items->Add(Material[i].Name);
+		matstrat1Box->Items->Add(Material[i].Name);
+		matstrat2Box->Items->Add(Material[i].Name);
+		matstrat3Box->Items->Add(Material[i].Name);
+	}
+	matstrat0Box->ItemIndex = (Material.Length <= 2) ? Material.Length - 1 : 1;
+	matstrat1Box->ItemIndex = (Material.Length <= 3) ? Material.Length - 1 : 2;
+	matstrat2Box->ItemIndex = (Material.Length <= 4) ? Material.Length - 1 : 3;
+	matstrat3Box->ItemIndex = (Material.Length <= 5) ? Material.Length - 1 : 4;
 
 	// *******************************************************************
 	// ПАРАМЕТРЫ МАТЕРИАЛОВ
 	// 1-Аллюминий, 2-сталь, 3-скальный грунт1, 4-скальный грунт2, бетон
 	// 5-скальный грунт3, 6-скальный грунт4, 7-стеклопластик, 8-песок, 9-воздух
+	/*
+	 // ro0 - ПЛОТНОСТЬ
 
-	// ro0 - ПЛОТНОСТЬ
+	 Material[1].ro0 = 2700.;
+	 Material[2].ro0 = 7800.;
+	 Material[3].ro0 = 3000.;
+	 Material[4].ro0 = 2500.;
+	 Material[5].ro0 = 2500.;
+	 Material[6].ro0 = 2720.;
+	 Material[7].ro0 = 1900.;
+	 Material[8].ro0 = 1600.;
+	 Material[9].ro0 = 1.2;
+	 Material[10].ro0 = 2500;
 
-	Material[1].ro0 = 2700.;
-	Material[2].ro0 = 7800.;
-	Material[3].ro0 = 3000.;
-	Material[4].ro0 = 2500.;
-	Material[5].ro0 = 2500.;
-	Material[6].ro0 = 2720.;
-	Material[7].ro0 = 1900.;
-	Material[8].ro0 = 1600.;
-	Material[9].ro0 = 1.2;
-	Material[10].ro0 = 2500;
+	 // G - МОДУЛЬ СДВИГА
+	 Material[1].G = 26.2 * GPa;
+	 Material[2].G = 81. * GPa;
+	 Material[3].G = 64 * GPa;
+	 Material[4].G = 4.17 * GPa;
+	 Material[5].G = 7.7 * GPa;
+	 Material[6].G = 0.0093 * GPa;
+	 Material[3].G = 184 * GPa;
+	 Material[4].G = 4.17 * GPa;
+	 Material[5].G = 87.7 * GPa;
+	 Material[6].G = 0.0093 * GPa;
+	 Material[7].G = 26.2 * GPa;
+	 Material[8].G = 0.0077 * GPa;
+	 Material[9].G = 0.0001 * GPa;
+	 Material[10].G = 7.7 * GPa;
 
-	// G - МОДУЛЬ СДВИГА
-	Material[1].G = 26.2 * GPa;
-	Material[2].G = 81. * GPa;
-	Material[3].G = 64 * GPa;
-	Material[4].G = 4.17 * GPa;
-	Material[5].G = 7.7 * GPa;
-	Material[6].G = 0.0093 * GPa;
-	Material[3].G = 184 * GPa;
-	Material[4].G = 4.17 * GPa;
-	Material[5].G = 87.7 * GPa;
-	Material[6].G = 0.0093 * GPa;
-	Material[7].G = 26.2 * GPa;
-	Material[8].G = 0.0077 * GPa;
-	Material[9].G = 0.0001 * GPa;
-	Material[10].G = 7.7 * GPa;
+	 // sigma0 - начальный предел текучести
+	 Material[1].sigma0 = 0.37 * GPa;
+	 Material[2].sigma0 = 1.66 * GPa;
+	 Material[3].sigma0 = 0.7 * GPa;
+	 Material[4].sigma0 = 0.3 * GPa;
+	 Material[5].sigma0 = 0.04 * GPa;
+	 Material[6].sigma0 = 0.0012 * GPa;
+	 Material[7].sigma0 = 0.37 * GPa;
+	 Material[8].sigma0 = 100;
+	 Material[9].sigma0 = 1000;
+	 Material[10].sigma0 = 0.04 * GPa;
 
-	// sigma0 - начальный предел текучести
-	Material[1].sigma0 = 0.37 * GPa;
-	Material[2].sigma0 = 1.66 * GPa;
-	Material[3].sigma0 = 0.7 * GPa;
-	Material[4].sigma0 = 0.3 * GPa;
-	Material[5].sigma0 = 0.04 * GPa;
-	Material[6].sigma0 = 0.0012 * GPa;
-	Material[7].sigma0 = 0.37 * GPa;
-	Material[8].sigma0 = 100;
-	Material[9].sigma0 = 1000;
-	Material[10].sigma0 = 0.04 * GPa;
+	 // k1 - коэффициент угла внутреннего трения
+	 Material[1].k1 = 0.;
+	 Material[2].k1 = 0.;
+	 Material[3].k1 = 0.4;
+	 Material[4].k1 = 0.4;
+	 // Material[5].k1=0.4;
+	 Material[5].k1 = 0.004;
+	 Material[6].k1 = 0.73;
+	 Material[7].k1 = 0.2;
+	 Material[8].k1 = 0.77;
+	 Material[9].k1 = 1;
+	 Material[10].k1 = 0.4;
 
-	// k1 - коэффициент угла внутреннего трения
-	Material[1].k1 = 0.;
-	Material[2].k1 = 0.;
-	Material[3].k1 = 0.4;
-	Material[4].k1 = 0.4;
-	// Material[5].k1=0.4;
-	Material[5].k1 = 0.004;
-	Material[6].k1 = 0.73;
-	Material[7].k1 = 0.2;
-	Material[8].k1 = 0.77;
-	Material[9].k1 = 1;
-	Material[10].k1 = 0.4;
+	 // K - коэффициент объёмного сжатия
+	 Material[1].k = 64. * GPa;
+	 Material[2].k = 175. * GPa;
+	 Material[3].k = 50 * GPa;
+	 Material[4].k = 16.67 * GPa;
+	 Material[5].k = 8.4 * GPa;
+	 Material[6].k = 0.0278 * GPa;
+	 Material[3].k = 160 * GPa;
+	 Material[4].k = 16.67 * GPa;
+	 Material[5].k = 78.4 * GPa;
+	 Material[6].k = 0.0278 * GPa;
+	 Material[7].k = 64 * GPa;
+	 Material[8].k = 0.01667 * GPa;
+	 Material[9].k = 0.00001 * GPa;
+	 Material[10].k = 8.4 * GPa;
 
-	// K - коэффициент объёмного сжатия
-	Material[1].k = 64. * GPa;
-	Material[2].k = 175. * GPa;
-	Material[3].k = 50 * GPa;
-	Material[4].k = 16.67 * GPa;
-	Material[5].k = 8.4 * GPa;
-	Material[6].k = 0.0278 * GPa;
-	Material[3].k = 160 * GPa;
-	Material[4].k = 16.67 * GPa;
-	Material[5].k = 78.4 * GPa;
-	Material[6].k = 0.0278 * GPa;
-	Material[7].k = 64 * GPa;
-	Material[8].k = 0.01667 * GPa;
-	Material[9].k = 0.00001 * GPa;
-	Material[10].k = 8.4 * GPa;
+	 // alpha - коэффициент убывания предела текучести
+	 Material[1].alpha = 50.0 * GPa;
+	 Material[2].alpha = 0.0 * GPa;
+	 Material[3].alpha = -20.11 * GPa;
+	 Material[4].alpha = 15.8 * GPa;
+	 Material[5].alpha = 100. * GPa;
+	 Material[6].alpha = 10.5 * GPa;
+	 Material[7].alpha = 1. * GPa;
+	 Material[8].alpha = -0.5 * GPa;
+	 Material[9].alpha = 0 * GPa;
+	 Material[10].alpha = 700 * GPa;
 
-	// alpha - коэффициент убывания предела текучести
-	Material[1].alpha = 50.0 * GPa;
-	Material[2].alpha = 0.0 * GPa;
-	Material[3].alpha = -20.11 * GPa;
-	Material[4].alpha = 15.8 * GPa;
-	Material[5].alpha = 100. * GPa;
-	Material[6].alpha = 10.5 * GPa;
-	Material[7].alpha = 1. * GPa;
-	Material[8].alpha = -0.5 * GPa;
-	Material[9].alpha = 0 * GPa;
-	Material[10].alpha = 700 * GPa;
+	 // sigma1 - предел текучести при разрушении или упрочнении
+	 Material[1].sigma1 = 0.07 * GPa;
+	 Material[2].sigma1 = 1.66 * GPa;
+	 Material[3].sigma1 = 0.007 * GPa;
+	 Material[4].sigma1 = 0.07 * GPa;
+	 Material[5].sigma1 = 0.009 * GPa;
+	 Material[6].sigma1 = 0.00012 * GPa;
+	 Material[7].sigma1 = 0.07 * GPa;
+	 Material[8].sigma1 = 0.00007 * GPa;
+	 Material[9].sigma1 = 0.00001 * GPa;
+	 Material[9].sigma1 = 0.007 * GPa;
 
-	// sigma1 - предел текучести при разрушении или упрочнении
-	Material[1].sigma1 = 0.07 * GPa;
-	Material[2].sigma1 = 1.66 * GPa;
-	Material[3].sigma1 = 0.007 * GPa;
-	Material[4].sigma1 = 0.07 * GPa;
-	Material[5].sigma1 = 0.009 * GPa;
-	Material[6].sigma1 = 0.00012 * GPa;
-	Material[7].sigma1 = 0.07 * GPa;
-	Material[8].sigma1 = 0.00007 * GPa;
-	Material[9].sigma1 = 0.00001 * GPa;
-	Material[9].sigma1 = 0.007 * GPa;
+	 // Цвета материалов при выводе анимации
+	 Material[1].Color = clNavy;
+	 Material[2].Color = clGreen;
+	 Material[3].Color = clLime;
+	 Material[4].Color = clSilver;
+	 Material[5].Color = clPurple;
+	 Material[6].Color = clOlive;
+	 Material[7].Color = clLtGray;
+	 Material[8].Color = clGray;
+	 Material[9].Color = clWhite;
+	 Material[10].Color = clBlue;
 
-	// Цвета материалов при выводе анимации
-	Material[1].Color = clNavy;
-	Material[2].Color = clGreen;
-	Material[3].Color = clLime;
-	Material[4].Color = clSilver;
-	Material[5].Color = clPurple;
-	Material[6].Color = clOlive;
-	Material[7].Color = clLtGray;
-	Material[8].Color = clGray;
-	Material[9].Color = clWhite;
-	Material[10].Color = clBlue;
+	 // Это, наверное, теплопроводность... Или нет...
+	 Material[1].ctep = 210;
+	 Material[2].ctep = 58;
+	 Material[3].ctep = 3.49;
+	 Material[4].ctep = 2.91;
+	 Material[5].ctep = 2.3;
+	 Material[6].ctep = 2.4;
+	 Material[7].ctep = 0.1;
+	 Material[8].ctep = 0.8;
+	 Material[9].ctep = 0.0;
+	 Material[10].ctep = 1.4;
 
-	// Это, наверное, теплопроводность... Или нет...
-	Material[1].ctep = 210;
-	Material[2].ctep = 58;
-	Material[3].ctep = 3.49;
-	Material[4].ctep = 2.91;
-	Material[5].ctep = 2.3;
-	Material[6].ctep = 2.4;
-	Material[7].ctep = 0.1;
-	Material[8].ctep = 0.8;
-	Material[9].ctep = 0.0;
-	Material[10].ctep = 1.4;
-
-	// Коэффициент температурного расширения
-	Material[1].gammatep = 22.2e-6;
-	Material[2].gammatep = 13e-6;
-	Material[3].gammatep = 8e-6;
-	Material[4].gammatep = 8e-6;
-	Material[5].gammatep = 8e-6;
-	Material[6].gammatep = 8e-6;
-	Material[7].gammatep = 27.8e-6;
-	Material[8].gammatep = 11.6e-6;
-	Material[9].gammatep = 0.0;
-	Material[10].gammatep = 14.5e-6;
-
+	 // Коэффициент температурного расширения
+	 Material[1].gammatep = 22.2e-6;
+	 Material[2].gammatep = 13e-6;
+	 Material[3].gammatep = 8e-6;
+	 Material[4].gammatep = 8e-6;
+	 Material[5].gammatep = 8e-6;
+	 Material[6].gammatep = 8e-6;
+	 Material[7].gammatep = 27.8e-6;
+	 Material[8].gammatep = 11.6e-6;
+	 Material[9].gammatep = 0.0;
+	 Material[10].gammatep = 14.5e-6;
+	 */
 	/*
 	 // (2015 год) Для будущей загрузки материалов.
 	 struct SaveDefaultMatirials
@@ -2283,9 +2307,8 @@ void __fastcall TmainForm::jjjjBoxChange(TObject *) {
 // ---------------------------------------------------------------------------
 void __fastcall TmainForm::GetBeginValue() {
 	for (int i = 0; i < nel; i++) {
-		srr[i] = szz[i] = srz[i] = stt[i] = epsrr[i] = epszz[i] = epsrz[i] = epstt[i] = matelm[i] = epsrrp[i] =
-			epszzp[i] = epsrzp[i] = epsttp[i] = sigmarr[i] = sigmazz[i] = sigmarz[i] = sigmatt[i] = ener[i] =
-			I2p[i] = 0.;
+		srr[i] = szz[i] = srz[i] = stt[i] = epsrr[i] = epszz[i] = epsrz[i] = epstt[i] = matelm[i] = epsrrp[i] = epszzp[i] =
+			epsrzp[i] = epsttp[i] = sigmarr[i] = sigmazz[i] = sigmarz[i] = sigmatt[i] = ener[i] = I2p[i] = 0.;
 	}
 	for (int i = 0; i < nus; i++) {
 		speedr[i] = speedz[i] = nearel[i] = 0.;
@@ -2293,8 +2316,8 @@ void __fastcall TmainForm::GetBeginValue() {
 	timepr = 0.;
 	// **************************************************************
 	// (2015 год) Переписать в виде цикла
-	for (int i = 0; i < numSeries; ++i)
-		graficForm->Series[i]->ShowInLegend = false;
+	/* for (int i = 0; i < numSeries; ++i)
+	 graficForm->Series[i]->ShowInLegend = false; */
 	// *************************************************************
 	alf = StrToFloat(alfEdit->Text); // Введённая альфа
 	c0 = StrToFloat(c0Edit->Text); // Коэффициент квадратичной псевдовязкости
@@ -2318,18 +2341,18 @@ void __fastcall TmainForm::GetBeginValue() {
 	// Число разбиений по высоте сооружения
 	n3 = EnsureRange(StrToInt(n3Edit->Text), 3, 30);
 	// Число разбиений по радиусу сооружения
-	matstrat0 = matstrat0Box->ItemIndex + 1;
+	matstrat0 = matstrat0Box->ItemIndex;// + 1;
 	// Материал сооружения (0-9) переводим в (1-10)
 	nstrat = nstratBox->ItemIndex + 1;
 	// Число слоёв основания (0-2) переводим в (1-3)
 	h2i[1] = StrToFloat(h2iEdit1->Text); // Высота первого слоя (м)
 	h2i[2] = StrToFloat(h2iEdit2->Text); // Высота второго слоя (м)
 	h2i[3] = StrToFloat(h2iEdit3->Text); // Высота третьего слоя (м)
-	matstrat[1] = matstrat1Box->ItemIndex + 1;
+	matstrat[1] = matstrat1Box->ItemIndex;// + 1;
 	// Материал первого слоя (0-9) переводим в (1-10)
-	matstrat[2] = matstrat2Box->ItemIndex + 1;
+	matstrat[2] = matstrat2Box->ItemIndex;// + 1;
 	// Материал второго слоя (0-9) переводим в (1-10)
-	matstrat[3] = matstrat3Box->ItemIndex + 1;
+	matstrat[3] = matstrat3Box->ItemIndex;// + 1;
 	// Материал третьего слоя (0-9) переводим в (1-10)
 }
 
@@ -2357,157 +2380,6 @@ void NewMat() {
 	// FormMain->matstrat3Box->Items->Add(temp);
 	// Form2->Close();
 	// MatCount++;
-}
-
-// -------------------------------------------------------------------
-
-void __fastcall TmainForm::Button2Click(TObject *Sender) {
-	graficForm->ComboBox1->ItemIndex = 0;
-	graficForm->ComboBox2->ItemIndex = 0;
-	NoAnim = true;
-	// graficForm->Cursor = crHourGlass;
-	// (Ales'hon'ne) Наверное, перед выводом графика, нужно что-нибудь посчитать
-	/* +-----------------------------+ */
-	/* | */ RefreshClick(Sender); /* | */
-	/* +-----------------------------+ */
-	graficForm->ShowModal();
-	NoAnim = false;
-}
-
-// ---------------------------------------------------------------------------
-
-void GraficRefresh(int n) {
-	// (2015 год) Дальше творится "Вай вай АХТУНГ!"
-	// Queen — It's A Kind Of Magic
-	// Selena Gomez — Magic
-	// Walk off the earth — Magic
-	// Perry Como — Magic Moments
-	static int *Points[9] = {NULL, // (2015 год) Это не ошибка. Так нужно.
-		CPointTarget, CPointImpactor, SPointTarget, SPointImpactor, BPointTarget, BPointImpactor, TPointTarget,
-		TPointImpactor};
-	static int *Elems[9] = {NULL, // (2015 год) Это не ошибка. Так нужно.
-		CElemTarget, CElemImpactor, SElemTarget, SElemImpactor, BElemTarget, BElemImpactor, TElemTarget, TElemImpactor};
-	static const int numMagic = 24;
-	static long double *magic[numMagic] = {NULL, // (2015 год) Это не ошибка. Так нужно.
-		rcoord, zcoord, speedr, speedz, epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, sigmarr, sigmarz,
-		sigmazz, sigmatt, sqI2p, tet, tetp, ener, T, T_plast, T_elast};
-	for (int pl = 1; pl <= 8; ++pl) {
-		int qwer;
-		switch (pl) {
-		case 1:
-		case 3:
-			qwer = n2;
-			break;
-		case 2:
-		case 4:
-			qwer = n1;
-			break;
-		case 5:
-		case 7:
-			qwer = n4;
-			break;
-		case 6:
-		case 8:
-			qwer = n3;
-			break;
-		default:
-			throw("Unknow error!");
-		}
-		int *PPoint = Points[pl];
-		int *PElem = Elems[pl];
-
-		for (int i = 1; i <= qwer + 1; ++i) {
-			int j = PPoint[i];
-			for (int k = 1; k <= 4; ++k) {
-				MyPoint &p = points[n][k][pl][i];
-				p.x = j;
-				p.y = magic[k][j];
-			}
-		}
-		// (2015 год) В шапке цикла подозрительно отсутствовала "+1" по сравнению с предыдущим.
-		// (2015 год) Добавил. Ничего плохого не произошло.
-		for (int i = 1; i <= qwer + 1; i++) {
-			int j = PElem[i];
-			for (int k = 5; k < numMagic; ++k) {
-				MyPoint &p = points[n][k][pl][i];
-				p.x = j;
-				p.y = magic[k][j];
-			}
-		}
-	}
-}
-
-// -----------------------------------------------------------------------------
-void draw() {
-	int qwer;
-	int Place = graficForm->ComboBox2->ItemIndex + 1;
-	switch (Place) {
-	case 1:
-	case 3:
-		qwer = n2;
-		break;
-	case 2:
-	case 4:
-		qwer = n1;
-		break;
-	case 5:
-	case 7:
-		qwer = n4;
-		break;
-	case 6:
-	case 8:
-		qwer = n3;
-		break;
-	default:
-		throw(" Ищите switch ");
-	}
-
-	graficForm->Chart1->Title->Text->Clear();
-	graficForm->Chart1->Title->Text->Add(graficForm->ComboBox1->Text + " (" + graficForm->ComboBox2->Text + ")");
-	int Func = graficForm->ComboBox1->ItemIndex + 1;
-	switch (Func) {
-	case 1:
-	case 2:
-	case 3:
-	case 4:
-		graficForm->Chart1->BottomAxis->Title->Caption = (UTF8String)"Узлы";
-		qwer++;
-		break;
-	default:
-		graficForm->Chart1->BottomAxis->Title->Caption = (UTF8String)"Элементы";
-	}
-
-	for (int n = 0; n < numSeries; n++) {
-		TLineSeries *Series = graficForm->Series[n];
-		Series->Clear();
-		Series->ShowInLegend = true;
-		Series->Title = FloatToStr(dtimepr * (double(n) / double(numSeries - 1) * nt) / 1.e-6) + " мкc";
-		if (graficForm->CheckBox1->Checked) {
-			// LagrangePolynomial< long double > lp( qwer );
-			// PartialLagrangePolynomial< long double, 3u > plp( qwer );
-			CubicSpline<long double>fun(qwer);
-			// auto &fun = cs;
-			for (int i = 1; i <= qwer; i++) {
-				MyPoint &p = points[n][Func][Place][i];
-				fun.addPoint(p.x, p.y);
-			}
-			fun.compute();
-
-			int iLoveMagic = 5000;
-
-			long double min_x = points[n][Func][Place][1].x;
-			long double max_x = points[n][Func][Place][qwer].x;
-			long double step = (max_x - min_x) / iLoveMagic;
-			for (long double x = min_x; x <= max_x; x += step)
-				Series->AddXY(x, fun(x), "", Series->SeriesColor);
-		}
-		else {
-			for (int i = 1; i <= qwer; i++) {
-				MyPoint &p = points[n][Func][Place][i];
-				Series->AddXY(p.x, p.y, "", Series->SeriesColor);
-			}
-		}
-	}
 }
 
 // ---------------------------------------------------------------------------
@@ -2596,15 +2468,13 @@ void __fastcall TmainForm::nstratBoxChange(TObject *) {
 	Label21->Enabled = E3;
 }
 
-void __fastcall TmainForm::Button1Click(TObject *) {
-	newMaterialForm->ShowModal();
-}
-
 // ---------------------------------------------------------------------------
 
 void __fastcall TmainForm::Button3Click(TObject *) {
 	UnicodeString path = ExtractFilePath(DirEdit->Text);
 	Vcl::Filectrl::SelectDirectory(path, TSelectDirOpts() << sdAllowCreate << sdPerformCreate << sdPrompt, 0);
+	if(path.LastChar()!=((UnicodeString)("\\")).LastChar())
+        path+="\\";
 	DirEdit->Text = path;
 }
 
@@ -2738,14 +2608,13 @@ void __fastcall TmainForm::FormClose(TObject *, TCloseAction &) {
 // ---------------------------------------------------------------------------
 
 void __fastcall TmainForm::Button4Click(TObject *Sender) {
-	int count = 10;
 	TForm1* form = new TForm1(this);
-	form->SetLen(count);
-	for (int i = 0; i <= count - 1;)
-		form->matarr[i] = Material[++i];
+	form->SetLen(Material.Length);
+	for (int i = 0; i < Material.Length; ++i)
+		form->matarr[i] = Material[i];
 	form->ShowModal();
-	for (int i = count; i > 0;)
-		Material[i] = form->matarr[--i];
+	for (int i = 0; i < Material.Length; ++i)
+		Material[i] = form->matarr[i];
 	delete form;
 }
 // ---------------------------------------------------------------------------
@@ -2788,3 +2657,4 @@ void __fastcall TmainForm::LineButtonClick(TObject *Sender) {
 	delete bmp;
 }
 // ---------------------------------------------------------------------------
+

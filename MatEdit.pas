@@ -4,12 +4,13 @@ interface
 
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
-  System.Generics.Collections, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls;
+  System.Generics.Collections, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Xml.xmldom, Xml.XMLIntf,
+  Xml.Win.msxmldom, Xml.XMLDoc, Xml.adomxmldom;
 
 type
   TMaterial = record
     G, ro0, sigma0, k, alpha, sigma1, k1, ctep, gammatep: Extended;
-    Name: ansistring;
+    Name: UnicodeString;
     Color: Integer;
   end;
 
@@ -29,6 +30,8 @@ type
     ctepEdit: TLabeledEdit;
     alphaEdit: TLabeledEdit;
     Button1: TButton;
+    MatDB: TXMLDocument;
+    CheckBox1: TCheckBox;
     procedure ColorListBox1Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -39,16 +42,23 @@ type
   public
     matarr: array of TMaterial;
     procedure SetLen(n: Integer);
+    procedure ReadFromFile(path:UnicodeString);
   end;
 
 var
   Form1: TForm1;
 
+function T2C(s: UnicodeString): TColor;
+function C2T(cl: TColor): UnicodeString;
+
 implementation
 
 {$R *.dfm}
 
-function C2T(cl: TColor): string;
+var
+  LastPath: UnicodeString;
+
+function C2T(cl: TColor): UnicodeString;
 var
   c: Integer;
   rgb: array [0 .. 3] of byte absolute c;
@@ -57,7 +67,7 @@ begin
   Result := Format('%.2x%.2x%.2x', [rgb[0], rgb[1], rgb[2]]);
 end;
 
-function T2C(s: string): TColor;
+function T2C(s: UnicodeString): TColor;
 var
   c: Integer;
   rgb: array [0 .. 3] of byte absolute c;
@@ -83,6 +93,30 @@ begin
   matarr[i].gammatep := StrToFloat(gammatepEdit.Text);
   matarr[i].Color := T2C(LabeledEdit2.Text);
   ComboBox1Change(self);
+  if CheckBox1.Checked then
+    begin
+      try
+        MatDB.LoadFromFile(LastPath);
+        with MatDB.Node.ChildNodes.Nodes['materials'].ChildNodes.Nodes[i - 1] do
+          try
+            Attributes['name'] := matarr[i].Name;
+            Attributes['color'] := C2T(matarr[i].Color);
+            Attributes['alpha'] := FloatToStr(matarr[i].alpha);
+            Attributes['g'] := FloatToStr(matarr[i].G);
+            Attributes['ro0'] := FloatToStr(matarr[i].ro0);
+            Attributes['k1'] := FloatToStr(matarr[i].k1);
+            Attributes['k'] := FloatToStr(matarr[i].k);
+            Attributes['sigma0'] := FloatToStr(matarr[i].sigma0);
+            Attributes['sigma1'] := FloatToStr(matarr[i].sigma1);
+            Attributes['c'] := FloatToStr(matarr[i].ctep);
+            Attributes['gamma'] := FloatToStr(matarr[i].gammatep);
+            MatDB.SaveToFile(LastPath);
+          except
+          end;
+      finally
+
+      end;
+    end;
 end;
 
 procedure TForm1.ColorListBox1Click(Sender: TObject);
@@ -108,7 +142,12 @@ begin
 end;
 
 procedure TForm1.FormShow(Sender: TObject);
+var
+  i:Integer;
 begin
+  ComboBox1.Items.Clear;
+  for i := 0 to Length(matarr)-1 do
+    ComboBox1.Items.Add(matarr[i].Name);
   ComboBox1.ItemIndex := 0;
   ComboBox1Change(self);
 end;
@@ -116,6 +155,40 @@ end;
 procedure TForm1.LabeledEdit2Change(Sender: TObject);
 begin
   Shape1.Brush.Color := T2C(LabeledEdit2.Text);
+end;
+
+procedure TForm1.ReadFromFile(path: UnicodeString);
+var
+  i:Integer;
+begin
+  LastPath := path;
+  try
+    MatDB.LoadFromFile(path);
+    with MatDB.Node.ChildNodes.Nodes['materials'] do
+    begin
+      SetLength(matarr, ChildNodes.Count + 1);
+      for i := 1 to ChildNodes.Count do
+        with ChildNodes.Nodes[i - 1] do
+        try
+          matarr[i].Name := Attributes['name'];
+          matarr[i].Color := T2C(Attributes['color']);
+          matarr[i].alpha := StrToFloat(Attributes['alpha']);
+          matarr[i].G := StrToFloat(Attributes['g']);
+          matarr[i].ro0 := StrToFloat(Attributes['ro0']);
+          matarr[i].k1 := StrToFloat(Attributes['k1']);
+          matarr[i].k := StrToFloat(Attributes['k']);
+          matarr[i].sigma0 := StrToFloat(Attributes['sigma0']);
+          matarr[i].sigma1 := StrToFloat(Attributes['sigma1']);
+          matarr[i].ctep := StrToFloat(Attributes['c']);
+          matarr[i].gammatep := StrToFloat(Attributes['gamma']);
+        except
+          on e:Exception do
+            Application.MessageBox(PWideChar('Ошибка при чтении данных из файла!'#13#10+XML),'Ошибка в XML')
+        end;
+    end;
+  finally
+
+  end;
 end;
 
 procedure TForm1.SetLen(n: Integer);

@@ -1,7 +1,4 @@
-﻿[FileEdit1]
-Coordinates=711,212,57,51
-
-[CheckBox4]
+﻿[CheckBox4]
 Coordinates=204,144,95,51
 
 [Bevel2]
@@ -25,9 +22,6 @@ Coordinates=220,416,95,51
 [Label14]
 Coordinates=910,212,52,51
 
-[Button1]
-Coordinates=897,484,53,51
-
 [ntEdit]
 Coordinates=328,484,43,51
 
@@ -39,9 +33,6 @@ Coordinates=209,620,47,33
 
 [Label21]
 Coordinates=950,348,52,51
-
-[SaveDialog1]
-Coordinates=626,832,87,36
 
 [matstrat1Box]
 Coordinates=343,10,84,105
@@ -81,9 +72,6 @@ Coordinates=134,484,46,51
 
 [Editinss]
 Coordinates=80,416,54,51
-
-[FileEdit]
-Coordinates=627,348,51,51
 
 [h0Edit]
 Coordinates=267,484,45,51
@@ -172,9 +160,6 @@ Coordinates=912,416,52,51
 [Button3]
 Coordinates=391,144,53,51
 
-[FileEdit2]
-Coordinates=202,348,57,51
-
 [Refresh]
 Coordinates=476,552,52,51
 
@@ -223,9 +208,6 @@ Coordinates=121,10,84,105
 [rad1Edit]
 Coordinates=460,144,55,51
 
-[Button2]
-Coordinates=509,484,53,51
-
 [Label31]
 Coordinates=216,212,52,51
 
@@ -268,9 +250,6 @@ Coordinates=80,484,40,51
 [Label11]
 Coordinates=10,416,52,51
 
-[FileEdit3]
-Coordinates=10,212,57,51
-
 [RadioGroup1]
 Coordinates=967,280,79,51
 
@@ -310,7 +289,7 @@ ExplicitSubNodes=Enabled
 Coordinates=10,144,95,51
 
 []
-Coordinates=866,280,79,51
+Coordinates=897,484,53,51
 
 [BindingsList1]
 Coordinates=938,87,91,36

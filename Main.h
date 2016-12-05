@@ -10,8 +10,6 @@
 #include <Dialogs.hpp>
 
 #include "Graph.h"
-#include "NewMaterial.h"
-#include "Grafic.h"
 #include <Data.Bind.Components.hpp>
 #include <Data.Bind.EngExt.hpp>
 #include <System.Bindings.Outputs.hpp>
@@ -103,9 +101,7 @@ __published: // IDE-managed Components
 	TComboBox *matstrat2Box;
 	TComboBox *matstrat3Box;
 	TBevel *Bevel7;
-	TButton *Button1;
 	TBevel *Bevel8;
-	TButton *Button2;
 	TButton *Button3;
 	TLabel *Label8;
 	TEdit *ntEdit;
@@ -167,8 +163,8 @@ __published: // IDE-managed Components
 	void __fastcall jjjjBoxChange(TObject *Sender);
 	void __fastcall nstratBoxChange(TObject *Sender);
 	void __fastcall GetBeginValue();
-	void __fastcall Button1Click(TObject *Sender);
-	void __fastcall Button2Click(TObject *Sender);
+	//void __fastcall Button1Click(TObject *Sender);
+	//void __fastcall Button2Click(TObject *Sender);
 	void __fastcall Button3Click(TObject *Sender);
 	void __fastcall CheckBoxinssClick(TObject *Sender);
 	void __fastcall CheckBoxbshClick(TObject *Sender);

@@ -14,8 +14,8 @@ function GetScPref(v: Extended; n: Byte; meas: UnicodeString): UnicodeString;
 var
   t: integer;
 const
-  pref: array [-8 .. 8] of UnicodeString = ('Рё', 'Р·', 'Р°', 'С„', 'Рї', 'РЅ', 'РјРє', 'Рј', '', 'Рє', 'Рњ', 'Р“', 'Рў', 'Рџ', 'Р­',
-    'Р—', 'Р�');
+  //Содержит кратные приставки СИ в Юникоде
+  pref: array [-8 .. 8] of UnicodeString = (#$0438, #$0437, #$0430, #$0444, #$043F, #$043D, #$043C#$043A, #$043C , '', #$043A, #$041C, #$0413, #$0422, #$041F, #$042D, #$0417, #$0418);
 begin
   if InRange(v, -10, 10) then
     Exit(UnicodeString(FloatToStr(RoundTo(v, -n))) + ' ' + pref[0] + meas);
@@ -27,12 +27,14 @@ function GetCompPref(v: Int64; n: Byte): UnicodeString;
 var
   t: integer;
 const
-  pref: array [0 .. 8] of UnicodeString = ('', 'РљРё', 'РњРё', 'Р“Рё', 'РўРё', 'РџРё', 'Р­Рё', 'Р—Рё', 'Р™Рё');
+  //Содержит кратные приставки для данных в Юникоде
+  pref: array [0 .. 8] of UnicodeString = ('', #$041A, #$041C, #$0413, #$0422, #$041F, #$042D, #$0417, #$0419);
+  prefpost: UnicodeString = #$0438#$20#$0411; //='и Б'
 begin
   if InRange(v, 0, 10) then
-    Exit(UnicodeString(FloatToStr(RoundTo(v, -n))) + ' ' + pref[0] + 'Р‘');
+    Exit(UnicodeString(FloatToStr(RoundTo(v, -n))) + ' ' + pref[0] + prefpost);
   t := EnsureRange(trunc(logN(990, abs(v))), 0, 8);
-  Result := UnicodeString(FloatToStr(RoundTo(v * power(2, -min(t * 10, 80)), -n))) + ' ' + pref[t] + 'Р‘';
+  Result := UnicodeString(FloatToStr(RoundTo(v * power(2, -min(t * 10, 80)), -n))) + ' ' + pref[t] + prefpost;
 end;
 
 end.
