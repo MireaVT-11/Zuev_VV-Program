@@ -1,4 +1,4 @@
-unit MatEdit;
+п»їunit MatEdit;
 
 interface
 
@@ -12,6 +12,7 @@ type
     G, ro0, sigma0, k, alpha, sigma1, k1, ctep, gammatep: Extended;
     Name: UnicodeString;
     Color: Integer;
+    function ToString: UnicodeString;
   end;
 
   TForm1 = class(TForm)
@@ -53,6 +54,9 @@ function C2T(cl: TColor): UnicodeString;
 
 implementation
 
+uses
+  ExtendedUtils;
+
 {$R *.dfm}
 
 var
@@ -73,7 +77,16 @@ var
   rgb: array [0 .. 3] of byte absolute c;
 begin
   if not TryStrToInt('$' + s, c) then
-    Exit(0);
+  begin
+    try
+      if s.StartsWith('cl') then
+        Exit(StringToColor(s))
+      else
+        Exit(StringToColor('cl'+s));
+    except
+      Exit(0);
+    end;
+  end;
   Result := rgb[0] shl 16 + rgb[1] shl 8 + rgb[2];
 end;
 
@@ -93,7 +106,7 @@ begin
   matarr[i].gammatep := StrToFloat(gammatepEdit.Text);
   matarr[i].Color := T2C(LabeledEdit2.Text);
   ComboBox1Change(self);
-  if CheckBox1.Checked then
+  if CheckBox1.Checked and (i > 0) then
     begin
       try
         MatDB.LoadFromFile(LastPath);
@@ -183,17 +196,32 @@ begin
           matarr[i].gammatep := StrToFloat(Attributes['gamma']);
         except
           on e:Exception do
-            Application.MessageBox(PWideChar('Ошибка при чтении данных из файла!'#13#10+XML),'Ошибка в XML')
+            Application.MessageBox(PWideChar('РћС€РёР±РєР° РїСЂРё С‡С‚РµРЅРёРё РґР°РЅРЅС‹С… РёР· С„Р°Р№Р»Р°!'#13#10 + XML),'РћС€РёР±РєР° РІ XML')
         end;
     end;
   finally
-
   end;
 end;
 
 procedure TForm1.SetLen(n: Integer);
 begin
   SetLength(matarr, n);
+end;
+
+{ TMaterial }
+
+function TMaterial.ToString: UnicodeString;
+begin
+  Result := Result + Name + ' |';
+  Result := Result + ' G=' + GetScPref(G, 2, 'РџР°');
+  Result := Result + '; ro0=' + GetScPref(ro0*1000, 2, 'Рі/Рј^3');
+  Result := Result + '; sigma0=' + GetScPref(sigma0, 2, 'РџР°');
+  Result := Result + '; sigma1=' + GetScPref(sigma1, 2, 'РџР°');
+  Result := Result + '; k=' + GetScPref(k, 2, 'РџР°');
+  Result := Result + '; k1=' + FloatToStr(k1);
+  Result := Result + '; c=' + GetScPref(ctep, 4, 'Р’С‚/(РјВ·K)');
+  Result := Result + '; gamma=' + FloatToStr(gammatep) + ' 1/K';
+  Result := Result + '; alpha=' + GetScPref(alpha, 2, 'РџР°');
 end;
 
 end.

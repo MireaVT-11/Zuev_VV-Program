@@ -54,24 +54,11 @@ object Form1: TForm1
     Left = 8
     Top = 21
     Width = 216
-    Height = 22
+    Height = 21
     AutoComplete = False
-    Style = csOwnerDrawFixed
-    ItemIndex = 0
+    Style = csDropDownList
     TabOrder = 1
-    Text = #1040#1083#1102#1084#1080#1085#1080#1081
     OnChange = ComboBox1Change
-    Items.Strings = (
-      #1040#1083#1102#1084#1080#1085#1080#1081
-      #1057#1090#1072#1083#1100
-      #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 1'
-      #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 2'
-      #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 3'
-      #1057#1082#1072#1083#1100#1085#1099#1081' '#1075#1088#1091#1085#1090' 4'
-      #1057#1090#1077#1082#1083#1086#1087#1083#1072#1089#1090#1080#1082
-      #1055#1077#1089#1086#1082
-      #1042#1086#1079#1076#1091#1093
-      #1057#1082#1072#1083#1072' '#1047#1091#1077#1074#1072)
   end
   object GEdit: TLabeledEdit
     Left = 8
@@ -193,7 +180,9 @@ object Form1: TForm1
     TabOrder = 13
   end
   object MatDB: TXMLDocument
-    Options = [doNodeAutoCreate, doNodeAutoIndent, doAttrNull, doAutoPrefix, doNamespaceDecl]
+    Options = [doNodeAutoIndent, doAttrNull, doAutoPrefix, doNamespaceDecl]
+    XML.Strings = (
+      '')
     Left = 152
     Top = 8
     DOMVendorDesc = 'ADOM XML v4'

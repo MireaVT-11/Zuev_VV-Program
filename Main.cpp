@@ -281,6 +281,12 @@ void SaveAsPNG(TBitmap* bmp, UnicodeString name){
 	delete pngi;
 }
 
+UnicodeString DirToResDir(UnicodeString path){
+	if(path.LastChar()!=((UnicodeString)("\\")).LastChar())
+		return path+"\\#Results\\";
+	return path+"#Results\\";
+}
+
 void __fastcall TmainForm::InitLoop(TObject *, int k) {
 	F[k] = Material[matelm[k]].sigma0;
 	// long double a = square[k];
@@ -810,33 +816,48 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	for (int k = 1; k <= numberelem; k++)
 		InitLoop(Sender, k);
 #endif
+    UnicodeString path, exstamp;
+	int dirnmb = 0;
+	do {
+		path = DirToResDir(DirEdit->Text) + "exper" + (exstamp = (IntToStr(dirnmb++) + dtstamp)) + "\\";
+	}
+	while (Sysutils::DirectoryExists(path));
+
+	if (!Sysutils::DirectoryExists(DirToResDir(DirEdit->Text)))
+		MkDir(DirToResDir(DirEdit->Text));
+	MkDir(path);
+	MkDir(path + "Cinema\\");
+
+	slT->Clear();
+	slT->Add("Время      = " + GetScPref(dtimepr*nt, 5, "с"));
+	slT->Add("Материал 0 = " + Material[matstrat0Box->ItemIndex].ToString());
+	slT->Add("Материал 1 = " + Material[matstrat1Box->ItemIndex].ToString());
+	if (matstrat2Box->Enabled)
+		slT->Add("Материал 2 = " + Material[matstrat2Box->ItemIndex].ToString());
+	if (matstrat3Box->Enabled)
+		slT->Add("Материал 3 = " + Material[matstrat3Box->ItemIndex].ToString());
+	if (CheckBoxs->Checked)
+		slT->Add("V_снар.    = " + vindentEdit->Text + " м/с");
+	if (CheckBoxbsh->Checked)
+		slT->Add("V_инд.     = " + Editbsh->Text + " м/с");
+	slT->Add("Размер уд. = " + rad0Edit->Text + "x" + h0Edit->Text + " (м)");
+	slT->Add("Размер м.  = " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text + ") (м)");
+	slT->SaveToFile(path + "/#.txt");
+
+	slT->Clear();
 	// Сохранение данных, вариант 3.1
-	UnicodeString s = "\"t, ms\"";
+	UnicodeString s = "\"t, µs\"";
 	for (int i = 1; i <= n4; ++i) {
 		s += UnicodeString(";\"") + FloatToStr((double)((int)((double)(i - 1) / (double)(n4 - 1) * 1000.0) / 10.0)) +
 			UnicodeString("%\""); // так надо
 	}
 	slT->Add(s);
 	slData1->Add
-		("\"t, ms\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
+		("\"t, µs\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
 	slData2->Add
-		("\"t, ms\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
+		("\"t, µs\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
 	slData3->Add
-		("\"t, ms\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
-	UnicodeString path, exstamp;
-	int dirnmb = 0;
-	do {
-		path = DirEdit->Text + "#Results\\exper" + (exstamp = (IntToStr(dirnmb++) + dtstamp)) + "\\";
-	}
-	while (Sysutils::DirectoryExists(path));
-
-	// ShellExecute(NULL, NULL, (const wchar_t*)"cmd.exe", "md \""+path+"\\Cinema\"", "C:\\", SW_HIDE); //Не работает!
-	if (!Sysutils::DirectoryExists(DirEdit->Text + "#Results\\"))
-		MkDir(DirEdit->Text + "#Results\\"); // Ура!!! Работает!!
-	MkDir(path);
-	// if (CinemaCBox->Checked) //пусть лучше будет всегда
-	MkDir(path + "Cinema\\");
-	/* CreateDir(path+"Cinema"); */  // Не работает!!!!
+		("\"t, µs\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
 	T_rec = T0;
 	dtime = dtimepr;
 	tfinish = nt * dtimepr;
@@ -1108,19 +1129,19 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			m_sqI2p = max(sqI2p[elementWithMaximalDeformationInTarget], sqI2p[elementWithMaximalDeformationInTarget - 2]);
 		}
 		if (!(n % (nt / 100))) {
-			s = FloatToStr(RoundTo(timepr * 1000, -5));
+			s = FloatToStr(RoundTo(timepr * 1e6, -2));
 			for (int i = 1; i <= n4; ++i)
-				s += ";" + FloatToStr(RoundTo(T[TElemTarget[i]], -2));
+				s += ";" + FloatToStr(RoundTo((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2., -2));
 			slT->Add(s);
-			s = FloatToStr(RoundTo(timepr * 1000, -5));
+			s = FloatToStr(RoundTo(timepr * 1e6, -2));
 			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
 					s += ";" + FloatToStr(data[i][point1]);
 			slData1->Add(s);
-			s = FloatToStr(RoundTo(timepr * 1000, -5));
+			s = FloatToStr(RoundTo(timepr * 1e6, -2));
 			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
 					s += ";" + FloatToStr(data[i][point2]);
 			slData2->Add(s);
-			s = FloatToStr(RoundTo(timepr * 1000, -5));
+			s = FloatToStr(RoundTo(timepr * 1e6, -2));
 			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
 					s += ";" + FloatToStr(data[i][point3]);
 			slData3->Add(s);
@@ -1153,22 +1174,6 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	slData3->SaveToFile(path + "/data_all.point3." + exstamp + ".csv");
 	delete slData3;
 	slT->SaveToFile(path + "/T_all_time." + exstamp + ".csv");
-	slT->Clear();
-	slT->Add("t\t= " + GetScPref(StrToFloat(dtimeprEdit->Text), 2, "с"));
-	slT->Add("alpha0\t= " + GetScPref(Material[matstrat0Box->ItemIndex].alpha, 2, "Па"));
-	slT->Add("alpha1\t= " + GetScPref(Material[matstrat1Box->ItemIndex].alpha, 2, "Па"));
-	if (matstrat2Box->Enabled)
-		slT->Add("alpha2\t= " + GetScPref(Material[matstrat2Box->ItemIndex].alpha, 2, "Па"));
-	if (matstrat3Box->Enabled)
-		slT->Add("alpha3\t= " + GetScPref(Material[matstrat3Box->ItemIndex].alpha, 2, "Па"));
-	if (CheckBoxs->Checked)
-		slT->Add("V\t= " + vindentEdit->Text + " м/с");
-	if (CheckBoxbsh->Checked)
-		slT->Add("V\t= " + Editbsh->Text + " м/с");
-	slT->Add("size0\t= " + rad0Edit->Text + "x" + h0Edit->Text + " (м)");
-	slT->Add("size1\t= " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text + ") (м)");
-	slT->SaveToFile(path + "/#.txt");
-
 	slT->Clear();
 	slT->Add("\"R, %\";\"T, K\";\"sqI2p\"");
 	for (int i = 1; i <= n4; ++i) {
@@ -2660,9 +2665,9 @@ void __fastcall TmainForm::LineButtonClick(TObject *Sender) {
 	holst->Font->Size = 26;
 	holst->TextOutW(5, 45, GetScPref(0, 0, "K"));
 	holst->TextOutW((int)T_max + 15 - holst->TextWidth(GetScPref(T_max, 0, "K")), 45, GetScPref(T_max, 0, "K"));
-	if (!Sysutils::DirectoryExists(DirEdit->Text + "#Results\\"))
-		MkDir(DirEdit->Text + "#Results\\");
-	SaveAsPNG(bmp, DirEdit->Text + "#Results\\" + ((BWCBox->Checked) ? "bwline.png" : "colorline.png"));
+	if (!Sysutils::DirectoryExists(DirToResDir(DirEdit->Text)))
+		MkDir(DirToResDir(DirEdit->Text));
+	SaveAsPNG(bmp, DirToResDir(DirEdit->Text) + ((BWCBox->Checked) ? "bwline.png" : "colorline.png"));
 	delete bmp;
 }
 // ---------------------------------------------------------------------------

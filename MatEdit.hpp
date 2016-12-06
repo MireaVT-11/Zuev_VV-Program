@@ -54,6 +54,7 @@ public:
 	System::Extended gammatep;
 	System::UnicodeString Name;
 	int Color;
+	System::UnicodeString __fastcall ToString(void);
 };
 
 
