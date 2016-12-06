@@ -8,6 +8,7 @@
 #include <System.SyncObjs.hpp>
 #include <System.Math.hpp>
 #include <System.Classes.hpp>
+#include <Vcl.Imaging.pngimage.hpp>
 
 #include "Main.h"
 #include "Matedit.hpp";
@@ -271,6 +272,14 @@ int point1 = 0, point2 = 0, point3 = 0;
 __fastcall TmainForm::TmainForm(TComponent* Owner) : TForm(Owner) {
 }
 // ---------------------------------------------------------------------------
+
+void SaveAsPNG(TBitmap* bmp, UnicodeString name){
+    //TODO: переделать на статику
+	auto pngi = new Vcl::Imaging::Pngimage::TPngImage();
+	pngi->Assign(bmp);
+	pngi->SaveToFile(name);
+	delete pngi;
+}
 
 void __fastcall TmainForm::InitLoop(TObject *, int k) {
 	F[k] = Material[matelm[k]].sigma0;
@@ -1718,7 +1727,7 @@ void _fastcall TmainForm::threegraphs(bool save, int i, bool cinema, UnicodeStri
 	// bmp->ReleaseHandle();
 	// bmp->Free();
 	if (save || cinema) {
-		bmp->SaveToFile(path + ((cinema) ? "Cinema\\" : "") + IntToStr(i) + ".bmp");
+		SaveAsPNG(bmp, path + ((cinema) ? "Cinema\\" : "") + IntToStr(i) + ".png");
 	}
 	delete bmp;
 }
@@ -2653,7 +2662,7 @@ void __fastcall TmainForm::LineButtonClick(TObject *Sender) {
 	holst->TextOutW((int)T_max + 15 - holst->TextWidth(GetScPref(T_max, 0, "K")), 45, GetScPref(T_max, 0, "K"));
 	if (!Sysutils::DirectoryExists(DirEdit->Text + "#Results\\"))
 		MkDir(DirEdit->Text + "#Results\\");
-	bmp->SaveToFile(DirEdit->Text + "#Results\\" + ((BWCBox->Checked) ? "bwline.bmp" : "colorline.bmp"));
+	SaveAsPNG(bmp, DirEdit->Text + "#Results\\" + ((BWCBox->Checked) ? "bwline.png" : "colorline.png"));
 	delete bmp;
 }
 // ---------------------------------------------------------------------------
