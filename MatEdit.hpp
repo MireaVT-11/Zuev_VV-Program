@@ -28,9 +28,11 @@
 #include <Vcl.ExtCtrls.hpp>
 #include <Xml.xmldom.hpp>
 #include <Xml.XMLIntf.hpp>
-#include <Xml.Win.msxmldom.hpp>
 #include <Xml.XMLDoc.hpp>
 #include <Xml.adomxmldom.hpp>
+#include <Vcl.Buttons.hpp>
+#include <System.Generics.Defaults.hpp>
+#include <System.Types.hpp>
 
 //-- user supplied -----------------------------------------------------------
 
@@ -62,11 +64,6 @@ class PASCALIMPLEMENTATION TForm1 : public Vcl::Forms::TForm
 {
 	typedef Vcl::Forms::TForm inherited;
 	
-	
-private:
-	typedef System::DynamicArray<TMaterial> _TForm1__1;
-	
-	
 __published:
 	Vcl::Extctrls::TColorListBox* ColorListBox1;
 	Vcl::Extctrls::TLabeledEdit* LabeledEdit2;
@@ -84,17 +81,27 @@ __published:
 	Vcl::Extctrls::TLabeledEdit* alphaEdit;
 	Vcl::Stdctrls::TButton* Button1;
 	Xml::Xmldoc::TXMLDocument* MatDB;
-	Vcl::Stdctrls::TCheckBox* CheckBox1;
+	Vcl::Buttons::TSpeedButton* SpeedButton1;
+	Vcl::Stdctrls::TButton* Button2;
+	Vcl::Buttons::TSpeedButton* SpeedButton2;
 	void __fastcall ColorListBox1Click(System::TObject* Sender);
 	void __fastcall ComboBox1Change(System::TObject* Sender);
 	void __fastcall FormShow(System::TObject* Sender);
 	void __fastcall LabeledEdit2Change(System::TObject* Sender);
 	void __fastcall Button1Click(System::TObject* Sender);
+	void __fastcall SpeedButton1Click(System::TObject* Sender);
+	void __fastcall Button2Click(System::TObject* Sender);
+	void __fastcall FormCreate(System::TObject* Sender);
+	void __fastcall FormDestroy(System::TObject* Sender);
+	void __fastcall SpeedButton2Click(System::TObject* Sender);
+	
+private:
+	System::Generics::Collections::TList__1<TMaterial>* MaterialList;
 	
 public:
-	_TForm1__1 matarr;
-	void __fastcall SetLen(int n);
+	System::TArray__1<TMaterial> matarr;
 	void __fastcall ReadFromFile(System::UnicodeString path);
+	void __fastcall ReinitList(void);
 public:
 	/* TCustomForm.Create */ inline __fastcall virtual TForm1(System::Classes::TComponent* AOwner) : Vcl::Forms::TForm(AOwner) { }
 	/* TCustomForm.CreateNew */ inline __fastcall virtual TForm1(System::Classes::TComponent* AOwner, int Dummy) : Vcl::Forms::TForm(AOwner, Dummy) { }

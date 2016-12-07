@@ -5,7 +5,7 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   System.Generics.Collections, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Xml.xmldom, Xml.XMLIntf,
-  Xml.Win.msxmldom, Xml.XMLDoc, Xml.adomxmldom;
+  Xml.XMLDoc, Xml.adomxmldom, Vcl.Buttons;
 
 type
   TMaterial = record
@@ -32,18 +32,25 @@ type
     alphaEdit: TLabeledEdit;
     Button1: TButton;
     MatDB: TXMLDocument;
-    CheckBox1: TCheckBox;
+    SpeedButton1: TSpeedButton;
+    Button2: TButton;
+    SpeedButton2: TSpeedButton;
     procedure ColorListBox1Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
     procedure LabeledEdit2Change(Sender: TObject);
     procedure Button1Click(Sender: TObject);
+    procedure SpeedButton1Click(Sender: TObject);
+    procedure Button2Click(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure FormDestroy(Sender: TObject);
+    procedure SpeedButton2Click(Sender: TObject);
   private
-    { Private declarations }
+    MaterialList: TList<TMaterial>;
   public
-    matarr: array of TMaterial;
-    procedure SetLen(n: Integer);
-    procedure ReadFromFile(path:UnicodeString);
+    matarr: TArray<TMaterial>;
+    procedure ReadFromFile(path: UnicodeString);
+    procedure ReinitList;
   end;
 
 var
@@ -59,8 +66,14 @@ uses
 
 {$R *.dfm}
 
+const
+  DefMaterial: TMaterial = (G: 10E9; ro0: 1000; sigma0: 1E9; k: 5E9; alpha: 0; sigma1: 1E8; k1: 0; ctep: 10; gammatep: 1E-5;
+    name: 'Новый материал'; Color: clGray);
+  BlankXMl = '<?xml version="1.0" encoding="UTF-8"?> <materials/>';
+
 var
   LastPath: UnicodeString;
+  LastIndex: Integer;
 
 function C2T(cl: TColor): UnicodeString;
 var
@@ -82,54 +95,67 @@ begin
       if s.StartsWith('cl') then
         Exit(StringToColor(s))
       else
-        Exit(StringToColor('cl'+s));
+        Exit(StringToColor('cl' + s))
     except
-      Exit(0);
-    end;
+      Exit(0)
+    end
   end;
-  Result := rgb[0] shl 16 + rgb[1] shl 8 + rgb[2];
+  Exit(rgb[0] shl 16 + rgb[1] shl 8 + rgb[2])
 end;
 
 procedure TForm1.Button1Click(Sender: TObject);
 var
-  i: Integer;
+  t: TMaterial;
 begin
-  i := ComboBox1.ItemIndex;
-  matarr[i].G := StrToFloat(GEdit.Text) * 1E9;
-  matarr[i].ro0 := StrToFloat(ro0Edit.Text);
-  matarr[i].sigma0 := StrToFloat(sigma0Edit.Text) * 1E9;
-  matarr[i].k := StrToFloat(kEdit.Text) * 1E9;
-  matarr[i].alpha := StrToFloat(alphaEdit.Text) * 1E9;
-  matarr[i].sigma1 := StrToFloat(sigma1Edit.Text) * 1E9;
-  matarr[i].k1 := StrToFloat(k1Edit.Text);
-  matarr[i].ctep := StrToFloat(ctepEdit.Text);
-  matarr[i].gammatep := StrToFloat(gammatepEdit.Text);
-  matarr[i].Color := T2C(LabeledEdit2.Text);
+  t.G := StrToFloat(GEdit.Text) * 1E9;
+  t.ro0 := StrToFloat(ro0Edit.Text);
+  t.sigma0 := StrToFloat(sigma0Edit.Text) * 1E9;
+  t.k := StrToFloat(kEdit.Text) * 1E9;
+  t.alpha := StrToFloat(alphaEdit.Text) * 1E9;
+  t.sigma1 := StrToFloat(sigma1Edit.Text) * 1E9;
+  t.k1 := StrToFloat(k1Edit.Text);
+  t.ctep := StrToFloat(ctepEdit.Text);
+  t.gammatep := StrToFloat(gammatepEdit.Text);
+  t.Color := T2C(LabeledEdit2.Text);
+  t.Name := ComboBox1.Text;
+  MaterialList[LastIndex] := t;
+  matarr := MaterialList.ToArray;
+  ComboBox1.Items[LastIndex] := t.Name;
+  ComboBox1.ItemIndex := LastIndex;
   ComboBox1Change(self);
-  if CheckBox1.Checked and (i > 0) then
-    begin
-      try
-        MatDB.LoadFromFile(LastPath);
-        with MatDB.Node.ChildNodes.Nodes['materials'].ChildNodes.Nodes[i - 1] do
-          try
-            Attributes['name'] := matarr[i].Name;
-            Attributes['color'] := C2T(matarr[i].Color);
-            Attributes['alpha'] := FloatToStr(matarr[i].alpha);
-            Attributes['g'] := FloatToStr(matarr[i].G);
-            Attributes['ro0'] := FloatToStr(matarr[i].ro0);
-            Attributes['k1'] := FloatToStr(matarr[i].k1);
-            Attributes['k'] := FloatToStr(matarr[i].k);
-            Attributes['sigma0'] := FloatToStr(matarr[i].sigma0);
-            Attributes['sigma1'] := FloatToStr(matarr[i].sigma1);
-            Attributes['c'] := FloatToStr(matarr[i].ctep);
-            Attributes['gamma'] := FloatToStr(matarr[i].gammatep);
-            MatDB.SaveToFile(LastPath);
-          except
-          end;
-      finally
+end;
 
+procedure TForm1.Button2Click(Sender: TObject);
+var
+  i: Integer;
+  t: TMaterial;
+begin
+  if Application.MessageBox
+    ('Внимание: файл материалов будет перезаписан и в него будут внесены все изменения, которые были сделаны с момента запуска программы (кроме изменений материала "Воздух"). Продолжить?',
+    'Запись в файл', MB_YESNO + MB_ICONWARNING) <> IDYES then
+    Exit;
+  Button1Click(self);
+  MatDB.LoadFromXML(BlankXML);
+  try
+    for i := 1 to MaterialList.Count - 1 do
+      with MatDB.Node.ChildNodes.Nodes['materials'].AddChild('material') do
+      begin
+        t := MaterialList[i];
+        Attributes['name'] := t.Name;
+        Attributes['color'] := C2T(t.Color);
+        Attributes['alpha'] := FloatToStr(t.alpha);
+        Attributes['g'] := FloatToStr(t.G);
+        Attributes['ro0'] := FloatToStr(t.ro0);
+        Attributes['k1'] := FloatToStr(t.k1);
+        Attributes['k'] := FloatToStr(t.k);
+        Attributes['sigma0'] := FloatToStr(t.sigma0);
+        Attributes['sigma1'] := FloatToStr(t.sigma1);
+        Attributes['c'] := FloatToStr(t.ctep);
+        Attributes['gamma'] := FloatToStr(t.gammatep);
       end;
-    end;
+  finally
+    MatDB.SaveToFile(LastPath);
+  end;
 end;
 
 procedure TForm1.ColorListBox1Click(Sender: TObject);
@@ -141,7 +167,11 @@ procedure TForm1.ComboBox1Change(Sender: TObject);
 var
   t: TMaterial;
 begin
-  t := matarr[ComboBox1.ItemIndex];
+  if ComboBox1.ItemIndex < 0 then
+    Exit;
+  LastIndex := ComboBox1.ItemIndex;
+  SpeedButton2.Enabled := LastIndex > 0;
+  t := MaterialList[LastIndex];
   LabeledEdit2.Text := C2T(t.Color);
   GEdit.Text := FloatToStr(t.G / 1E9);
   ro0Edit.Text := FloatToStr(t.ro0);
@@ -154,13 +184,23 @@ begin
   gammatepEdit.Text := FloatToStr(t.gammatep);
 end;
 
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  MaterialList := TList<TMaterial>.Create;
+end;
+
+procedure TForm1.FormDestroy(Sender: TObject);
+begin
+  MaterialList.Free;
+end;
+
 procedure TForm1.FormShow(Sender: TObject);
 var
-  i:Integer;
+  i: Integer;
 begin
   ComboBox1.Items.Clear;
-  for i := 0 to Length(matarr)-1 do
-    ComboBox1.Items.Add(matarr[i].Name);
+  for i := 0 to MaterialList.Count - 1 do
+    ComboBox1.Items.Add(MaterialList[i].Name);
   ComboBox1.ItemIndex := 0;
   ComboBox1Change(self);
 end;
@@ -172,49 +212,90 @@ end;
 
 procedure TForm1.ReadFromFile(path: UnicodeString);
 var
-  i:Integer;
+  i: Integer;
+  t: TMaterial;
 begin
-  LastPath := path;
+  LastPath := path;  
   try
-    MatDB.LoadFromFile(path);
+    if FileExists(path) then
+      MatDB.LoadFromFile(path)
+    else
+      MatDB.LoadFromXML(BlankXML);
     with MatDB.Node.ChildNodes.Nodes['materials'] do
     begin
-      SetLength(matarr, ChildNodes.Count + 1);
+      MaterialList.Clear;
+      MaterialList.Add(DefMaterial);
       for i := 1 to ChildNodes.Count do
         with ChildNodes.Nodes[i - 1] do
-        try
-          matarr[i].Name := Attributes['name'];
-          matarr[i].Color := T2C(Attributes['color']);
-          matarr[i].alpha := StrToFloat(Attributes['alpha']);
-          matarr[i].G := StrToFloat(Attributes['g']);
-          matarr[i].ro0 := StrToFloat(Attributes['ro0']);
-          matarr[i].k1 := StrToFloat(Attributes['k1']);
-          matarr[i].k := StrToFloat(Attributes['k']);
-          matarr[i].sigma0 := StrToFloat(Attributes['sigma0']);
-          matarr[i].sigma1 := StrToFloat(Attributes['sigma1']);
-          matarr[i].ctep := StrToFloat(Attributes['c']);
-          matarr[i].gammatep := StrToFloat(Attributes['gamma']);
-        except
-          on e:Exception do
-            Application.MessageBox(PWideChar('Ошибка при чтении данных из файла!'#13#10 + XML),'Ошибка в XML')
-        end;
+          try
+            t:=DefMaterial;
+            t.Name := Attributes['name'];
+            if HasAttribute('color') then
+              t.Color := T2C(Attributes['color']);
+            if HasAttribute('alpha') then
+              t.alpha := StrToFloat(Attributes['alpha']);
+            if HasAttribute('g') then
+              t.G := StrToFloat(Attributes['g']);
+            if HasAttribute('ro0') then
+              t.ro0 := StrToFloat(Attributes['ro0']);
+            if HasAttribute('k1') then
+              t.k1 := StrToFloat(Attributes['k1']);
+            if HasAttribute('k') then
+              t.k := StrToFloat(Attributes['k']);
+            if HasAttribute('sigma0') then
+              t.sigma0 := StrToFloat(Attributes['sigma0']);
+            if HasAttribute('sigma1') then
+              t.sigma1 := StrToFloat(Attributes['sigma1']);
+            if HasAttribute('c') then
+              t.ctep := StrToFloat(Attributes['c']);
+            if HasAttribute('gamma') then
+              t.gammatep := StrToFloat(Attributes['gamma']);
+            MaterialList.Add(t);
+          except
+            on e: Exception do
+              Application.MessageBox(PWideChar('Ошибка при чтении данных из файла!'#13#10 + Xml), 'Ошибка в XML')
+          end;
     end;
   finally
+    matarr := MaterialList.ToArray;
   end;
 end;
 
-procedure TForm1.SetLen(n: Integer);
+procedure TForm1.ReinitList;
 begin
-  SetLength(matarr, n);
+  MaterialList.Clear;
+  MaterialList.AddRange(matarr);
+end;
+
+procedure TForm1.SpeedButton1Click(Sender: TObject);
+begin
+  MaterialList.Add(DefMaterial);
+  matarr := MaterialList.ToArray;
+  ComboBox1.Items.Add(DefMaterial.Name);
+  ComboBox1.ItemIndex := ComboBox1.Items.Count - 1;
+  ComboBox1Change(self);
+end;
+
+procedure TForm1.SpeedButton2Click(Sender: TObject);
+begin
+  if LastIndex = 0 then
+    Exit;
+  if Application.MessageBox('Внимание: удаление материала нельзя будет отменить. Продолжить?', PWideChar('Удаление материала "'+ComboBox1.Text+'"'), MB_YESNO + MB_ICONWARNING) <> IDYES then
+    Exit;
+  MaterialList.Delete(LastIndex);
+  matarr := MaterialList.ToArray;
+  ComboBox1.Items.Delete(LastIndex);
+  ComboBox1.ItemIndex := LastIndex - 1;
+  ComboBox1Change(self);
 end;
 
 { TMaterial }
 
 function TMaterial.ToString: UnicodeString;
 begin
-  Result := Result + Name + ' |';
+  Result := Result + name + ' |';
   Result := Result + ' G=' + GetScPref(G, 2, 'Па');
-  Result := Result + '; ro0=' + GetScPref(ro0*1000, 2, 'г/м^3');
+  Result := Result + '; ro0=' + GetScPref(ro0 * 1000, 2, 'г/м^3');
   Result := Result + '; sigma0=' + GetScPref(sigma0, 2, 'Па');
   Result := Result + '; sigma1=' + GetScPref(sigma1, 2, 'Па');
   Result := Result + '; k=' + GetScPref(k, 2, 'Па');

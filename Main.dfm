@@ -228,7 +228,7 @@ object mainForm: TmainForm
   end
   object Bevel7: TBevel
     Left = 238
-    Top = 447
+    Top = 443
     Width = 219
     Height = 14
     Shape = bsBottomLine
@@ -876,7 +876,7 @@ object mainForm: TmainForm
     Top = 363
     Width = 204
     Height = 25
-    Caption = #1048#1079#1084#1077#1085#1080#1090#1100' '#1089#1074#1086#1081#1089#1090#1074#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1072
+    Caption = #1048#1079#1084#1077#1085#1080#1090#1100' '#1089#1074#1086#1081#1089#1090#1074#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
     TabOrder = 56
     OnClick = Button4Click
   end

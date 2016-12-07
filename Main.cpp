@@ -1864,6 +1864,27 @@ void newspeed() {
 
 // ---------------------------------------------------------------------------
 
+void ReinitBoxes(){
+	int i0 = mainForm->matstrat0Box->ItemIndex;
+	int i1 = mainForm->matstrat1Box->ItemIndex;
+	int i2 = mainForm->matstrat2Box->ItemIndex;
+	int i3 = mainForm->matstrat3Box->ItemIndex;
+	mainForm->matstrat0Box->Items->Clear();
+	mainForm->matstrat1Box->Items->Clear();
+	mainForm->matstrat2Box->Items->Clear();
+	mainForm->matstrat3Box->Items->Clear();
+	for (auto i = 0; i < Material.Length; ++i) {
+		mainForm->matstrat0Box->Items->Add(Material[i].Name);
+		mainForm->matstrat1Box->Items->Add(Material[i].Name);
+		mainForm->matstrat2Box->Items->Add(Material[i].Name);
+		mainForm->matstrat3Box->Items->Add(Material[i].Name);
+	}
+	mainForm->matstrat0Box->ItemIndex = (!(Material.Length > i0)) ? Material.Length - 1 : i0;
+	mainForm->matstrat1Box->ItemIndex = (!(Material.Length > i1)) ? Material.Length - 1 : i1;
+	mainForm->matstrat2Box->ItemIndex = (!(Material.Length > i2)) ? Material.Length - 1 : i2;
+	mainForm->matstrat3Box->ItemIndex = (!(Material.Length > i3)) ? Material.Length - 1 : i3;
+}
+
 void __fastcall TmainForm::FormCreate(TObject *) {
 	DirEdit->Text = ExtractFilePath(Application->ExeName);
 	auto path = DirEdit->Text + "materials.xml";
@@ -1886,20 +1907,12 @@ void __fastcall TmainForm::FormCreate(TObject *) {
 	Material[0].ctep = 0.0;
 	Material[0].gammatep = 0.0;
 
-	matstrat0Box->Items->Clear();
-	matstrat1Box->Items->Clear();
-	matstrat2Box->Items->Clear();
-	matstrat3Box->Items->Clear();
-	for (auto i = 0; i < Material.Length; ++i) {
-		matstrat0Box->Items->Add(Material[i].Name);
-		matstrat1Box->Items->Add(Material[i].Name);
-		matstrat2Box->Items->Add(Material[i].Name);
-		matstrat3Box->Items->Add(Material[i].Name);
-	}
-	matstrat0Box->ItemIndex = (Material.Length <= 2) ? Material.Length - 1 : 1;
-	matstrat1Box->ItemIndex = (Material.Length <= 3) ? Material.Length - 1 : 2;
-	matstrat2Box->ItemIndex = (Material.Length <= 4) ? Material.Length - 1 : 3;
-	matstrat3Box->ItemIndex = (Material.Length <= 5) ? Material.Length - 1 : 4;
+	ReinitBoxes();
+
+	mainForm->matstrat0Box->ItemIndex = (Material.Length <= 2) ? Material.Length - 1 : 1;
+	mainForm->matstrat1Box->ItemIndex = (Material.Length <= 3) ? Material.Length - 1 : 2;
+	mainForm->matstrat2Box->ItemIndex = (Material.Length <= 4) ? Material.Length - 1 : 3;
+	mainForm->matstrat3Box->ItemIndex = (Material.Length <= 5) ? Material.Length - 1 : 4;
 
 	// *******************************************************************
 	// ПАРАМЕТРЫ МАТЕРИАЛОВ
@@ -2623,13 +2636,16 @@ void __fastcall TmainForm::FormClose(TObject *, TCloseAction &) {
 
 void __fastcall TmainForm::Button4Click(TObject *Sender) {
 	TForm1* form = new TForm1(this);
-	form->SetLen(Material.Length);
+	form->matarr.set_length(Material.Length);
 	for (int i = 0; i < Material.Length; ++i)
 		form->matarr[i] = Material[i];
+	form->ReinitList();
 	form->ShowModal();
+	Material.set_length(form->matarr.Length);
 	for (int i = 0; i < Material.Length; ++i)
 		Material[i] = form->matarr[i];
 	delete form;
+	ReinitBoxes();
 }
 // ---------------------------------------------------------------------------
 
