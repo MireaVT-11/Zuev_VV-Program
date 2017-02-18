@@ -47,6 +47,13 @@ object Form1: TForm1
     Caption = #8211
     OnClick = SpeedButton2Click
   end
+  object Label2: TLabel
+    Left = 375
+    Top = 6
+    Width = 86
+    Height = 13
+    Caption = #1055#1088#1086#1095#1080#1077' '#1089#1074#1086#1081#1089#1090#1074#1072
+  end
   object ColorListBox1: TColorListBox
     Left = 240
     Top = 48
@@ -222,13 +229,40 @@ object Form1: TForm1
     TabOrder = 13
     OnClick = Button2Click
   end
-  object varAlphaCBox: TCheckBox
+  object AddPropButton: TButton
     Left = 119
-    Top = 228
+    Top = 224
     Width = 105
-    Height = 17
-    Caption = #1048#1079#1084#1077#1085#1103#1077#1084#1072#1103' '#945
+    Height = 21
+    Caption = #1055#1088#1086#1095#1080#1077' '#1089#1074#1086#1081#1089#1090#1074#1072
     TabOrder = 14
+    OnClick = AddPropButtonClick
+  end
+  object AddPropEdit: TValueListEditor
+    Left = 375
+    Top = 20
+    Width = 330
+    Height = 253
+    Enabled = False
+    Options = [goFixedVertLine, goFixedHorzLine, goVertLine, goHorzLine, goEditing, goAlwaysShowEditor, goThumbTracking]
+    Strings.Strings = (
+      #1055#1077#1088#1077#1084#1077#1085#1085#1099#1081' '#1050#1056'=False'
+      #1055#1050#1056': '#1090#1077#1084#1087#1077#1088#1072#1090#1091#1088#1072' '#1048#1055'=0'
+      #1055#1050#1056': '#1090#1077#1084#1087#1077#1088#1072#1090#1091#1088#1072' '#1084#1072#1082#1089'. '#1050#1056'=0'
+      #1055#1050#1056': '#1085#1072#1095#1072#1083#1100#1085#1099#1081' '#1050#1056'=0')
+    TabOrder = 15
+    TitleCaptions.Strings = (
+      #1057#1074#1086#1081#1089#1090#1074#1086
+      #1047#1085#1072#1095#1077#1085#1080#1077)
+    ColWidths = (
+      150
+      174)
+    RowHeights = (
+      18
+      18
+      18
+      18
+      18)
   end
   object MatDB: TXMLDocument
     Options = [doNodeAutoIndent, doAttrNull, doAutoPrefix, doNamespaceDecl]

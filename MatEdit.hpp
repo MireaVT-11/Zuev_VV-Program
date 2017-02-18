@@ -32,6 +32,9 @@
 #include <Xml.adomxmldom.hpp>
 #include <Vcl.Buttons.hpp>
 #include <System.StrUtils.hpp>
+#include <Vcl.Grids.hpp>
+#include <Vcl.ValEdit.hpp>
+#include <Vcl.ComCtrls.hpp>
 #include <System.Generics.Defaults.hpp>
 #include <System.Types.hpp>
 
@@ -40,9 +43,21 @@
 namespace Matedit
 {
 //-- forward type declarations -----------------------------------------------
+struct TVarAlpha;
 struct TMaterial;
 class DELPHICLASS TForm1;
 //-- type declarations -------------------------------------------------------
+struct DECLSPEC_DRECORD TVarAlpha
+{
+public:
+	bool Enabled;
+	bool Default;
+	System::Extended MinT;
+	System::Extended MaxT;
+	System::Extended MinAlpha;
+};
+
+
 struct DECLSPEC_DRECORD TMaterial
 {
 public:
@@ -57,7 +72,7 @@ public:
 	System::Extended gammatep;
 	System::UnicodeString Name;
 	int Color;
-	bool VarAlpha;
+	TVarAlpha VarAlpha;
 	System::UnicodeString __fastcall ToString(void);
 };
 
@@ -86,7 +101,9 @@ __published:
 	Vcl::Buttons::TSpeedButton* SpeedButton1;
 	Vcl::Stdctrls::TButton* Button2;
 	Vcl::Buttons::TSpeedButton* SpeedButton2;
-	Vcl::Stdctrls::TCheckBox* varAlphaCBox;
+	Vcl::Stdctrls::TButton* AddPropButton;
+	Vcl::Stdctrls::TLabel* Label2;
+	Vcl::Valedit::TValueListEditor* AddPropEdit;
 	void __fastcall ColorListBox1Click(System::TObject* Sender);
 	void __fastcall ComboBox1Change(System::TObject* Sender);
 	void __fastcall FormShow(System::TObject* Sender);
@@ -97,6 +114,7 @@ __published:
 	void __fastcall FormCreate(System::TObject* Sender);
 	void __fastcall FormDestroy(System::TObject* Sender);
 	void __fastcall SpeedButton2Click(System::TObject* Sender);
+	void __fastcall AddPropButtonClick(System::TObject* Sender);
 	
 private:
 	System::Generics::Collections::TList__1<TMaterial>* MaterialList;

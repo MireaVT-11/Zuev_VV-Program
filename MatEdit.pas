@@ -5,14 +5,19 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   System.Generics.Collections, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Xml.xmldom, Xml.XMLIntf,
-  Xml.XMLDoc, Xml.adomxmldom, Vcl.Buttons, System.StrUtils;
+  Xml.XMLDoc, Xml.adomxmldom, Vcl.Buttons, System.StrUtils, Vcl.Grids, Vcl.ValEdit, Vcl.ComCtrls;
 
 type
+  TVarAlpha = record
+    Enabled, Default: Boolean;
+    MinT, MaxT, MinAlpha: Extended;
+  end;
+
   TMaterial = record
     G, ro0, sigma0, k, alpha, sigma1, k1, ctep, gammatep: Extended;
     Name: UnicodeString;
     Color: Integer;
-    VarAlpha: boolean;
+    VarAlpha: TVarAlpha;
     function ToString: UnicodeString;
   end;
 
@@ -36,7 +41,9 @@ type
     SpeedButton1: TSpeedButton;
     Button2: TButton;
     SpeedButton2: TSpeedButton;
-    varAlphaCBox: TCheckBox;
+    AddPropButton: TButton;
+    Label2: TLabel;
+    AddPropEdit: TValueListEditor;
     procedure ColorListBox1Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -47,6 +54,7 @@ type
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure SpeedButton2Click(Sender: TObject);
+    procedure AddPropButtonClick(Sender: TObject);
   private
     MaterialList: TList<TMaterial>;
   public
@@ -70,8 +78,8 @@ uses
 
 const
   DefMaterial: TMaterial = (G: 10E9; ro0: 1000; sigma0: 1E9; k: 5E9; alpha: 0; sigma1: 1E8; k1: 0; ctep: 10; gammatep: 1E-5;
-    name: 'Новый материал'; Color: clGray; VarAlpha: false);
-  BlankXMl = '<?xml version="1.0" encoding="UTF-8"?> <materials/>';
+    name: 'Новый материал'; Color: clGray; VarAlpha: (Enabled: False; Default: True; MinT: 0; MaxT: 0; MinAlpha: 0));
+  BlankXML = '<?xml version="1.0" encoding="UTF-8"?> <materials/>';
 
 var
   LastPath: UnicodeString;
@@ -105,9 +113,34 @@ begin
   Exit(rgb[0] shl 16 + rgb[1] shl 8 + rgb[2])
 end;
 
+procedure TForm1.AddPropButtonClick(Sender: TObject);
+begin
+  if AddPropEdit.Enabled then
+  begin
+    Width := 375;
+    AddPropEdit.Enabled := False;
+  end
+  else
+  begin
+    Width := 725;
+    AddPropEdit.Enabled := True;
+  end
+end;
+
 procedure TForm1.Button1Click(Sender: TObject);
 var
   t: TMaterial;
+
+  function EditVarAlpha(d:TVarAlpha):TVarAlpha;
+  begin
+    Result.Default := d.Default;
+    Result.Enabled := StrToBool(AddPropEdit.Strings.ValueFromIndex[0]);
+    Result.MinT := StrToFloat(AddPropEdit.Strings.ValueFromIndex[1]);
+    Result.MaxT := StrToFloat(AddPropEdit.Strings.ValueFromIndex[2]);
+    Result.MinAlpha := StrToFloat(AddPropEdit.Strings.ValueFromIndex[3]);
+    Result.Default := Result.Default and (d.Enabled = Result.Enabled) and (d.MinT = Result.MinT) and (d.MaxT = Result.MaxT) and (d.MinAlpha = Result.MinAlpha);
+  end;
+  
 begin
   t.G := StrToFloat(GEdit.Text) * 1E9;
   t.ro0 := StrToFloat(ro0Edit.Text);
@@ -119,8 +152,8 @@ begin
   t.ctep := StrToFloat(ctepEdit.Text);
   t.gammatep := StrToFloat(gammatepEdit.Text);
   t.Color := T2C(LabeledEdit2.Text);
-  t.VarAlpha := varAlphaCBox.Checked;
   t.Name := ComboBox1.Text;
+  t.VarAlpha := EditVarAlpha(t.VarAlpha);
   MaterialList[LastIndex] := t;
   matarr := MaterialList.ToArray;
   ComboBox1.Items[LastIndex] := t.Name;
@@ -155,7 +188,14 @@ begin
         Attributes['sigma1'] := FloatToStr(t.sigma1);
         Attributes['c'] := FloatToStr(t.ctep);
         Attributes['gamma'] := FloatToStr(t.gammatep);
-        Attributes['varAlpha'] := t.VarAlpha;
+        if not t.VarAlpha.Default then
+        with AddChild('varAlpha') do
+          begin
+            Attributes['enabled'] := t.VarAlpha.Enabled;
+            AddChild('minT').Attributes['value']:=FloatToStr(t.VarAlpha.MinT);
+            AddChild('maxT').Attributes['value']:=FloatToStr(t.VarAlpha.MaxT);
+            AddChild('minAlpha').Attributes['value']:=FloatToStr(t.VarAlpha.MinAlpha);
+          end;
       end;
   finally
     MatDB.SaveToFile(LastPath);
@@ -170,6 +210,9 @@ end;
 procedure TForm1.ComboBox1Change(Sender: TObject);
 var
   t: TMaterial;
+  i, j: Integer;
+  section, key: string;
+  ss: TStringList;
 begin
   if ComboBox1.ItemIndex < 0 then
     Exit;
@@ -186,12 +229,18 @@ begin
   k1Edit.Text := FloatToStr(t.k1);
   ctepEdit.Text := FloatToStr(t.ctep);
   gammatepEdit.Text := FloatToStr(t.gammatep);
-  varAlphaCBox.Checked := t.VarAlpha;
+  
+  AddPropEdit.Strings.ValueFromIndex[0] := BoolToStr(t.VarAlpha.Enabled, True);
+  AddPropEdit.Strings.ValueFromIndex[1] := FloatToStr(t.VarAlpha.MinT);
+  AddPropEdit.Strings.ValueFromIndex[2] := FloatToStr(t.VarAlpha.MaxT);
+  AddPropEdit.Strings.ValueFromIndex[3] := FloatToStr(t.VarAlpha.MinAlpha);
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   MaterialList := TList<TMaterial>.Create;
+  AddPropEdit.ItemProps[0].PickList.Text := BoolToStr(True, True) + #13#10 + BoolToStr(False, True);
+  AddPropEdit.ItemProps[0].EditStyle := esPickList;
 end;
 
 procedure TForm1.FormDestroy(Sender: TObject);
@@ -217,8 +266,18 @@ end;
 
 procedure TForm1.ReadFromFile(path: UnicodeString);
 var
-  i: Integer;
+  i, j, k: Integer;
   t: TMaterial;
+
+  function ParseVarAlpha(Node: IXMLNode): TVarAlpha;
+  begin
+    Result.Enabled := True;
+    Result.Default := False;
+    Result.MinT := Node.ChildNodes.Nodes['minT'].Attributes['value'];
+    Result.MaxT := Node.ChildNodes.Nodes['maxT'].Attributes['value'];
+    Result.MinAlpha := Node.ChildNodes.Nodes['minAlpha'].Attributes['value'];
+  end;
+
 begin
   LastPath := path;
   try
@@ -255,8 +314,14 @@ begin
               t.ctep := StrToFloat(Attributes['c']);
             if HasAttribute('gamma') then
               t.gammatep := StrToFloat(Attributes['gamma']);
-            if HasAttribute('varAlpha') then
-              t.VarAlpha := Attributes['varAlpha'];
+            if ChildNodes.Count > 0 then
+            begin
+              for j := 0 to ChildNodes.Count - 1 do
+              begin
+                if ChildNodes.Nodes[j].LocalName = 'varAlpha' then
+                  t.VarAlpha := ParseVarAlpha(ChildNodes.Nodes[j]);
+              end;
+            end;
             MaterialList.Add(t);
           except
             on e: Exception do
@@ -310,7 +375,7 @@ begin
   Result := Result + '; k1=' + FloatToStr(k1);
   Result := Result + '; c=' + GetScPref(ctep, 4, 'Вт/(м·K)');
   Result := Result + '; gamma=' + FloatToStr(gammatep) + ' 1/K';
-  Result := Result + '; alpha=' + GetScPref(alpha, 2, 'Па') + IfThen(VarAlpha, ' (amax)', '');
+  Result := Result + '; alpha=' + IfThen(VarAlpha.Enabled, GetScPref(VarAlpha.MinAlpha, 2, 'Па') + ' [@' + FloatToStr(VarAlpha.MinT) + 'K] : ', '') + GetScPref(alpha, 2, 'Па') + IfThen(VarAlpha.Enabled, ' [@' + FloatToStr(VarAlpha.MaxT) + 'K]', '');
 end;
 
 end.
