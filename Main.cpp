@@ -300,10 +300,21 @@ void __fastcall TmainForm::InitLoop(TObject *, int k) {
 	T_in[k] = 0;
 }
 
+#define _varalpha(t, maa, mint, maxt) ((maa)/(1.0+exp((-20.0/((maxt)-(mint)))*((t)-((maxt)+(mint))/2.0))))
+
 void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	Gs[k] = Material[matelm[k]].G;
 	ks[k] = Material[matelm[k]].k;
-	alphas[k] = Material[matelm[k]].alpha;
+	if(Material[matelm[k]].VarAlpha)
+	{
+	  //ВНИМАНИЕ! «varalpha» — это макрос!
+	  alphas[k] = _varalpha(T[k], Material[matelm[k]].alpha, T0+80, T0+280);
+	  // Здесь вводится зависимость разупрочнения от температуры:
+	  // до T0+80 (≈100°C) разупрочнение почти отсутствует, после чего начинает изменяться и
+	  // при температуре T0+280 (≈300°C) почти достигает своего номинального значения.
+	}
+	else
+		alphas[k] = Material[matelm[k]].alpha;
 	sigma0s[k] = Material[matelm[k]].sigma0;
 	sigma1s[k] = Material[matelm[k]].sigma1;
 	ro0s[k] = Material[matelm[k]].ro0;
@@ -539,6 +550,8 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	if (T_rec >= T_max)
 		T_max += 10.0;
 }
+
+#undef _varalpha
 
 // Нужно для заглубления ударника. Проверяет, будет ли элемент мишени с номером k заменён элементом ударника
 bool test_k(int k) {

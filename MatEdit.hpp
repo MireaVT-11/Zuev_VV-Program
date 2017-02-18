@@ -31,6 +31,7 @@
 #include <Xml.XMLDoc.hpp>
 #include <Xml.adomxmldom.hpp>
 #include <Vcl.Buttons.hpp>
+#include <System.StrUtils.hpp>
 #include <System.Generics.Defaults.hpp>
 #include <System.Types.hpp>
 
@@ -56,6 +57,7 @@ public:
 	System::Extended gammatep;
 	System::UnicodeString Name;
 	int Color;
+	bool VarAlpha;
 	System::UnicodeString __fastcall ToString(void);
 };
 
@@ -84,6 +86,7 @@ __published:
 	Vcl::Buttons::TSpeedButton* SpeedButton1;
 	Vcl::Stdctrls::TButton* Button2;
 	Vcl::Buttons::TSpeedButton* SpeedButton2;
+	Vcl::Stdctrls::TCheckBox* varAlphaCBox;
 	void __fastcall ColorListBox1Click(System::TObject* Sender);
 	void __fastcall ComboBox1Change(System::TObject* Sender);
 	void __fastcall FormShow(System::TObject* Sender);

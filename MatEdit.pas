@@ -5,13 +5,14 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   System.Generics.Collections, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Xml.xmldom, Xml.XMLIntf,
-  Xml.XMLDoc, Xml.adomxmldom, Vcl.Buttons;
+  Xml.XMLDoc, Xml.adomxmldom, Vcl.Buttons, System.StrUtils;
 
 type
   TMaterial = record
     G, ro0, sigma0, k, alpha, sigma1, k1, ctep, gammatep: Extended;
     Name: UnicodeString;
     Color: Integer;
+    VarAlpha: boolean;
     function ToString: UnicodeString;
   end;
 
@@ -35,6 +36,7 @@ type
     SpeedButton1: TSpeedButton;
     Button2: TButton;
     SpeedButton2: TSpeedButton;
+    varAlphaCBox: TCheckBox;
     procedure ColorListBox1Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -68,7 +70,7 @@ uses
 
 const
   DefMaterial: TMaterial = (G: 10E9; ro0: 1000; sigma0: 1E9; k: 5E9; alpha: 0; sigma1: 1E8; k1: 0; ctep: 10; gammatep: 1E-5;
-    name: 'Новый материал'; Color: clGray);
+    name: 'Новый материал'; Color: clGray; VarAlpha: false);
   BlankXMl = '<?xml version="1.0" encoding="UTF-8"?> <materials/>';
 
 var
@@ -117,6 +119,7 @@ begin
   t.ctep := StrToFloat(ctepEdit.Text);
   t.gammatep := StrToFloat(gammatepEdit.Text);
   t.Color := T2C(LabeledEdit2.Text);
+  t.VarAlpha := varAlphaCBox.Checked;
   t.Name := ComboBox1.Text;
   MaterialList[LastIndex] := t;
   matarr := MaterialList.ToArray;
@@ -135,7 +138,7 @@ begin
     'Запись в файл', MB_YESNO + MB_ICONWARNING) <> IDYES then
     Exit;
   Button1Click(self);
-  MatDB.LoadFromXML(BlankXML);
+  MatDB.LoadFromXML(BlankXMl);
   try
     for i := 1 to MaterialList.Count - 1 do
       with MatDB.Node.ChildNodes.Nodes['materials'].AddChild('material') do
@@ -152,6 +155,7 @@ begin
         Attributes['sigma1'] := FloatToStr(t.sigma1);
         Attributes['c'] := FloatToStr(t.ctep);
         Attributes['gamma'] := FloatToStr(t.gammatep);
+        Attributes['varAlpha'] := t.VarAlpha;
       end;
   finally
     MatDB.SaveToFile(LastPath);
@@ -182,6 +186,7 @@ begin
   k1Edit.Text := FloatToStr(t.k1);
   ctepEdit.Text := FloatToStr(t.ctep);
   gammatepEdit.Text := FloatToStr(t.gammatep);
+  varAlphaCBox.Checked := t.VarAlpha;
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
@@ -215,12 +220,12 @@ var
   i: Integer;
   t: TMaterial;
 begin
-  LastPath := path;  
+  LastPath := path;
   try
     if FileExists(path) then
       MatDB.LoadFromFile(path)
     else
-      MatDB.LoadFromXML(BlankXML);
+      MatDB.LoadFromXML(BlankXMl);
     with MatDB.Node.ChildNodes.Nodes['materials'] do
     begin
       MaterialList.Clear;
@@ -228,7 +233,7 @@ begin
       for i := 1 to ChildNodes.Count do
         with ChildNodes.Nodes[i - 1] do
           try
-            t:=DefMaterial;
+            t := DefMaterial;
             t.Name := Attributes['name'];
             if HasAttribute('color') then
               t.Color := T2C(Attributes['color']);
@@ -250,6 +255,8 @@ begin
               t.ctep := StrToFloat(Attributes['c']);
             if HasAttribute('gamma') then
               t.gammatep := StrToFloat(Attributes['gamma']);
+            if HasAttribute('varAlpha') then
+              t.VarAlpha := Attributes['varAlpha'];
             MaterialList.Add(t);
           except
             on e: Exception do
@@ -280,7 +287,8 @@ procedure TForm1.SpeedButton2Click(Sender: TObject);
 begin
   if LastIndex = 0 then
     Exit;
-  if Application.MessageBox('Внимание: удаление материала нельзя будет отменить. Продолжить?', PWideChar('Удаление материала "'+ComboBox1.Text+'"'), MB_YESNO + MB_ICONWARNING) <> IDYES then
+  if Application.MessageBox('Внимание: удаление материала нельзя будет отменить. Продолжить?',
+    PWideChar('Удаление материала "' + ComboBox1.Text + '"'), MB_YESNO + MB_ICONWARNING) <> IDYES then
     Exit;
   MaterialList.Delete(LastIndex);
   matarr := MaterialList.ToArray;
@@ -302,7 +310,7 @@ begin
   Result := Result + '; k1=' + FloatToStr(k1);
   Result := Result + '; c=' + GetScPref(ctep, 4, 'Вт/(м·K)');
   Result := Result + '; gamma=' + FloatToStr(gammatep) + ' 1/K';
-  Result := Result + '; alpha=' + GetScPref(alpha, 2, 'Па');
+  Result := Result + '; alpha=' + GetScPref(alpha, 2, 'Па') + IfThen(VarAlpha, ' (amax)', '');
 end;
 
 end.

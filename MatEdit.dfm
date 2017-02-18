@@ -192,7 +192,7 @@ object Form1: TForm1
   object alphaEdit: TLabeledEdit
     Left = 8
     Top = 224
-    Width = 216
+    Width = 105
     Height = 21
     EditLabel.Width = 36
     EditLabel.Height = 13
@@ -221,6 +221,14 @@ object Form1: TForm1
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100' '#1074' '#1092#1072#1081#1083
     TabOrder = 13
     OnClick = Button2Click
+  end
+  object varAlphaCBox: TCheckBox
+    Left = 119
+    Top = 228
+    Width = 105
+    Height = 17
+    Caption = #1048#1079#1084#1077#1085#1103#1077#1084#1072#1103' '#945
+    TabOrder = 14
   end
   object MatDB: TXMLDocument
     Options = [doNodeAutoIndent, doAttrNull, doAutoPrefix, doNamespaceDecl]
