@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <materials>
-  <material name="Сталь" g="81000000000" ro0="7800" sigma0="1660000000" sigma1="1660000000" k="175000000000" k1="0" c="58" gamma="0,000013" alpha="0" color="008000"/>
-  <material name="Алюминий" g="26200000000" ro0="2700" sigma0="370000000" sigma1="70000000" k="64000000000" k1="0" c="210" gamma="0,0000222" alpha="50000000000" color="000080"/>
-  <material name="Скальный грунт №1" g="184000000000" ro0="3000" sigma0="700000000" sigma1="7000000" k="160000000000" k1="0,4" c="3,5" gamma="0,000008" alpha="-20000000000" color="00FF00"/>
+  <material name="Сталь" color="008000" alpha="0" g="81000000000" ro0="7800" k1="0" k="175000000000" sigma0="1660000000" sigma1="1660000000" c="58" gamma="1,3E-5" varAlpha="false"/>
+  <material name="Алюминий" color="000080" alpha="50000000000" g="26200000000" ro0="2700" k1="0" k="64000000000" sigma0="370000000" sigma1="70000000" c="210" gamma="2,22E-5" varAlpha="false"/>
+  <material name="Алюминий (переменная альфа)" color="205080" alpha="50000000000" g="26200000000" ro0="2700" k1="0" k="64000000000" sigma0="370000000" sigma1="70000000" c="210" gamma="2,22E-5" varAlpha="true"/>
+  <material name="Скальный грунт №1" color="00FF00" alpha="-20000000000" g="184000000000" ro0="3000" k1="0,4" k="160000000000" sigma0="700000000" sigma1="7000000" c="3,5" gamma="8E-6" varAlpha="false"/>
+  <material name="Скальный грунт №2" color="800080" alpha="15800000000" g="4170000000" ro0="2500" k1="0,4" k="16670000000" sigma0="300000000" sigma1="70000000" c="2,91" gamma="8E-6" varAlpha="false"/>
+  <material name="Скальный грунт №3" color="008080" alpha="100000000000" g="87700000000" ro0="2500" k1="0,004" k="78400000000" sigma0="40000000" sigma1="9000000" c="2,3" gamma="8E-6" varAlpha="false"/>
+  <material name="Скальный грунт №4" color="808000" alpha="10500000000" g="9300000" ro0="2720" k1="0,73" k="27800000" sigma0="1200000" sigma1="120000" c="2,4" gamma="8E-6" varAlpha="false"/>
 </materials>
