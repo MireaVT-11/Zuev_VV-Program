@@ -280,17 +280,8 @@ Coordinates=695,348,54,51
 [Bevel12]
 Coordinates=545,552,53,33
 
-[Edit1]
-Coordinates=859,10,44,69
+[]
+Coordinates=938,87,91,36
 Visible=True
 ExplicitSubNodes=Enabled
-
-[CheckBox2]
-Coordinates=10,144,95,51
-
-[]
-Coordinates=897,484,53,51
-
-[BindingsList1]
-Coordinates=938,87,91,36
 

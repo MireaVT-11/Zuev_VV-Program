@@ -3,9 +3,10 @@
   <material name="Сталь" color="008000" alpha="0" g="81000000000" ro0="7800" k1="0" k="175000000000" sigma0="1660000000" sigma1="1660000000" c="58" gamma="1,3E-5"/>
   <material name="Алюминий" color="000080" alpha="50000000000" g="26200000000" ro0="2700" k1="0" k="64000000000" sigma0="370000000" sigma1="70000000" c="210" gamma="2,22E-5"/>
   <material name="Алюминий (переменная альфа)" color="205080" alpha="50000000000" g="26200000000" ro0="2700" k1="0" k="64000000000" sigma0="370000000" sigma1="70000000" c="210" gamma="2,22E-5">
-    <varAlpha enabled="True">
+    <varAlpha enabled="true">
       <minT value="373,15"/>
       <maxT value="573,15"/>
+      <minAlpha value="0"/>
     </varAlpha>
   </material>
   <material name="Скальный грунт №1" color="00FF00" alpha="-20000000000" g="184000000000" ro0="3000" k1="0,4" k="160000000000" sigma0="700000000" sigma1="7000000" c="3,5" gamma="8E-6"/>

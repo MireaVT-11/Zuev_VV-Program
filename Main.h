@@ -142,10 +142,6 @@ __published: // IDE-managed Components
 	TStaticText *StaticText1;
 	TCheckBox *BeautyCBox;
 	TBevel *Bevel12;
-	TCheckBox *CheckBox2;
-	TEdit *Edit1;
-	TBindingsList *BindingsList1;
-	TLinkControlToProperty *LinkControlToPropertyEnabled;
 	TSpinEdit *InputEdit1;
 	TLabel *Label30;
 	TCheckBox *AltInpCBox;

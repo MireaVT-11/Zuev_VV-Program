@@ -9,7 +9,7 @@ uses
 
 type
   TVarAlpha = record
-    Enabled, Default: Boolean;
+    Enabled, default: Boolean;
     MinT, MaxT, MinAlpha: Extended;
   end;
 
@@ -78,8 +78,9 @@ uses
 
 const
   DefMaterial: TMaterial = (G: 10E9; ro0: 1000; sigma0: 1E9; k: 5E9; alpha: 0; sigma1: 1E8; k1: 0; ctep: 10; gammatep: 1E-5;
-    name: 'Новый материал'; Color: clGray; VarAlpha: (Enabled: False; Default: True; MinT: 0; MaxT: 0; MinAlpha: 0));
+    name: 'Новый материал'; Color: clGray; VarAlpha: (Enabled: False; default: True; MinT: 0; MaxT: 0; MinAlpha: 0));
   BlankXML = '<?xml version="1.0" encoding="UTF-8"?> <materials/>';
+  Enablers: array [False .. True] of UnicodeString = ('отключено', 'включено');
 
 var
   LastPath: UnicodeString;
@@ -131,16 +132,22 @@ procedure TForm1.Button1Click(Sender: TObject);
 var
   t: TMaterial;
 
-  function EditVarAlpha(d:TVarAlpha):TVarAlpha;
+  function EditVarAlpha(d: TVarAlpha): TVarAlpha;
   begin
     Result.Default := d.Default;
-    Result.Enabled := StrToBool(AddPropEdit.Strings.ValueFromIndex[0]);
+    Result.Enabled := AddPropEdit.Strings.ValueFromIndex[0] = Enablers[true];
     Result.MinT := StrToFloat(AddPropEdit.Strings.ValueFromIndex[1]);
     Result.MaxT := StrToFloat(AddPropEdit.Strings.ValueFromIndex[2]);
+    if Result.Enabled and ((Result.MinT + Result.MaxT < 100) or (Result.MinT < 0) or (Result.MaxT < 100)) then
+    begin
+      Application.MessageBox('Величины температур ПКР слишком малы! ПКР отключено.', 'Неверные параметры', MB_OK + MB_ICONERROR);
+      Result.Enabled := False;
+    end;
     Result.MinAlpha := StrToFloat(AddPropEdit.Strings.ValueFromIndex[3]);
-    Result.Default := Result.Default and (d.Enabled = Result.Enabled) and (d.MinT = Result.MinT) and (d.MaxT = Result.MaxT) and (d.MinAlpha = Result.MinAlpha);
+    Result.Default := Result.Default and (d.Enabled = Result.Enabled) and (d.MinT = Result.MinT) and (d.MaxT = Result.MaxT) and
+      (d.MinAlpha = Result.MinAlpha);
   end;
-  
+
 begin
   t.G := StrToFloat(GEdit.Text) * 1E9;
   t.ro0 := StrToFloat(ro0Edit.Text);
@@ -171,7 +178,7 @@ begin
     'Запись в файл', MB_YESNO + MB_ICONWARNING) <> IDYES then
     Exit;
   Button1Click(self);
-  MatDB.LoadFromXML(BlankXMl);
+  MatDB.LoadFromXML(BlankXML);
   try
     for i := 1 to MaterialList.Count - 1 do
       with MatDB.Node.ChildNodes.Nodes['materials'].AddChild('material') do
@@ -189,12 +196,12 @@ begin
         Attributes['c'] := FloatToStr(t.ctep);
         Attributes['gamma'] := FloatToStr(t.gammatep);
         if not t.VarAlpha.Default then
-        with AddChild('varAlpha') do
+          with AddChild('varAlpha') do
           begin
             Attributes['enabled'] := t.VarAlpha.Enabled;
-            AddChild('minT').Attributes['value']:=FloatToStr(t.VarAlpha.MinT);
-            AddChild('maxT').Attributes['value']:=FloatToStr(t.VarAlpha.MaxT);
-            AddChild('minAlpha').Attributes['value']:=FloatToStr(t.VarAlpha.MinAlpha);
+            AddChild('minT').Attributes['value'] := FloatToStr(t.VarAlpha.MinT);
+            AddChild('maxT').Attributes['value'] := FloatToStr(t.VarAlpha.MaxT);
+            AddChild('minAlpha').Attributes['value'] := FloatToStr(t.VarAlpha.MinAlpha);
           end;
       end;
   finally
@@ -210,9 +217,6 @@ end;
 procedure TForm1.ComboBox1Change(Sender: TObject);
 var
   t: TMaterial;
-  i, j: Integer;
-  section, key: string;
-  ss: TStringList;
 begin
   if ComboBox1.ItemIndex < 0 then
     Exit;
@@ -229,8 +233,8 @@ begin
   k1Edit.Text := FloatToStr(t.k1);
   ctepEdit.Text := FloatToStr(t.ctep);
   gammatepEdit.Text := FloatToStr(t.gammatep);
-  
-  AddPropEdit.Strings.ValueFromIndex[0] := BoolToStr(t.VarAlpha.Enabled, True);
+
+  AddPropEdit.Strings.ValueFromIndex[0] := Enablers[t.VarAlpha.Enabled];
   AddPropEdit.Strings.ValueFromIndex[1] := FloatToStr(t.VarAlpha.MinT);
   AddPropEdit.Strings.ValueFromIndex[2] := FloatToStr(t.VarAlpha.MaxT);
   AddPropEdit.Strings.ValueFromIndex[3] := FloatToStr(t.VarAlpha.MinAlpha);
@@ -239,7 +243,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   MaterialList := TList<TMaterial>.Create;
-  AddPropEdit.ItemProps[0].PickList.Text := BoolToStr(True, True) + #13#10 + BoolToStr(False, True);
+  AddPropEdit.ItemProps[0].PickList.Text := Enablers[false] + #13#10 + Enablers[true];
   AddPropEdit.ItemProps[0].EditStyle := esPickList;
 end;
 
@@ -266,7 +270,7 @@ end;
 
 procedure TForm1.ReadFromFile(path: UnicodeString);
 var
-  i, j, k: Integer;
+  i, j: Integer;
   t: TMaterial;
 
   function ParseVarAlpha(Node: IXMLNode): TVarAlpha;
@@ -284,7 +288,7 @@ begin
     if FileExists(path) then
       MatDB.LoadFromFile(path)
     else
-      MatDB.LoadFromXML(BlankXMl);
+      MatDB.LoadFromXML(BlankXML);
     with MatDB.Node.ChildNodes.Nodes['materials'] do
     begin
       MaterialList.Clear;
@@ -375,7 +379,9 @@ begin
   Result := Result + '; k1=' + FloatToStr(k1);
   Result := Result + '; c=' + GetScPref(ctep, 4, 'Вт/(м·K)');
   Result := Result + '; gamma=' + FloatToStr(gammatep) + ' 1/K';
-  Result := Result + '; alpha=' + IfThen(VarAlpha.Enabled, GetScPref(VarAlpha.MinAlpha, 2, 'Па') + ' [@' + FloatToStr(VarAlpha.MinT) + 'K] : ', '') + GetScPref(alpha, 2, 'Па') + IfThen(VarAlpha.Enabled, ' [@' + FloatToStr(VarAlpha.MaxT) + 'K]', '');
+  Result := Result + '; alpha=' + IfThen(VarAlpha.Enabled, GetScPref(VarAlpha.MinAlpha, 2, 'Па') + ' [@' +
+    FloatToStr(VarAlpha.MinT) + 'K] : ', '') + GetScPref(alpha, 2, 'Па') +
+    IfThen(VarAlpha.Enabled, ' [@' + FloatToStr(VarAlpha.MaxT) + 'K]', '');
 end;
 
 end.
