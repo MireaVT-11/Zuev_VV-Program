@@ -327,7 +327,7 @@ object mainForm: TmainForm
   end
   object Label30: TLabel
     Left = 562
-    Top = 594
+    Top = 537
     Width = 65
     Height = 13
     Caption = #1047#1072#1075#1083#1091#1073#1083#1077#1085#1080#1077
@@ -815,32 +815,9 @@ object mainForm: TmainForm
     State = cbChecked
     TabOrder = 50
   end
-  object CheckBox2: TCheckBox
-    Left = 562
-    Top = 537
-    Width = 110
-    Height = 17
-    Caption = #1048#1089#1087#1088#1072#1074#1080#1090#1100' '#945
-    Font.Charset = RUSSIAN_CHARSET
-    Font.Color = clWindowText
-    Font.Height = -12
-    Font.Name = 'Calibri'
-    Font.Style = []
-    ParentFont = False
-    TabOrder = 51
-  end
-  object Edit1: TEdit
-    Left = 562
-    Top = 560
-    Width = 121
-    Height = 21
-    Enabled = False
-    TabOrder = 52
-    Text = '100'
-  end
   object InputEdit1: TSpinEdit
     Left = 562
-    Top = 613
+    Top = 556
     Width = 121
     Height = 22
     Hint = #1056#1072#1073#1086#1090#1072#1077#1090' '#1090#1086#1083#1100#1082#1086' '#1089' '#1075#1086#1088#1080#1079#1086#1085#1090#1072#1083#1100#1085#1099#1084#1080' '#1089#1083#1086#1103#1084#1080'!'
@@ -848,19 +825,19 @@ object mainForm: TmainForm
     MinValue = 0
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 53
+    TabOrder = 51
     Value = 0
   end
   object AltInpCBox: TCheckBox
     Left = 562
-    Top = 641
+    Top = 584
     Width = 126
     Height = 17
     Hint = #1044#1074#1080#1078#1077#1085#1080#1077' '#1079#1072#1075#1083#1091#1073#1083#1105#1085#1085#1086#1081' '#1095#1072#1089#1090#1080'. '#1053#1077' '#1089#1086#1074#1089#1077#1084' '#1082#1086#1088#1088#1077#1082#1090#1085#1086', '#1085#1086' '#1088#1072#1073#1086#1090#1072#1077#1090
     Caption = #1040#1083#1100#1090'. '#1088#1077#1078#1080#1084' '#1079#1072#1075#1083'.'
     ParentShowHint = False
     ShowHint = True
-    TabOrder = 54
+    TabOrder = 52
   end
   object CheckBox5: TCheckBox
     Left = 326
@@ -868,7 +845,7 @@ object mainForm: TmainForm
     Width = 55
     Height = 17
     Caption = #1053#1072#1075#1088#1077#1074
-    TabOrder = 55
+    TabOrder = 53
     OnClick = CheckBox5Click
   end
   object Button4: TButton
@@ -877,7 +854,7 @@ object mainForm: TmainForm
     Width = 204
     Height = 25
     Caption = #1048#1079#1084#1077#1085#1080#1090#1100' '#1089#1074#1086#1081#1089#1090#1074#1072' '#1084#1072#1090#1077#1088#1080#1072#1083#1086#1074
-    TabOrder = 56
+    TabOrder = 54
     OnClick = Button4Click
   end
   object DirEdit: TEdit
@@ -886,7 +863,7 @@ object mainForm: TmainForm
     Width = 138
     Height = 21
     ReadOnly = True
-    TabOrder = 57
+    TabOrder = 55
   end
   object CinemaCBox: TCheckBox
     Left = 407
@@ -894,7 +871,7 @@ object mainForm: TmainForm
     Width = 51
     Height = 17
     Caption = #1050#1080#1085#1086':'
-    TabOrder = 58
+    TabOrder = 56
   end
   object CinemaEdit: TSpinEdit
     Left = 464
@@ -903,7 +880,7 @@ object mainForm: TmainForm
     Height = 22
     MaxValue = 1000
     MinValue = 10
-    TabOrder = 59
+    TabOrder = 57
     Value = 10
   end
   object BWCBox: TCheckBox
@@ -912,7 +889,7 @@ object mainForm: TmainForm
     Width = 97
     Height = 17
     Caption = #1063'/'#1073' '#1075#1088#1072#1092#1080#1082#1072
-    TabOrder = 60
+    TabOrder = 58
   end
   object LineButton: TButton
     Left = 407
@@ -920,28 +897,15 @@ object mainForm: TmainForm
     Width = 138
     Height = 22
     Caption = #1051#1080#1085#1077#1081#1082#1080
-    TabOrder = 61
+    TabOrder = 59
     OnClick = LineButtonClick
   end
   object CBoxPoints: TCheckBox
     Left = 562
-    Top = 664
+    Top = 607
     Width = 126
     Height = 17
     Caption = #1058#1086#1095#1082#1080' '#1074' '#1091#1076#1072#1088#1085#1080#1082#1077
-    TabOrder = 62
-  end
-  object BindingsList1: TBindingsList
-    Methods = <>
-    OutputConverters = <>
-    Left = 20
-    Top = 5
-    object LinkControlToPropertyEnabled: TLinkControlToProperty
-      Category = 'Quick Bindings'
-      Control = CheckBox2
-      Track = True
-      Component = Edit1
-      ComponentProperty = 'Enabled'
-    end
+    TabOrder = 60
   end
 end

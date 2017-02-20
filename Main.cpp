@@ -274,11 +274,10 @@ __fastcall TmainForm::TmainForm(TComponent* Owner) : TForm(Owner) {
 // ---------------------------------------------------------------------------
 
 void SaveAsPNG(TBitmap* bmp, UnicodeString name){
-    //TODO: переделать на статику
-	auto pngi = new Vcl::Imaging::Pngimage::TPngImage();
+	static auto pngi = new Vcl::Imaging::Pngimage::TPngImage();
 	pngi->Assign(bmp);
 	pngi->SaveToFile(name);
-	delete pngi;
+	//delete pngi;
 }
 
 UnicodeString DirToResDir(UnicodeString path){
@@ -300,18 +299,18 @@ void __fastcall TmainForm::InitLoop(TObject *, int k) {
 	T_in[k] = 0;
 }
 
-#define _varalpha(t, maa, mint, maxt) ((maa)/(1.0+exp((-20.0/((maxt)-(mint)))*((t)-((maxt)+(mint))/2.0))))
+#define _varalpha(t, maa, mia, mint, maxt) ((mia)+((maa)-(mia))/(1.0+exp((-20.0/((maxt)-(mint)))*((t)-((maxt)+(mint))/2.0))))
 
 void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	Gs[k] = Material[matelm[k]].G;
 	ks[k] = Material[matelm[k]].k;
-	if(Material[matelm[k]].VarAlpha)
+	if(Material[matelm[k]].VarAlpha.Enabled)
 	{
 	  //ВНИМАНИЕ! «varalpha» — это макрос!
-	  alphas[k] = _varalpha(T[k], Material[matelm[k]].alpha, T0+80, T0+280);
+	  alphas[k] = _varalpha(T[k], Material[matelm[k]].alpha, Material[matelm[k]].VarAlpha.MinAlpha, Material[matelm[k]].VarAlpha.MinT, Material[matelm[k]].VarAlpha.MaxT);
 	  // Здесь вводится зависимость разупрочнения от температуры:
-	  // до T0+80 (≈100°C) разупрочнение почти отсутствует, после чего начинает изменяться и
-	  // при температуре T0+280 (≈300°C) почти достигает своего номинального значения.
+	  // до MinT разупрочнение ≈MinAlpha, после чего начинает изменяться и
+	  // при температуре MaxT почти достигает своего номинального значения.
 	}
 	else
 		alphas[k] = Material[matelm[k]].alpha;
@@ -647,10 +646,6 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		point2 = 2 * (n2 - zcl) * n4 - 2 * (n4 - n3 - 1);
 		point3 = 2 * (n2) * n4 - 2 * (n4 - n3 - 1);
 	}
-	if (CheckBox2->Checked) {
-		Material[1].alpha = StrToFloat(Edit1->Text) * GPa;
-	}
-	Edit1->Text = FloatToStr(Material[1].alpha / GPa);
 	// *****************************************************************
 	// Массив для удаления эффекта "залечивания"
 	Colorletch = new int[numberelem];
