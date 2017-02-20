@@ -9,7 +9,7 @@ uses
 
 type
   TVarAlpha = record
-    Enabled, default: Boolean;
+    Enabled, Default: Boolean;
     MinT, MaxT, MinAlpha: Extended;
   end;
 
@@ -77,8 +77,8 @@ uses
 {$R *.dfm}
 
 const
-  DefMaterial: TMaterial = (G: 10E9; ro0: 1000; sigma0: 1E9; k: 5E9; alpha: 0; sigma1: 1E8; k1: 0; ctep: 10; gammatep: 1E-5;
-    name: 'Новый материал'; Color: clGray; VarAlpha: (Enabled: False; default: True; MinT: 0; MaxT: 0; MinAlpha: 0));
+  DefMaterial: TMaterial = (G: 10E9; ro0: 1000; sigma0: 1E9; k: 5E9; alpha: 0; sigma1: 1E8; k1: 0; ctep: 0; gammatep: 0;
+    name: 'Новый материал'; Color: clGray; VarAlpha: (Enabled: False; Default: True; MinT: 0; MaxT: 0; MinAlpha: 0));
   BlankXML = '<?xml version="1.0" encoding="UTF-8"?> <materials/>';
   Enablers: array [False .. True] of UnicodeString = ('отключено', 'включено');
 
@@ -135,7 +135,7 @@ var
   function EditVarAlpha(d: TVarAlpha): TVarAlpha;
   begin
     Result.Default := d.Default;
-    Result.Enabled := AddPropEdit.Strings.ValueFromIndex[0] = Enablers[true];
+    Result.Enabled := AddPropEdit.Strings.ValueFromIndex[0] = Enablers[True];
     Result.MinT := StrToFloat(AddPropEdit.Strings.ValueFromIndex[1]);
     Result.MaxT := StrToFloat(AddPropEdit.Strings.ValueFromIndex[2]);
     if Result.Enabled and ((Result.MinT + Result.MaxT < 100) or (Result.MinT < 0) or (Result.MaxT < 100)) then
@@ -186,15 +186,19 @@ begin
         t := MaterialList[i];
         Attributes['name'] := t.Name;
         Attributes['color'] := C2T(t.Color);
-        Attributes['alpha'] := FloatToStr(t.alpha);
+        if t.alpha <> DefMaterial.alpha then
+          Attributes['alpha'] := FloatToStr(t.alpha);
         Attributes['g'] := FloatToStr(t.G);
         Attributes['ro0'] := FloatToStr(t.ro0);
-        Attributes['k1'] := FloatToStr(t.k1);
+        if t.k1 <> DefMaterial.k1 then
+          Attributes['k1'] := FloatToStr(t.k1);
         Attributes['k'] := FloatToStr(t.k);
         Attributes['sigma0'] := FloatToStr(t.sigma0);
         Attributes['sigma1'] := FloatToStr(t.sigma1);
-        Attributes['c'] := FloatToStr(t.ctep);
-        Attributes['gamma'] := FloatToStr(t.gammatep);
+        if t.ctep <> DefMaterial.ctep then
+          Attributes['c'] := FloatToStr(t.ctep);
+        if t.gammatep <> DefMaterial.gammatep then
+          Attributes['gamma'] := FloatToStr(t.gammatep);
         if not t.VarAlpha.Default then
           with AddChild('varAlpha') do
           begin
@@ -243,7 +247,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
   MaterialList := TList<TMaterial>.Create;
-  AddPropEdit.ItemProps[0].PickList.Text := Enablers[false] + #13#10 + Enablers[true];
+  AddPropEdit.ItemProps[0].PickList.Text := Enablers[False] + #13#10 + Enablers[True];
   AddPropEdit.ItemProps[0].EditStyle := esPickList;
 end;
 
@@ -370,7 +374,7 @@ end;
 
 function TMaterial.ToString: UnicodeString;
 begin
-  Result := Result + name + ' |';
+  Result := name + ' |';
   Result := Result + ' G=' + GetScPref(G, 2, 'Па');
   Result := Result + '; ro0=' + GetScPref(ro0 * 1000, 2, 'г/м^3');
   Result := Result + '; sigma0=' + GetScPref(sigma0, 2, 'Па');
