@@ -766,12 +766,13 @@ object mainForm: TmainForm
     OnClick = CheckBoxbshClick
   end
   object CheckBoxStakan: TCheckBox
-    Left = 245
-    Top = 680
+    Left = 407
+    Top = 679
     Width = 129
     Height = 17
     Caption = #1057#1090#1072#1082#1072#1085
     TabOrder = 47
+    Visible = False
     OnClick = CheckBoxStakanClick
   end
   object ComboBoxBuild: TComboBox
@@ -907,5 +908,14 @@ object mainForm: TmainForm
     Height = 17
     Caption = #1058#1086#1095#1082#1080' '#1074' '#1091#1076#1072#1088#1085#1080#1082#1077
     TabOrder = 60
+  end
+  object BBCBox: TCheckBox
+    Left = 245
+    Top = 679
+    Width = 97
+    Height = 17
+    Caption = #1053#1080#1078#1085#1080#1081' '#1091#1076#1072#1088
+    TabOrder = 61
+    OnClick = CheckBoxbshClick
   end
 end

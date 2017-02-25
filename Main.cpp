@@ -815,6 +815,16 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			for (int i = (n2 + 1) * (n4 + 1) + (n1) * (n3); i <= (n2 + 1) * (n4 + 1) + (n1) * (n3 + 1); i++)
 				speedz[i] = 0.;
 	}
+	if (BBCBox->Checked) //Нижний удар
+	{
+		if(RadioGroup1->ItemIndex == 0)
+		{
+			for (int i = 1; i <= n4 + 1; ++i)
+			{
+				speedz[i] = bsh;
+			}
+		}
+	}
 	// *****************************************************************
 	tim = 0;
 
@@ -1126,6 +1136,16 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 						speedz[i] = 0.;
 					}
 				}
+			}
+			if (BBCBox->Checked)
+			{
+				if(RadioGroup1->ItemIndex == 0)
+				{
+					for (int i = 1; i <= n4 + 1; ++i)
+					{
+						speedz[i] = bsh;
+					}
+                }
 			}
 #ifdef UseParallel
 			TParallel::For(NULL, 1, numberelem, BaseLoop);
@@ -2485,7 +2505,7 @@ void __fastcall TmainForm::CheckBoxinssClick(TObject *) {
 
 // ---------------------------------------------------------------------------
 void __fastcall TmainForm::CheckBoxbshClick(TObject *) {
-	if (CheckBoxbsh->Checked)
+	if (CheckBoxbsh->Checked || BBCBox->Checked)
 		bsh = StrToFloat(Editbsh->Text);
 }
 // ---------------------------------------------------------------------------
