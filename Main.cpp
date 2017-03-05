@@ -871,11 +871,9 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	}
 	slT->Add(s);
 	slData1->Add
-		("\"t, µs\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
-	slData2->Add
-		("\"t, µs\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
-	slData3->Add
-		("\"t, µs\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\"");
+		("\"t, µs\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\";\"R, mm\";\"Z, mm\"");
+	slData2->Add(slData1->Strings[0]);
+	slData3->Add(slData1->Strings[0]);
 	T_rec = T0;
 	dtime = dtimepr;
 	tfinish = nt * dtimepr;
@@ -1163,15 +1161,21 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			slT->Add(s);
 			s = FloatToStr(RoundTo(timepr * 1e6, -2));
 			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
-					s += ";" + FloatToStr(data[i][point1]);
+				s += ";" + FloatToStr(data[i][point1]);
+			s += ";" + FloatToStr((rcoord[itop[1][point1]] + rcoord[itop[2][point1]] + rcoord[itop[3][point1]])/0.003);
+			s += ";" + FloatToStr((zcoord[itop[1][point1]] + zcoord[itop[2][point1]] + zcoord[itop[3][point1]])/0.003);
 			slData1->Add(s);
 			s = FloatToStr(RoundTo(timepr * 1e6, -2));
 			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
-					s += ";" + FloatToStr(data[i][point2]);
+				s += ";" + FloatToStr(data[i][point2]);
+			s += ";" + FloatToStr((rcoord[itop[1][point2]] + rcoord[itop[2][point2]] + rcoord[itop[3][point2]])/0.003);
+			s += ";" + FloatToStr((zcoord[itop[1][point2]] + zcoord[itop[2][point2]] + zcoord[itop[3][point2]])/0.003);
 			slData2->Add(s);
 			s = FloatToStr(RoundTo(timepr * 1e6, -2));
 			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
-					s += ";" + FloatToStr(data[i][point3]);
+				s += ";" + FloatToStr(data[i][point3]);
+			s += ";" + FloatToStr((rcoord[itop[1][point3]] + rcoord[itop[2][point3]] + rcoord[itop[3][point3]])/0.003);
+			s += ";" + FloatToStr((zcoord[itop[1][point3]] + zcoord[itop[2][point3]] + zcoord[itop[3][point3]])/0.003);
 			slData3->Add(s);
 
 		}
@@ -1832,18 +1836,18 @@ void threeangle(int k) {
 	else
 		HotColor = DefColor;
 	// (2015 год) Проверить на ошибки!!!
-	for (int il = 0; il <= 2; il++) {
-		poly[il] = Point((graphForm->ClientWidth + WidthCoef1 + rcoord[itop[il + 1][k]] * WidthCoef) / 2,
-			HeightCoef1 - zcoord[itop[il + 1][k]] * HeightCoef);
+	for (int il = 1; il <= 3; ++il) {
+		poly[il-1] = Point((graphForm->ClientWidth + WidthCoef1 + rcoord[itop[il][k]] * WidthCoef) / 2,
+			HeightCoef1 - zcoord[itop[il][k]] * HeightCoef);
 	}
 	holst->Brush->Color = DefColor;
 	// holst->Pen->Color = DefColor;
 	holst->Polygon(poly, 2);
 	if (mainForm->CheckBox5->Checked)
 		holst->Pen->Color = (bw) ? clBlack : static_cast<TColor>(Material[matelm[k]].Color);
-	for (int il = 0; il <= 2; il++) {
-		poly[il] = Point((graphForm->ClientWidth - WidthCoef1 - rcoord[itop[il + 1][k]] * WidthCoef) / 2,
-			HeightCoef1 - zcoord[itop[il + 1][k]] * HeightCoef);
+	for (int il = 1; il <= 3; ++il) {
+		poly[il-1] = Point((graphForm->ClientWidth - WidthCoef1 - rcoord[itop[il][k]] * WidthCoef) / 2,
+			HeightCoef1 - zcoord[itop[il][k]] * HeightCoef);
 	}
 	holst->Brush->Color = HotColor;
 	// holst->Pen->Color = HotColor;
