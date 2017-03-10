@@ -28,7 +28,7 @@ void Saver::AddItem(UnicodeString name, std::function<long double()> f)
 
 void Saver::Final()
 {
-    data->SaveToFile(fileName);
+	data->SaveToFile(fileName);
 }
 
 void Saver::SaveValues(long double time)
@@ -38,5 +38,41 @@ void Saver::SaveValues(long double time)
 	{
 		t += ";" + FloatToStr(v());
 	}
-    data->Add(t);
+	data->Add(t);
 }
+
+FinalSaver::FinalSaver(UnicodeString fName)
+{
+	fileName = fName;
+	data = new TStringList();
+	data->Add("");
+	fl = new std::list<std::function<long double(int)>>();
+}
+
+FinalSaver::~FinalSaver()
+{
+	delete data;
+	delete fl;
+}
+
+void FinalSaver::AddItem(UnicodeString name, std::function<long double(int)> f)
+{
+	data->Text = data->Strings[0] + "\"" + name + "\";";
+	fl->push_back(f);
+}
+
+void FinalSaver::Final()
+{
+	data->SaveToFile(fileName);
+}
+
+void FinalSaver::SaveValues(int index)
+{
+	UnicodeString t = "";
+	for(auto v : *fl)
+	{
+		t += FloatToStr(v(index)) + ";";
+	}
+	data->Add(t);
+}
+

@@ -871,14 +871,14 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	slT->Add("Размер м.  = " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text + ") (м)");
 	slT->SaveToFile(path + "/#.txt");
 
-	slT->Clear();
+	delete slT;
 
 	// Сохранение данных, вариант 4, теперь с ООП и лямбдами!
     // Недоделанный, правда.
 
 	Saver *sT = new Saver(path + "/T_all.new."+exstamp+".csv");
 	for (int i = 1; i <= n4; ++i) {
-		sT->AddItem(FloatToStr((double)((int)((double)(i - 1) / (double)(n4 - 1) * 1000.0) / 10.0)) + "%", [](){return RoundTo((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2., -2);});
+		sT->AddItem(FloatToStr((double)((int)((double)(i - 1) / (double)(n4 - 1) * 1000.0) / 10.0)) + "%", [i](){return RoundTo((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2., -2);});
 	}
 
 	Saver *sData1 = new Saver(path + "/data_all.point1."+exstamp+".csv");
@@ -932,8 +932,6 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	tfinish = nt * dtimepr;
 	// if (!NoAnim)
 	threegraphs(true, 0, false, path);
-	const int dataSize = 11;
-	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p, T};
 	for (auto n = 0; n <= nt; n++) {
 		if (UnlimStop) {
 			return;
@@ -1236,30 +1234,44 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	sData1->Final();
 	sData2->Final();
 	sData3->Final();
+	sT->Final();
 	delete sData1;
 	delete sData2;
 	delete sData3;
+	delete sT;
 
-	slT->Clear();
-	slT->Add("\"R, %\";\"T, K\";\"sqI2p\"");
-	for (int i = 1; i <= n4; ++i) {
-		slT->Add(FloatToStr((double)(i - 1) / (double)(n4 - 1) * 100) + "%;" +
-			FloatToStr((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2) + ";" + FloatToStr(sqI2p[TElemTarget[i]]));
-	}
-	slT->SaveToFile(path + "/T_final." + exstamp + ".csv");
+	FinalSaver *sTI = new FinalSaver(path + "/T_final." + exstamp + ".csv");
+	sTI->AddItem("R", [](int i){return (double)(i - 1) / (double)(n4 - 1);});
+	sTI->AddItem("T, K", [](int i){return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
+	sTI->AddItem("sqI2p", [](int i){return sqI2p[TElemTarget[i]];});
 
-	slT->Clear();
-	slT->Add
-		("\"R, %\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\";\"T\"");
 	for (int i = 1; i <= n4; ++i) {
-		UnicodeString s = FloatToStr((double)(i - 1) / (double)(n4 - 1) * 100) + "%";
-		for (int j = 0; j < dataSize; ++j) {
-			s += ";" + (FloatToStr(data[j][TElemTarget[i]]));
-		}
-		slT->Add(s);
+		sTI->SaveValues(i);
 	}
-	slT->SaveToFile(path + "/data_final." + exstamp + ".csv");
-	delete slT;
+
+	sTI->Final();
+	delete sTI;
+
+	const int dataSize = 10;
+	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p};
+	UnicodeString dname[dataSize] = {(UnicodeString)"epsrr",(UnicodeString)"epszz",(UnicodeString)"epsrz",
+	(UnicodeString)"epstt",(UnicodeString)"epsrrp",(UnicodeString)"epszzp",(UnicodeString)"epsrzp",(UnicodeString)"epsttp",
+	(UnicodeString)"tet",(UnicodeString)"sqI2p"};
+
+	FinalSaver *sD = new FinalSaver(path + "/data_final." + exstamp + ".csv");
+	sD->AddItem("R", [](int i){return (double)(i - 1) / (double)(n4 - 1);});
+	for(int j = 0; j < dataSize; ++j)
+	{
+		sD->AddItem(dname[j],[data, j](int i){return data[j][TElemTarget[i]];});
+	}
+	sD->AddItem("T, K", [](int i){return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
+
+	for (int i = 1; i <= n4; ++i) {
+		sD->SaveValues(i);
+	}
+
+	sD->Final();
+	delete sD;
 
 	// Button2->Caption = capt;
 	// fclose(file);

@@ -22,4 +22,18 @@ class Saver
 		void Final();
 };
 
+class FinalSaver
+{
+    private:
+		UnicodeString fileName;
+		TStringList *data;
+		std::list<std::function<long double(int)>> *fl;
+	public:
+		FinalSaver(UnicodeString fName);
+		~FinalSaver();
+		void AddItem(UnicodeString name, std::function<long double(int)> f);
+		void SaveValues(int index);
+		void Final();
+};
+
 #endif
