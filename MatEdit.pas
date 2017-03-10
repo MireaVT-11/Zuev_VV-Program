@@ -296,7 +296,7 @@ begin
     with MatDB.Node.ChildNodes.Nodes['materials'] do
     begin
       MaterialList.Clear;
-      MaterialList.Add(DefMaterial);
+      MaterialList.Add(DefMaterial); //нулевой элемент списка игнорируется
       for i := 1 to ChildNodes.Count do
         with ChildNodes.Nodes[i - 1] do
           try
@@ -376,16 +376,20 @@ function TMaterial.ToString: UnicodeString;
 begin
   Result := name + ' |';
   Result := Result + ' G=' + GetScPref(G, 2, 'Па');
-  Result := Result + '; ro0=' + GetScPref(ro0 * 1000, 2, 'г/м^3');
+  if ro0<0.9 then
+    Result := Result + '; ro0=' + GetScPref(ro0 * 1000, 2, 'г/м^3')
+  else
+    Result := Result + '; ro0=' + GetScPref(ro0 / 1000, 2, 'т/м^3');
   Result := Result + '; sigma0=' + GetScPref(sigma0, 2, 'Па');
   Result := Result + '; sigma1=' + GetScPref(sigma1, 2, 'Па');
   Result := Result + '; k=' + GetScPref(k, 2, 'Па');
   Result := Result + '; k1=' + FloatToStr(k1);
   Result := Result + '; c=' + GetScPref(ctep, 4, 'Вт/(м·K)');
   Result := Result + '; gamma=' + FloatToStr(gammatep) + ' 1/K';
-  Result := Result + '; alpha=' + IfThen(VarAlpha.Enabled, GetScPref(VarAlpha.MinAlpha, 2, 'Па') + ' [@' +
-    FloatToStr(VarAlpha.MinT) + 'K] : ', '') + GetScPref(alpha, 2, 'Па') +
-    IfThen(VarAlpha.Enabled, ' [@' + FloatToStr(VarAlpha.MaxT) + 'K]', '');
+  if VarAlpha.Enabled then
+    Result := Result + '; alpha=' + GetScPref(VarAlpha.MinAlpha, 2, 'Па') + ' [@' + FloatToStr(VarAlpha.MinT) + 'K] : '+ GetScPref(alpha, 2, 'Па') +' [@' + FloatToStr(VarAlpha.MaxT) + 'K]'
+  else
+    Result := Result + '; alpha=' + GetScPref(alpha, 2, 'Па');
 end;
 
 end.

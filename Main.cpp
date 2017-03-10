@@ -13,6 +13,7 @@
 #include "Main.h"
 #include "Matedit.hpp";
 #include "Extendedutils.hpp"
+#include "Saver.h"
 
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -198,7 +199,7 @@ int nt;
 int it1;
 int it2;
 int it3;
-//int MatCount = 9;
+// int MatCount = 9;
 int UElemIndex;
 
 // bool NoAnim = false;
@@ -273,17 +274,17 @@ __fastcall TmainForm::TmainForm(TComponent* Owner) : TForm(Owner) {
 }
 // ---------------------------------------------------------------------------
 
-void SaveAsPNG(TBitmap* bmp, UnicodeString name){
+void SaveAsPNG(TBitmap* bmp, UnicodeString name) {
 	static auto pngi = new Vcl::Imaging::Pngimage::TPngImage();
 	pngi->Assign(bmp);
 	pngi->SaveToFile(name);
-	//delete pngi;
+	// delete pngi;
 }
 
-UnicodeString DirToResDir(UnicodeString path){
-	if(path.LastChar()!=((UnicodeString)("\\")).LastChar())
-		return path+"\\#Results\\";
-	return path+"#Results\\";
+UnicodeString DirToResDir(UnicodeString path) {
+	if (path.LastChar() != ((UnicodeString)("\\")).LastChar())
+		return path + "\\#Results\\";
+	return path + "#Results\\";
 }
 
 void __fastcall TmainForm::InitLoop(TObject *, int k) {
@@ -300,17 +301,21 @@ void __fastcall TmainForm::InitLoop(TObject *, int k) {
 }
 
 #define _varalpha(t, maa, mia, mint, maxt) ((mia)+((maa)-(mia))/(1.0+exp((-20.0/((maxt)-(mint)))*((t)-((maxt)+(mint))/2.0))))
+#define _dvaralpha(t, maa, mia, mint, maxt) (20.0*((mia)-(maa))*exp(-20.0*((t)-((mint)+(maxt))/2.0)/((mint)-(maxt)))/(((mint)-(maxt))*(exp(-20.0*((t)-((mint)+(maxt))/2.0)/((mint)-(maxt)))+1)*(exp(-20.0*((t)-((mint)+(maxt))/2.0)/((mint)-(maxt)))+1)))
 
 void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	Gs[k] = Material[matelm[k]].G;
 	ks[k] = Material[matelm[k]].k;
-	if(Material[matelm[k]].VarAlpha.Enabled)
-	{
-	  //ВНИМАНИЕ! «varalpha» — это макрос!
-	  alphas[k] = _varalpha(T[k], Material[matelm[k]].alpha, Material[matelm[k]].VarAlpha.MinAlpha, Material[matelm[k]].VarAlpha.MinT, Material[matelm[k]].VarAlpha.MaxT);
-	  // Здесь вводится зависимость разупрочнения от температуры:
-	  // до MinT разупрочнение ≈MinAlpha, после чего начинает изменяться и
-	  // при температуре MaxT почти достигает своего номинального значения.
+	long double alphadot = 0; // содержит производную от alpha по времени
+	if (Material[matelm[k]].VarAlpha.Enabled) {
+		// ВНИМАНИЕ! «varalpha» — это макрос!
+		alphadot = alphas[k];
+		alphas[k] = _varalpha(T[k], Material[matelm[k]].alpha, Material[matelm[k]].VarAlpha.MinAlpha,
+			Material[matelm[k]].VarAlpha.MinT, Material[matelm[k]].VarAlpha.MaxT);
+		alphadot = alphas[k] - alphadot;
+		// Здесь вводится зависимость разупрочнения от температуры:
+		// до MinT разупрочнение ≈MinAlpha, после чего начинает изменяться и
+		// при температуре MaxT почти достигает своего номинального значения.
 	}
 	else
 		alphas[k] = Material[matelm[k]].alpha;
@@ -419,8 +424,17 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 
 	// ПРОИЗВОДНАЯ ФУНКЦИИ ДЕФОРМИРОВАНИЯ ПО ВРЕМЕНИ
 	// (2015 год) За такое надо руки отрывать!
+	// (2017 год) Поддерживаю предыдущего оратора.
 	psidot[k] = 2.e0 * Gs[k] / F[k] * (srr[k] * (epsdotrr - epsdottt) + szz[k] * (epsdotzz - epsdottt) + 2.e0 * srz[k] * epsdotrz)
 		- ks[k] * alf * k1s[k] * (epsdotrr + epsdotzz + epsdottt);
+
+	// (2017 год) По уверениям Зуева, к psidot нужно добавить производную от alpha по температуре.
+	// Ниже: d(alpha)/dT*dT/dt, если alpha не константа.
+	if (Material[matelm[k]].VarAlpha.Enabled) {
+		// ВНИМАНИЕ! «dvaralpha» — это макрос!
+		psidot[k] += _dvaralpha(T[k], Material[matelm[k]].alpha, Material[matelm[k]].VarAlpha.MinAlpha,
+			Material[matelm[k]].VarAlpha.MinT, Material[matelm[k]].VarAlpha.MaxT) * (T[k] - T_old[k]) / dtime;
+	}
 
 	// то что было в новой версии
 	/*
@@ -569,9 +583,6 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	DateTimeToString(dtstamp, "yymmddhhnnss", Sysutils::Now());
 	Application->ProcessMessages();
 	auto slT = new TStringList();
-	auto slData1 = new TStringList();
-	auto slData2 = new TStringList();
-	auto slData3 = new TStringList();
 	graphForm->Canvas->Brush->Color = clWhite;
 	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
 	/* FILE *file, *file1, *file2, *file3;
@@ -815,12 +826,10 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			for (int i = (n2 + 1) * (n4 + 1) + (n1) * (n3); i <= (n2 + 1) * (n4 + 1) + (n1) * (n3 + 1); i++)
 				speedz[i] = 0.;
 	}
-	if (BBCBox->Checked) //Нижний удар
+	if (BBCBox->Checked) // Нижний удар
 	{
-		if(RadioGroup1->ItemIndex == 0)
-		{
-			for (int i = 1; i <= n4 + 1; ++i)
-			{
+		if (RadioGroup1->ItemIndex == 0) {
+			for (int i = 1; i <= n4 + 1; ++i) {
 				speedz[i] = bsh;
 			}
 		}
@@ -834,7 +843,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	for (int k = 1; k <= numberelem; k++)
 		InitLoop(Sender, k);
 #endif
-    UnicodeString path, exstamp;
+	UnicodeString path, exstamp;
 	int dirnmb = 0;
 	do {
 		path = DirToResDir(DirEdit->Text) + "exper" + (exstamp = (IntToStr(dirnmb++) + dtstamp)) + "\\";
@@ -862,25 +871,67 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	slT->Add("Размер м.  = " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text + ") (м)");
 	slT->SaveToFile(path + "/#.txt");
 
-	slT->Clear();
-	// Сохранение данных, вариант 3.1
-	UnicodeString s = "\"t, µs\"";
+	delete slT;
+
+	// Сохранение данных, вариант 4, теперь с ООП и лямбдами!
+    // Недоделанный, правда.
+
+	Saver *sT = new Saver(path + "/T_all.new."+exstamp+".csv");
 	for (int i = 1; i <= n4; ++i) {
-		s += UnicodeString(";\"") + FloatToStr((double)((int)((double)(i - 1) / (double)(n4 - 1) * 1000.0) / 10.0)) +
-			UnicodeString("%\""); // так надо
+		sT->AddItem(FloatToStr((double)((int)((double)(i - 1) / (double)(n4 - 1) * 1000.0) / 10.0)) + "%", [i](){return RoundTo((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2., -2);});
 	}
-	slT->Add(s);
-	slData1->Add
-		("\"t, µs\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\";\"R, mm\";\"Z, mm\"");
-	slData2->Add(slData1->Strings[0]);
-	slData3->Add(slData1->Strings[0]);
+
+	Saver *sData1 = new Saver(path + "/data_all.point1."+exstamp+".csv");
+	sData1->AddItem("epsrr", [](){return epsrr[point1];});
+	sData1->AddItem("epszz", [](){return epszz[point1];});
+	sData1->AddItem("epsrz", [](){return epsrz[point1];});
+	sData1->AddItem("epstt", [](){return epstt[point1];});
+	sData1->AddItem("epsrrp", [](){return epsrrp[point1];});
+	sData1->AddItem("epszzp", [](){return epszzp[point1];});
+	sData1->AddItem("epsrzp", [](){return epsrzp[point1];});
+	sData1->AddItem("epsttp", [](){return epsttp[point1];});
+	sData1->AddItem("tet", [](){return tet[point1];});
+	sData1->AddItem("sqI2p", [](){return sqI2p[point1];});
+	sData1->AddItem("T, K", [](){return (T[point1] + T[point1 + ((point1 % 2) ? 1 : -1)]);});
+	sData1->AddItem("R, mm", [](){return (rcoord[itop[1][point1]] + rcoord[itop[2][point1]] + rcoord[itop[3][point1]]) / 0.003;});
+	sData1->AddItem("Z, mm", [](){return (zcoord[itop[1][point1]] + zcoord[itop[2][point1]] + zcoord[itop[3][point1]]) / 0.003;});
+
+	Saver *sData2 = new Saver(path + "/data_all.point2."+exstamp+".csv");
+	sData2->AddItem("epsrr", [](){return epsrr[point2];});
+	sData2->AddItem("epszz", [](){return epszz[point2];});
+	sData2->AddItem("epsrz", [](){return epsrz[point2];});
+	sData2->AddItem("epstt", [](){return epstt[point2];});
+	sData2->AddItem("epsrrp", [](){return epsrrp[point2];});
+	sData2->AddItem("epszzp", [](){return epszzp[point2];});
+	sData2->AddItem("epsrzp", [](){return epsrzp[point2];});
+	sData2->AddItem("epsttp", [](){return epsttp[point2];});
+	sData2->AddItem("tet", [](){return tet[point2];});
+	sData2->AddItem("sqI2p", [](){return sqI2p[point2];});
+	sData2->AddItem("T, K", [](){return (T[point2] + T[point2 + ((point2 % 2) ? 1 : -1)]);});
+	sData2->AddItem("R, mm", [](){return (rcoord[itop[1][point2]] + rcoord[itop[2][point2]] + rcoord[itop[3][point2]]) / 0.003;});
+	sData2->AddItem("Z, mm", [](){return (zcoord[itop[1][point2]] + zcoord[itop[2][point2]] + zcoord[itop[3][point2]]) / 0.003;});
+
+	Saver *sData3 = new Saver(path + "/data_all.point3."+exstamp+".csv");
+	sData3->AddItem("epsrr", [](){return epsrr[point3];});
+	sData3->AddItem("epszz", [](){return epszz[point3];});
+	sData3->AddItem("epsrz", [](){return epsrz[point3];});
+	sData3->AddItem("epstt", [](){return epstt[point3];});
+	sData3->AddItem("epsrrp", [](){return epsrrp[point3];});
+	sData3->AddItem("epszzp", [](){return epszzp[point3];});
+	sData3->AddItem("epsrzp", [](){return epsrzp[point3];});
+	sData3->AddItem("epsttp", [](){return epsttp[point3];});
+	sData3->AddItem("tet", [](){return tet[point3];});
+	sData3->AddItem("sqI2p", [](){return sqI2p[point3];});
+	sData3->AddItem("T, K", [](){return (T[point3] + T[point3 + ((point3 % 2) ? 1 : -1)]);});
+	sData3->AddItem("R, mm", [](){return (rcoord[itop[1][point3]] + rcoord[itop[2][point3]] + rcoord[itop[3][point3]]) / 0.003;});
+	sData3->AddItem("Z, mm", [](){return (zcoord[itop[1][point3]] + zcoord[itop[2][point3]] + zcoord[itop[3][point3]]) / 0.003;});
+
+
 	T_rec = T0;
 	dtime = dtimepr;
 	tfinish = nt * dtimepr;
 	// if (!NoAnim)
 	threegraphs(true, 0, false, path);
-	const int dataSize = 11;
-	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p, T};
 	for (auto n = 0; n <= nt; n++) {
 		if (UnlimStop) {
 			return;
@@ -1135,15 +1186,12 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 					}
 				}
 			}
-			if (BBCBox->Checked)
-			{
-				if(RadioGroup1->ItemIndex == 0)
-				{
-					for (int i = 1; i <= n4 + 1; ++i)
-					{
+			if (BBCBox->Checked) {
+				if (RadioGroup1->ItemIndex == 0) {
+					for (int i = 1; i <= n4 + 1; ++i) {
 						speedz[i] = bsh;
 					}
-                }
+				}
 			}
 #ifdef UseParallel
 			TParallel::For(NULL, 1, numberelem, BaseLoop);
@@ -1155,28 +1203,11 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			m_sqI2p = max(sqI2p[elementWithMaximalDeformationInTarget], sqI2p[elementWithMaximalDeformationInTarget - 2]);
 		}
 		if (!(n % (nt / 100))) {
-			s = FloatToStr(RoundTo(timepr * 1e6, -2));
-			for (int i = 1; i <= n4; ++i)
-				s += ";" + FloatToStr(RoundTo((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2., -2));
-			slT->Add(s);
-			s = FloatToStr(RoundTo(timepr * 1e6, -2));
-			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
-				s += ";" + FloatToStr(data[i][point1]);
-			s += ";" + FloatToStr((rcoord[itop[1][point1]] + rcoord[itop[2][point1]] + rcoord[itop[3][point1]])/0.003);
-			s += ";" + FloatToStr((zcoord[itop[1][point1]] + zcoord[itop[2][point1]] + zcoord[itop[3][point1]])/0.003);
-			slData1->Add(s);
-			s = FloatToStr(RoundTo(timepr * 1e6, -2));
-			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
-				s += ";" + FloatToStr(data[i][point2]);
-			s += ";" + FloatToStr((rcoord[itop[1][point2]] + rcoord[itop[2][point2]] + rcoord[itop[3][point2]])/0.003);
-			s += ";" + FloatToStr((zcoord[itop[1][point2]] + zcoord[itop[2][point2]] + zcoord[itop[3][point2]])/0.003);
-			slData2->Add(s);
-			s = FloatToStr(RoundTo(timepr * 1e6, -2));
-			for (int i = 0; i <= dataSize - 2; ++i) // именно -2, это не ошибка
-				s += ";" + FloatToStr(data[i][point3]);
-			s += ";" + FloatToStr((rcoord[itop[1][point3]] + rcoord[itop[2][point3]] + rcoord[itop[3][point3]])/0.003);
-			s += ";" + FloatToStr((zcoord[itop[1][point3]] + zcoord[itop[2][point3]] + zcoord[itop[3][point3]])/0.003);
-			slData3->Add(s);
+			sT->SaveValues(timepr);
+
+			sData1->SaveValues(timepr);
+			sData2->SaveValues(timepr);
+			sData3->SaveValues(timepr);
 
 		}
 		// if (!NoAnim) {
@@ -1188,44 +1219,59 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		}
 		// }
 		/* else {
-		if (!(n % (nt / 100)))
+		 if (!(n % (nt / 100)))
 		 Button2->Caption = FloatToStr(RoundTo(n * 100. / nt, 0)) + "%";
 		 if (!(n % (nt / (numSeries - 1))))
 		 GraficRefresh(nforgraf++);
 		 //Теперь без картинок нельзя!
 		 } */
-		if (!(n % (nt >> 7))){
+		if (!(n % (nt >> 7))) {
 			StaticText1->Caption = "max(sqI2p)=" + FloatToStr(RoundTo(m_sqI2p, -4));
 		}
 	}
 	threegraphs(true, 1, false, path);
-	slData1->SaveToFile(path + "/data_all.point1." + exstamp + ".csv");
-	delete slData1;
-	slData2->SaveToFile(path + "/data_all.point2." + exstamp + ".csv");
-	delete slData2;
-	slData3->SaveToFile(path + "/data_all.point3." + exstamp + ".csv");
-	delete slData3;
-	slT->SaveToFile(path + "/T_all_time." + exstamp + ".csv");
-	slT->Clear();
-	slT->Add("\"R, %\";\"T, K\";\"sqI2p\"");
-	for (int i = 1; i <= n4; ++i) {
-		slT->Add(FloatToStr((double)(i - 1) / (double)(n4 - 1) * 100) + "%;" +
-			FloatToStr((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2) + ";" + FloatToStr(sqI2p[TElemTarget[i]]));
-	}
-	slT->SaveToFile(path + "/T_final." + exstamp + ".csv");
 
-	slT->Clear();
-	slT->Add
-		("\"R, %\";\"epsrr\";\"epszz\";\"epsrz\";\"epstt\";\"epsrrp\";\"epszzp\";\"epsrzp\";\"epsttp\";\"tet\";\"sqI2p\";\"T\"");
+	sData1->Final();
+	sData2->Final();
+	sData3->Final();
+	sT->Final();
+	delete sData1;
+	delete sData2;
+	delete sData3;
+	delete sT;
+
+	FinalSaver *sTI = new FinalSaver(path + "/T_final." + exstamp + ".csv");
+	sTI->AddItem("R", [](int i){return (double)(i - 1) / (double)(n4 - 1);});
+	sTI->AddItem("T, K", [](int i){return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
+	sTI->AddItem("sqI2p", [](int i){return sqI2p[TElemTarget[i]];});
+
 	for (int i = 1; i <= n4; ++i) {
-		UnicodeString s = FloatToStr((double)(i - 1) / (double)(n4 - 1) * 100) + "%";
-		for (int j = 0; j < dataSize; ++j) {
-			s += ";" + (FloatToStr(data[j][TElemTarget[i]]));
-		}
-		slT->Add(s);
+		sTI->SaveValues(i);
 	}
-	slT->SaveToFile(path + "/data_final." + exstamp + ".csv");
-	delete slT;
+
+	sTI->Final();
+	delete sTI;
+
+	const int dataSize = 10;
+	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p};
+	UnicodeString dname[dataSize] = {(UnicodeString)"epsrr",(UnicodeString)"epszz",(UnicodeString)"epsrz",
+	(UnicodeString)"epstt",(UnicodeString)"epsrrp",(UnicodeString)"epszzp",(UnicodeString)"epsrzp",(UnicodeString)"epsttp",
+	(UnicodeString)"tet",(UnicodeString)"sqI2p"};
+
+	FinalSaver *sD = new FinalSaver(path + "/data_final." + exstamp + ".csv");
+	sD->AddItem("R", [](int i){return (double)(i - 1) / (double)(n4 - 1);});
+	for(int j = 0; j < dataSize; ++j)
+	{
+		sD->AddItem(dname[j],[data, j](int i){return data[j][TElemTarget[i]];});
+	}
+	sD->AddItem("T, K", [](int i){return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
+
+	for (int i = 1; i <= n4; ++i) {
+		sD->SaveValues(i);
+	}
+
+	sD->Final();
+	delete sD;
 
 	// Button2->Caption = capt;
 	// fclose(file);
@@ -1516,7 +1562,7 @@ void topology() {
 				matelm[kv] = tmat;
 			}
 			else {
-                //Теперь воздух - это 0!!!
+				// Теперь воздух - это 0!!!
 				matelm[kn] = 0; // (Ales'hon'ne 15.2.5) 9 - это воздух
 				matelm[kv] = 0; // (Ales'hon'ne 15.2.5) но только здесь
 			}
@@ -1837,7 +1883,7 @@ void threeangle(int k) {
 		HotColor = DefColor;
 	// (2015 год) Проверить на ошибки!!!
 	for (int il = 1; il <= 3; ++il) {
-		poly[il-1] = Point((graphForm->ClientWidth + WidthCoef1 + rcoord[itop[il][k]] * WidthCoef) / 2,
+		poly[il - 1] = Point((graphForm->ClientWidth + WidthCoef1 + rcoord[itop[il][k]] * WidthCoef) / 2,
 			HeightCoef1 - zcoord[itop[il][k]] * HeightCoef);
 	}
 	holst->Brush->Color = DefColor;
@@ -1846,7 +1892,7 @@ void threeangle(int k) {
 	if (mainForm->CheckBox5->Checked)
 		holst->Pen->Color = (bw) ? clBlack : static_cast<TColor>(Material[matelm[k]].Color);
 	for (int il = 1; il <= 3; ++il) {
-		poly[il-1] = Point((graphForm->ClientWidth - WidthCoef1 - rcoord[itop[il][k]] * WidthCoef) / 2,
+		poly[il - 1] = Point((graphForm->ClientWidth - WidthCoef1 - rcoord[itop[il][k]] * WidthCoef) / 2,
 			HeightCoef1 - zcoord[itop[il][k]] * HeightCoef);
 	}
 	holst->Brush->Color = HotColor;
@@ -1896,7 +1942,7 @@ void newspeed() {
 
 // ---------------------------------------------------------------------------
 
-void ReinitBoxes(){
+void ReinitBoxes() {
 	int i0 = mainForm->matstrat0Box->ItemIndex;
 	int i1 = mainForm->matstrat1Box->ItemIndex;
 	int i2 = mainForm->matstrat2Box->ItemIndex;
@@ -1922,12 +1968,12 @@ void __fastcall TmainForm::FormCreate(TObject *) {
 	auto path = DirEdit->Text + "materials.xml";
 	TForm1* form = new TForm1(this);
 	form->ReadFromFile(path);
-    Material.set_length(form->matarr.Length);
+	Material.set_length(form->matarr.Length);
 	for (int i = 1; i < form->matarr.Length; ++i)
 		Material[i] = form->matarr[i];
 	delete form;
 
-    Material[0].Name = "Воздух";
+	Material[0].Name = "Воздух";
 	Material[0].Color = clWhite;
 	Material[0].ro0 = 1.2;
 	Material[0].G = 0.0001 * GPa;
@@ -2400,18 +2446,18 @@ void __fastcall TmainForm::GetBeginValue() {
 	// Число разбиений по высоте сооружения
 	n3 = EnsureRange(StrToInt(n3Edit->Text), 3, 30);
 	// Число разбиений по радиусу сооружения
-	matstrat0 = matstrat0Box->ItemIndex;// + 1;
+	matstrat0 = matstrat0Box->ItemIndex; // + 1;
 	// Материал сооружения (0-9) переводим в (1-10)
 	nstrat = nstratBox->ItemIndex + 1;
 	// Число слоёв основания (0-2) переводим в (1-3)
 	h2i[1] = StrToFloat(h2iEdit1->Text); // Высота первого слоя (м)
 	h2i[2] = StrToFloat(h2iEdit2->Text); // Высота второго слоя (м)
 	h2i[3] = StrToFloat(h2iEdit3->Text); // Высота третьего слоя (м)
-	matstrat[1] = matstrat1Box->ItemIndex;// + 1;
+	matstrat[1] = matstrat1Box->ItemIndex; // + 1;
 	// Материал первого слоя (0-9) переводим в (1-10)
-	matstrat[2] = matstrat2Box->ItemIndex;// + 1;
+	matstrat[2] = matstrat2Box->ItemIndex; // + 1;
 	// Материал второго слоя (0-9) переводим в (1-10)
-	matstrat[3] = matstrat3Box->ItemIndex;// + 1;
+	matstrat[3] = matstrat3Box->ItemIndex; // + 1;
 	// Материал третьего слоя (0-9) переводим в (1-10)
 }
 
@@ -2532,8 +2578,8 @@ void __fastcall TmainForm::nstratBoxChange(TObject *) {
 void __fastcall TmainForm::Button3Click(TObject *) {
 	UnicodeString path = ExtractFilePath(DirEdit->Text);
 	Vcl::Filectrl::SelectDirectory(path, TSelectDirOpts() << sdAllowCreate << sdPerformCreate << sdPrompt, 0);
-	if(path.LastChar()!=((UnicodeString)("\\")).LastChar())
-        path+="\\";
+	if (path.LastChar() != ((UnicodeString)("\\")).LastChar())
+		path += "\\";
 	DirEdit->Text = path;
 }
 
@@ -2719,4 +2765,3 @@ void __fastcall TmainForm::LineButtonClick(TObject *Sender) {
 	delete bmp;
 }
 // ---------------------------------------------------------------------------
-
