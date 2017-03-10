@@ -1262,7 +1262,8 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	sD->AddItem("R", [](int i){return (double)(i - 1) / (double)(n4 - 1);});
 	for(int j = 0; j < dataSize; ++j)
 	{
-		sD->AddItem(dname[j],[data, j](int i){return data[j][TElemTarget[i]];});
+		long double *dj = data[j];
+		sD->AddItem(dname[j],[dj](int i){return dj[TElemTarget[i]];});
 	}
 	sD->AddItem("T, K", [](int i){return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
 
