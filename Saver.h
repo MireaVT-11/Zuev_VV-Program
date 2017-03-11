@@ -8,32 +8,52 @@
 #include <list>
 #include <System.Math.hpp>
 
-class Saver
-{
-	private:
-		UnicodeString fileName;
-		TStringList *data;
-		std::list<std::function<long double()>> *fl;
-	public:
-		Saver(UnicodeString fName);
-		~Saver();
-		void AddItem(UnicodeString name, std::function<long double()> f);
-		void SaveValues(long double time);
-		void Final();
+class ProtoSaver {
+protected:
+	UnicodeString fileName;
+	TStringList *data;
+
+	ProtoSaver(UnicodeString fName) {
+		fileName = fName;
+		data = new TStringList();
+	}
+
+	~ProtoSaver() {
+		delete data;
+	}
+
+public:
+	static UnicodeString DefaultFormater(long double v) {
+		return FloatToStr(v);
+	}
+
+	void Final() {
+		data->SaveToFile(fileName);
+	}
 };
 
-class FinalSaver
-{
-    private:
-		UnicodeString fileName;
-		TStringList *data;
-		std::list<std::function<long double(int)>> *fl;
-	public:
-		FinalSaver(UnicodeString fName);
-		~FinalSaver();
-		void AddItem(UnicodeString name, std::function<long double(int)> f);
-		void SaveValues(int index);
-		void Final();
+class Saver : public ProtoSaver {
+private:
+	std::list < std::function < UnicodeString() >> *fl;
+
+public:
+	Saver(UnicodeString fName);
+	~Saver();
+	void AddItem(UnicodeString name, std::function < long double() > f, std::function < UnicodeString(long double) > formater =
+		ProtoSaver::DefaultFormater);
+	void SaveValues(long double time);
+};
+
+class FinalSaver : public ProtoSaver {
+private:
+	std::list < std::function < UnicodeString(int) >> *fl;
+
+public:
+	FinalSaver(UnicodeString fName);
+	~FinalSaver();
+	void AddItem(UnicodeString name, std::function < long double(int) > f, std::function < UnicodeString(long double) > formater =
+		ProtoSaver::DefaultFormater);
+	void SaveValues(int index);
 };
 
 #endif

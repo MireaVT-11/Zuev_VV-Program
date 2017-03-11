@@ -582,7 +582,6 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	UnicodeString dtstamp;
 	DateTimeToString(dtstamp, "yymmddhhnnss", Sysutils::Now());
 	Application->ProcessMessages();
-	auto slT = new TStringList();
 	graphForm->Canvas->Brush->Color = clWhite;
 	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
 	/* FILE *file, *file1, *file2, *file3;
@@ -855,77 +854,86 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	MkDir(path);
 	MkDir(path + "Cinema\\");
 
-	slT->Clear();
-	slT->Add("Время      = " + GetScPref(dtimepr*nt, 5, "с"));
-	slT->Add("Материал 0 = " + Material[matstrat0Box->ItemIndex].ToString());
-	slT->Add("Материал 1 = " + Material[matstrat1Box->ItemIndex].ToString());
-	if (matstrat2Box->Enabled)
-		slT->Add("Материал 2 = " + Material[matstrat2Box->ItemIndex].ToString());
-	if (matstrat3Box->Enabled)
-		slT->Add("Материал 3 = " + Material[matstrat3Box->ItemIndex].ToString());
-	if (CheckBoxs->Checked)
-		slT->Add("V_снар.    = " + vindentEdit->Text + " м/с");
-	if (CheckBoxbsh->Checked)
-		slT->Add("V_инд.     = " + Editbsh->Text + " м/с");
-	slT->Add("Размер уд. = " + rad0Edit->Text + "x" + h0Edit->Text + " (м)");
-	slT->Add("Размер м.  = " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text + ") (м)");
-	slT->SaveToFile(path + "/#.txt");
+	{
+		auto BaseInfo = new TStringList();
+		BaseInfo->Add("Время      = " + GetScPref(dtimepr*nt, 5, "с"));
+		BaseInfo->Add("Материал 0 = " + Material[matstrat0Box->ItemIndex].ToString());
+		BaseInfo->Add("Материал 1 = " + Material[matstrat1Box->ItemIndex].ToString());
+		if (matstrat2Box->Enabled)
+			BaseInfo->Add("Материал 2 = " + Material[matstrat2Box->ItemIndex].ToString());
+		if (matstrat3Box->Enabled)
+			BaseInfo->Add("Материал 3 = " + Material[matstrat3Box->ItemIndex].ToString());
+		if (CheckBoxs->Checked)
+			BaseInfo->Add("V_снар.    = " + vindentEdit->Text + " м/с");
+		if (CheckBoxbsh->Checked)
+			BaseInfo->Add("V_инд.     = " + Editbsh->Text + " м/с");
+		BaseInfo->Add("Размер уд. = " + rad0Edit->Text + "x" + h0Edit->Text + " (м)");
+		BaseInfo->Add("Размер м.  = " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text +
+			") (м)");
+		BaseInfo->SaveToFile(path + "/#" + exstamp + ".txt");
 
-	delete slT;
-
-	// Сохранение данных, вариант 4, теперь с ООП и лямбдами!
-    // Недоделанный, правда.
-
-	Saver *sT = new Saver(path + "/T_all.new."+exstamp+".csv");
-	for (int i = 1; i <= n4; ++i) {
-		sT->AddItem(FloatToStr((double)((int)((double)(i - 1) / (double)(n4 - 1) * 1000.0) / 10.0)) + "%", [i](){return RoundTo((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2., -2);});
+		delete BaseInfo;
 	}
 
-	Saver *sData1 = new Saver(path + "/data_all.point1."+exstamp+".csv");
-	sData1->AddItem("epsrr", [](){return epsrr[point1];});
-	sData1->AddItem("epszz", [](){return epszz[point1];});
-	sData1->AddItem("epsrz", [](){return epsrz[point1];});
-	sData1->AddItem("epstt", [](){return epstt[point1];});
-	sData1->AddItem("epsrrp", [](){return epsrrp[point1];});
-	sData1->AddItem("epszzp", [](){return epszzp[point1];});
-	sData1->AddItem("epsrzp", [](){return epsrzp[point1];});
-	sData1->AddItem("epsttp", [](){return epsttp[point1];});
-	sData1->AddItem("tet", [](){return tet[point1];});
-	sData1->AddItem("sqI2p", [](){return sqI2p[point1];});
-	sData1->AddItem("T, K", [](){return (T[point1] + T[point1 + ((point1 % 2) ? 1 : -1)]);});
-	sData1->AddItem("R, mm", [](){return (rcoord[itop[1][point1]] + rcoord[itop[2][point1]] + rcoord[itop[3][point1]]) / 0.003;});
-	sData1->AddItem("Z, mm", [](){return (zcoord[itop[1][point1]] + zcoord[itop[2][point1]] + zcoord[itop[3][point1]]) / 0.003;});
+	// Сохранение данных, вариант 4, теперь с ООП и лямбдами!
+	// Недоделанный, правда.
 
-	Saver *sData2 = new Saver(path + "/data_all.point2."+exstamp+".csv");
-	sData2->AddItem("epsrr", [](){return epsrr[point2];});
-	sData2->AddItem("epszz", [](){return epszz[point2];});
-	sData2->AddItem("epsrz", [](){return epsrz[point2];});
-	sData2->AddItem("epstt", [](){return epstt[point2];});
-	sData2->AddItem("epsrrp", [](){return epsrrp[point2];});
-	sData2->AddItem("epszzp", [](){return epszzp[point2];});
-	sData2->AddItem("epsrzp", [](){return epsrzp[point2];});
-	sData2->AddItem("epsttp", [](){return epsttp[point2];});
-	sData2->AddItem("tet", [](){return tet[point2];});
-	sData2->AddItem("sqI2p", [](){return sqI2p[point2];});
-	sData2->AddItem("T, K", [](){return (T[point2] + T[point2 + ((point2 % 2) ? 1 : -1)]);});
-	sData2->AddItem("R, mm", [](){return (rcoord[itop[1][point2]] + rcoord[itop[2][point2]] + rcoord[itop[3][point2]]) / 0.003;});
-	sData2->AddItem("Z, mm", [](){return (zcoord[itop[1][point2]] + zcoord[itop[2][point2]] + zcoord[itop[3][point2]]) / 0.003;});
+	Saver *sT = new Saver(path + "/T_all." + exstamp + ".csv");
+	for (int i = 1; i <= n4; ++i) {
+		sT->AddItem(FloatToStr((double)((int)((double)(i - 1) / (double)(n4 - 1) * 1000.0) / 10.0)) + "%", [i]()
+		{return RoundTo((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2., -2);});
+	}
 
-	Saver *sData3 = new Saver(path + "/data_all.point3."+exstamp+".csv");
-	sData3->AddItem("epsrr", [](){return epsrr[point3];});
-	sData3->AddItem("epszz", [](){return epszz[point3];});
-	sData3->AddItem("epsrz", [](){return epsrz[point3];});
-	sData3->AddItem("epstt", [](){return epstt[point3];});
-	sData3->AddItem("epsrrp", [](){return epsrrp[point3];});
-	sData3->AddItem("epszzp", [](){return epszzp[point3];});
-	sData3->AddItem("epsrzp", [](){return epsrzp[point3];});
-	sData3->AddItem("epsttp", [](){return epsttp[point3];});
-	sData3->AddItem("tet", [](){return tet[point3];});
-	sData3->AddItem("sqI2p", [](){return sqI2p[point3];});
-	sData3->AddItem("T, K", [](){return (T[point3] + T[point3 + ((point3 % 2) ? 1 : -1)]);});
-	sData3->AddItem("R, mm", [](){return (rcoord[itop[1][point3]] + rcoord[itop[2][point3]] + rcoord[itop[3][point3]]) / 0.003;});
-	sData3->AddItem("Z, mm", [](){return (zcoord[itop[1][point3]] + zcoord[itop[2][point3]] + zcoord[itop[3][point3]]) / 0.003;});
+	Saver *sData1 = new Saver(path + "/data_all.point1." + exstamp + ".csv");
+	sData1->AddItem("epsrr", []() {return epsrr[point1];});
+	sData1->AddItem("epszz", []() {return epszz[point1];});
+	sData1->AddItem("epsrz", []() {return epsrz[point1];});
+	sData1->AddItem("epstt", []() {return epstt[point1];});
+	sData1->AddItem("epsrrp", []() {return epsrrp[point1];});
+	sData1->AddItem("epszzp", []() {return epszzp[point1];});
+	sData1->AddItem("epsrzp", []() {return epsrzp[point1];});
+	sData1->AddItem("epsttp", []() {return epsttp[point1];});
+	sData1->AddItem("tet", []() {return tet[point1];});
+	sData1->AddItem("sqI2p", []() {return sqI2p[point1];});
+	sData1->AddItem("T, K", []() {return (T[point1] + T[point1 + ((point1 % 2) ? 1 : -1)]);});
+	sData1->AddItem("R, mm", []()
+	{return (rcoord[itop[1][point1]] + rcoord[itop[2][point1]] + rcoord[itop[3][point1]]) / 0.003;});
+	sData1->AddItem("Z, mm", []()
+	{return (zcoord[itop[1][point1]] + zcoord[itop[2][point1]] + zcoord[itop[3][point1]]) / 0.003;});
 
+	Saver *sData2 = new Saver(path + "/data_all.point2." + exstamp + ".csv");
+	sData2->AddItem("epsrr", []() {return epsrr[point2];});
+	sData2->AddItem("epszz", []() {return epszz[point2];});
+	sData2->AddItem("epsrz", []() {return epsrz[point2];});
+	sData2->AddItem("epstt", []() {return epstt[point2];});
+	sData2->AddItem("epsrrp", []() {return epsrrp[point2];});
+	sData2->AddItem("epszzp", []() {return epszzp[point2];});
+	sData2->AddItem("epsrzp", []() {return epsrzp[point2];});
+	sData2->AddItem("epsttp", []() {return epsttp[point2];});
+	sData2->AddItem("tet", []() {return tet[point2];});
+	sData2->AddItem("sqI2p", []() {return sqI2p[point2];});
+	sData2->AddItem("T, K", []() {return (T[point2] + T[point2 + ((point2 % 2) ? 1 : -1)]);});
+	sData2->AddItem("R, mm", []()
+	{return (rcoord[itop[1][point2]] + rcoord[itop[2][point2]] + rcoord[itop[3][point2]]) / 0.003;});
+	sData2->AddItem("Z, mm", []()
+	{return (zcoord[itop[1][point2]] + zcoord[itop[2][point2]] + zcoord[itop[3][point2]]) / 0.003;});
+
+	Saver *sData3 = new Saver(path + "/data_all.point3." + exstamp + ".csv");
+	sData3->AddItem("epsrr", []() {return epsrr[point3];});
+	sData3->AddItem("epszz", []() {return epszz[point3];});
+	sData3->AddItem("epsrz", []() {return epsrz[point3];});
+	sData3->AddItem("epstt", []() {return epstt[point3];});
+	sData3->AddItem("epsrrp", []() {return epsrrp[point3];});
+	sData3->AddItem("epszzp", []() {return epszzp[point3];});
+	sData3->AddItem("epsrzp", []() {return epsrzp[point3];});
+	sData3->AddItem("epsttp", []() {return epsttp[point3];});
+	sData3->AddItem("tet", []() {return tet[point3];});
+	sData3->AddItem("sqI2p", []() {return sqI2p[point3];});
+	sData3->AddItem("T, K", []() {return (T[point3] + T[point3 + ((point3 % 2) ? 1 : -1)]);});
+	sData3->AddItem("R, mm", []()
+	{return (rcoord[itop[1][point3]] + rcoord[itop[2][point3]] + rcoord[itop[3][point3]]) / 0.003;});
+	sData3->AddItem("Z, mm", []()
+	{return (zcoord[itop[1][point3]] + zcoord[itop[2][point3]] + zcoord[itop[3][point3]]) / 0.003;});
 
 	T_rec = T0;
 	dtime = dtimepr;
@@ -1241,9 +1249,10 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	delete sT;
 
 	FinalSaver *sTI = new FinalSaver(path + "/T_final." + exstamp + ".csv");
-	sTI->AddItem("R", [](int i){return (double)(i - 1) / (double)(n4 - 1);});
-	sTI->AddItem("T, K", [](int i){return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
-	sTI->AddItem("sqI2p", [](int i){return sqI2p[TElemTarget[i]];});
+	sTI->AddItem("R, %", [](int i) {return (double)(i - 1) / (double)(n4 - 1);}, [](long double v)
+	{return FloatToStr(RoundTo(v * 100, -2)) + "%";});
+	sTI->AddItem("T, K", [](int i) {return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
+	sTI->AddItem("sqI2p", [](int i) {return sqI2p[TElemTarget[i]];});
 
 	for (int i = 1; i <= n4; ++i) {
 		sTI->SaveValues(i);
@@ -1254,18 +1263,19 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 
 	const int dataSize = 10;
 	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p};
-	UnicodeString dname[dataSize] = {(UnicodeString)"epsrr",(UnicodeString)"epszz",(UnicodeString)"epsrz",
-	(UnicodeString)"epstt",(UnicodeString)"epsrrp",(UnicodeString)"epszzp",(UnicodeString)"epsrzp",(UnicodeString)"epsttp",
-	(UnicodeString)"tet",(UnicodeString)"sqI2p"};
+	UnicodeString dname[dataSize] = {
+		(UnicodeString)"epsrr", (UnicodeString)"epszz", (UnicodeString)"epsrz", (UnicodeString)"epstt", (UnicodeString)"epsrrp",
+			(UnicodeString)"epszzp", (UnicodeString)"epsrzp", (UnicodeString)"epsttp", (UnicodeString)"tet",
+		(UnicodeString)"sqI2p"};
 
 	FinalSaver *sD = new FinalSaver(path + "/data_final." + exstamp + ".csv");
-	sD->AddItem("R", [](int i){return (double)(i - 1) / (double)(n4 - 1);});
-	for(int j = 0; j < dataSize; ++j)
-	{
+	sD->AddItem("R, %", [](int i) {return (double)(i - 1) / (double)(n4 - 1);}, [](long double v)
+	{return FloatToStr(RoundTo(v * 100, -2)) + "%";});
+	for (int j = 0; j < dataSize; ++j) {
 		long double *dj = data[j];
-		sD->AddItem(dname[j],[dj](int i){return dj[TElemTarget[i]];});
+		sD->AddItem(dname[j], [dj](int i) {return dj[TElemTarget[i]];});
 	}
-	sD->AddItem("T, K", [](int i){return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
+	sD->AddItem("T, K", [](int i) {return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
 
 	for (int i = 1; i <= n4; ++i) {
 		sD->SaveValues(i);
