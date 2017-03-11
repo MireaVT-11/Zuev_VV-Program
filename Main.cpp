@@ -580,7 +580,8 @@ bool test_k(int k) {
 // Нажатие книпки "Пуск". Основная функция.
 void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	UnicodeString dtstamp;
-	DateTimeToString(dtstamp, "yymmddhhnnss", Sysutils::Now());
+	TDateTime etime = Sysutils::Now();
+	DateTimeToString(dtstamp, "yymmddhhnnss", etime);
 	Application->ProcessMessages();
 	graphForm->Canvas->Brush->Color = clWhite;
 	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
@@ -842,6 +843,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	for (int k = 1; k <= numberelem; k++)
 		InitLoop(Sender, k);
 #endif
+	bool cinemaEnabled = CinemaCBox->Checked;
 	UnicodeString path, exstamp;
 	int dirnmb = 0;
 	do {
@@ -852,8 +854,8 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	if (!Sysutils::DirectoryExists(DirToResDir(DirEdit->Text)))
 		MkDir(DirToResDir(DirEdit->Text));
 	MkDir(path);
-	MkDir(path + "Cinema\\");
-
+	if(cinemaEnabled)
+		MkDir(path + "Cinema\\");
 	{
 		auto BaseInfo = new TStringList();
 		BaseInfo->Add("Время      = " + GetScPref(dtimepr*nt, 5, "с"));
@@ -870,7 +872,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		BaseInfo->Add("Размер уд. = " + rad0Edit->Text + "x" + h0Edit->Text + " (м)");
 		BaseInfo->Add("Размер м.  = " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text +
 			") (м)");
-		BaseInfo->SaveToFile(path + "/#" + exstamp + ".txt");
+		BaseInfo->SaveToFile(GetFileName("#", "", "", path, exstamp, "txt"));
 
 		delete BaseInfo;
 	}
@@ -878,13 +880,13 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	// Сохранение данных, вариант 4, теперь с ООП и лямбдами!
 	// Недоделанный, правда.
 
-	Saver *sT = new Saver(path + "/T_all." + exstamp + ".csv");
+	Saver *sT = new Saver(GetFileName("T", "all", "", path, exstamp));
 	for (int i = 1; i <= n4; ++i) {
 		sT->AddItem(FloatToStr((double)((int)((double)(i - 1) / (double)(n4 - 1) * 1000.0) / 10.0)) + "%", [i]()
 		{return RoundTo((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2., -2);});
 	}
 
-	Saver *sData1 = new Saver(path + "/data_all.point1." + exstamp + ".csv");
+	Saver *sData1 = new Saver(GetFileName("data", "all", "point1", path, exstamp));
 	sData1->AddItem("epsrr", []() {return epsrr[point1];});
 	sData1->AddItem("epszz", []() {return epszz[point1];});
 	sData1->AddItem("epsrz", []() {return epsrz[point1];});
@@ -901,7 +903,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	sData1->AddItem("Z, mm", []()
 	{return (zcoord[itop[1][point1]] + zcoord[itop[2][point1]] + zcoord[itop[3][point1]]) / 0.003;});
 
-	Saver *sData2 = new Saver(path + "/data_all.point2." + exstamp + ".csv");
+	Saver *sData2 = new Saver(GetFileName("data", "all", "point2", path, exstamp));
 	sData2->AddItem("epsrr", []() {return epsrr[point2];});
 	sData2->AddItem("epszz", []() {return epszz[point2];});
 	sData2->AddItem("epsrz", []() {return epsrz[point2];});
@@ -918,7 +920,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	sData2->AddItem("Z, mm", []()
 	{return (zcoord[itop[1][point2]] + zcoord[itop[2][point2]] + zcoord[itop[3][point2]]) / 0.003;});
 
-	Saver *sData3 = new Saver(path + "/data_all.point3." + exstamp + ".csv");
+	Saver *sData3 = new Saver(GetFileName("data", "all", "point3", path, exstamp));
 	sData3->AddItem("epsrr", []() {return epsrr[point3];});
 	sData3->AddItem("epszz", []() {return epszz[point3];});
 	sData3->AddItem("epsrz", []() {return epsrz[point3];});
@@ -1220,7 +1222,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		}
 		// if (!NoAnim) {
 		if (!(n % (nt / Min(1000, nt)))) {
-			bool cinema = CinemaCBox->Checked && !(n % (nt / CinemaEdit->Value));
+			bool cinema = cinemaEnabled && !(n % (nt / CinemaEdit->Value));
 			threegraphs(false, n / (nt / CinemaEdit->Value), cinema, path);
 			graphForm->Caption = FloatToStr(RoundTo(n * 100. / nt, -1)) + "%|"; // <-- (2015 год) Проверить здесь
 			graphForm->Caption = graphForm->Caption + FloatToStr(RoundTo(T_max, 0)) + "|" + FloatToStr(RoundTo(T_rec, 0));
@@ -1248,7 +1250,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	delete sData3;
 	delete sT;
 
-	FinalSaver *sTI = new FinalSaver(path + "/T_final." + exstamp + ".csv");
+	FinalSaver *sTI = new FinalSaver(GetFileName("T", "final", "", path, exstamp));
 	sTI->AddItem("R, %", [](int i) {return (double)(i - 1) / (double)(n4 - 1);}, [](long double v)
 	{return FloatToStr(RoundTo(v * 100, -2)) + "%";});
 	sTI->AddItem("T, K", [](int i) {return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
@@ -1268,7 +1270,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			(UnicodeString)"epszzp", (UnicodeString)"epsrzp", (UnicodeString)"epsttp", (UnicodeString)"tet",
 		(UnicodeString)"sqI2p"};
 
-	FinalSaver *sD = new FinalSaver(path + "/data_final." + exstamp + ".csv");
+	FinalSaver *sD = new FinalSaver(GetFileName("data", "final", "", path, exstamp));
 	sD->AddItem("R, %", [](int i) {return (double)(i - 1) / (double)(n4 - 1);}, [](long double v)
 	{return FloatToStr(RoundTo(v * 100, -2)) + "%";});
 	for (int j = 0; j < dataSize; ++j) {
@@ -1308,6 +1310,13 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		delete[]massn1;
 		delete[]massn2;
 	}
+
+	etime = Sysutils::Now() - etime;
+	UnicodeString res;
+	DateTimeToString(res, "h:nn:ss.zzz", etime);
+	res = "Время выполнения: " + res;
+	Application->MessageBoxW(res.w_str(), ((UnicodeString)"Расчёт завершён").w_str(), 0x40);
+
 }
 
 // *****************************************************************

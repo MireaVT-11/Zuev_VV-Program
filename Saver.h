@@ -8,6 +8,8 @@
 #include <list>
 #include <System.Math.hpp>
 
+UnicodeString GetFileName(UnicodeString name, UnicodeString style, UnicodeString id, UnicodeString path, UnicodeString exstamp, UnicodeString ext = "csv");
+
 class ProtoSaver {
 protected:
 	UnicodeString fileName;

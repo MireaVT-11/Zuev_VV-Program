@@ -6,6 +6,22 @@
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 
+UnicodeString GetFileName(UnicodeString name, UnicodeString style, UnicodeString id, UnicodeString path, UnicodeString exstamp,
+	UnicodeString ext) {
+	UnicodeString res = path;
+	if (path.LastChar() != ((UnicodeString)("\\")).LastChar())
+		res += "\\";
+	res += name;
+	if (style.Length() > 0) {
+		res += "_" + style + ".";
+	}
+	if (id.Length() > 0) {
+		res += id + ".";
+	}
+	res += exstamp + "." + ext;
+    return res;
+}
+
 Saver::Saver(UnicodeString fName) : ProtoSaver(fName) {
 	data->Add("\"t, µs\"");
 	fl = new std::list < std::function < UnicodeString() >> ();
