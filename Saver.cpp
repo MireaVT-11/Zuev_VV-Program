@@ -33,11 +33,13 @@ Saver::~Saver() {
 
 void Saver::AddItem(UnicodeString name, std::function < long double() > f, std::function < UnicodeString(long double) > formater)
 {
+	TestAI();
 	data->Text = data->Strings[0] + ";\"" + name + "\"";
 	fl->push_back([formater, f]() {return formater(f());});
 }
 
 void Saver::SaveValues(long double time) {
+	FinAI();
 	UnicodeString t = FloatToStr(RoundTo(time * 1e6, -2));
 	for (auto v : *fl) {
 		t += ";" + v();
@@ -56,11 +58,13 @@ FinalSaver::~FinalSaver() {
 
 void FinalSaver::AddItem(UnicodeString name, std::function < long double(int) > f, std::function < UnicodeString(long double) >
 	formater) {
+	TestAI();
 	data->Text = data->Strings[0] + "\"" + name + "\";";
 	fl->push_back([formater, f](int i) {return formater(f(i));});
 }
 
 void FinalSaver::SaveValues(int index) {
+    FinAI();
 	UnicodeString t = "";
 	for (auto v : *fl) {
 		t += v(index) + ";";

@@ -1,4 +1,4 @@
-#ifndef SaverH
+﻿#ifndef SaverH
 #define SaverH
 
 #include <System.Classes.hpp>
@@ -8,9 +8,13 @@
 #include <list>
 #include <System.Math.hpp>
 
-UnicodeString GetFileName(UnicodeString name, UnicodeString style, UnicodeString id, UnicodeString path, UnicodeString exstamp, UnicodeString ext = "csv");
+UnicodeString GetFileName(UnicodeString name, UnicodeString style, UnicodeString id, UnicodeString path, UnicodeString exstamp,
+	UnicodeString ext = "csv");
 
 class ProtoSaver {
+private:
+	bool canAI;
+
 protected:
 	UnicodeString fileName;
 	TStringList *data;
@@ -18,16 +22,26 @@ protected:
 	ProtoSaver(UnicodeString fName) {
 		fileName = fName;
 		data = new TStringList();
+		canAI = true;
 	}
 
 	~ProtoSaver() {
 		delete data;
 	}
 
-public:
+	void FinAI() {
+		canAI = false;
+	}
+
+	void TestAI() {
+		if (!canAI)
+			throw new Exception("Нельзя добавить новый столбец после сохранения значений!");
+	}
 	static UnicodeString DefaultFormater(long double v) {
 		return FloatToStr(v);
 	}
+
+public:
 
 	void Final() {
 		data->SaveToFile(fileName);

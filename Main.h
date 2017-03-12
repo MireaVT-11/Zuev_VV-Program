@@ -190,9 +190,12 @@ private: // User declarations
 	void __fastcall SquareLoop(TObject *Sender, int k);
 	void __fastcall squareall();
 	void __fastcall threegraphs(bool save, int i, bool cinema, UnicodeString path);
+	void __fastcall SetFormState(bool enabled);
+    void __fastcall StopRFClick(TObject *Sender);
 
 public: // User declarations
 	__fastcall TmainForm(TComponent* Owner);
+	bool __fastcall Calculate(UnicodeString dtstamp);
 };
 
 // ---------------------------------------------------------------------------
