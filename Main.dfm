@@ -918,4 +918,13 @@ object mainForm: TmainForm
     TabOrder = 61
     OnClick = CheckBoxbshClick
   end
+  object MQCButton: TButton
+    Left = 245
+    Top = 394
+    Width = 204
+    Height = 25
+    Caption = #1052#1077#1085#1077#1076#1078#1077#1088' '#1086#1095#1077#1088#1077#1076#1080' '#1088#1072#1089#1095#1105#1090#1072
+    TabOrder = 62
+    OnClick = MQCButtonClick
+  end
 end

@@ -14,6 +14,7 @@
 #include "Matedit.hpp";
 #include "Extendedutils.hpp"
 #include "Saver.h"
+#include "QM.h"
 
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -578,7 +579,8 @@ bool test_k(int k) {
 	return false;
 }
 
-bool __fastcall TmainForm::Calculate(UnicodeString dtstamp) {
+bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, UnicodeString subfolder,
+	std::function < void(int) > percentCallBack) {
 	Application->ProcessMessages();
 	graphForm->Canvas->Brush->Color = clWhite;
 	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
@@ -614,7 +616,7 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp) {
 	graphForm->Left = 0;
 	graphForm->Top = 0;
 	graphForm->Canvas->Pen->Color = clBlack;
-	graphForm->Visible = true;
+	graphForm->Visible = !hideGraph;
 
 	WidthCoef1 = 0.;
 	HeightCoef1 = height - 40; // width=640, height=480
@@ -835,13 +837,13 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp) {
 	UnicodeString path, exstamp;
 	int dirnmb = 0;
 	do {
-		path = DirToResDir(DirEdit->Text) + "exper" + (exstamp = (IntToStr(dirnmb++) + dtstamp)) + "\\";
+		path = DirToResDir(DirEdit->Text) + subfolder + (exstamp = (dtstamp + IntToStr(dirnmb++))) + "\\";
 	}
 	while (Sysutils::DirectoryExists(path));
 
 	if (!Sysutils::DirectoryExists(DirToResDir(DirEdit->Text)))
 		MkDir(DirToResDir(DirEdit->Text));
-	MkDir(path);
+	ForceDirectories(path);
 	if (cinemaEnabled)
 		MkDir(path + "Cinema\\");
 
@@ -1213,13 +1215,16 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp) {
 			sData2->SaveValues(timepr);
 			sData3->SaveValues(timepr);
 
+			percentCallBack((n * 100) / nt);
 		}
 		// if (!NoAnim) {
 		if (!(n % (nt / Min(1000, nt)))) {
 			bool cinema = cinemaEnabled && !(n % (nt / CinemaEdit->Value));
-			threegraphs(false, n / (nt / CinemaEdit->Value), cinema, path);
-			graphForm->Caption = FloatToStr(RoundTo(n * 100. / nt, -1)) + "%|"; // <-- (2015 год) Проверить здесь
-			graphForm->Caption = graphForm->Caption + FloatToStr(RoundTo(T_max, 0)) + "|" + FloatToStr(RoundTo(T_rec, 0));
+			if (!hideGraph || (hideGraph && cinema)) {
+				threegraphs(false, n / (nt / CinemaEdit->Value), cinema, path);
+				graphForm->Caption = FloatToStr(RoundTo(n * 100. / nt, -1)) + "%|"; // <-- (2015 год) Проверить здесь
+				graphForm->Caption = graphForm->Caption + FloatToStr(RoundTo(T_max, 0)) + "|" + FloatToStr(RoundTo(T_rec, 0));
+			}
 		}
 		// }
 		/* else {
@@ -1317,7 +1322,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	UnlimStop = false;
 	UnicodeString msg = "";
 	try {
-		res = Calculate(dtstamp);
+		res = Calculate("exper" + dtstamp);
 	}
 	catch (Exception &e) {
 		res = false;
@@ -1332,7 +1337,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	DateTimeToString(resstr, ":nn:ss.zzz", etime);
 	resstr = IntToStr((int)((double)etime * 24.)) + resstr;
 	resstr = (res) ? ("Выполнено успешно. Время выполнения: " + resstr) :
-		("Выполнение прервано через " + resstr + " с сообщением «" + msg + "»");
+		("Выполнение прервано через " + resstr + ((msg == "") ? "" : (" с сообщением «" + msg + "»")));
 	if (res)
 		Application->MessageBoxW(resstr.w_str(), ((UnicodeString)"Расчёт завершён").w_str(), 0x40);
 	else
@@ -2835,6 +2840,7 @@ void __fastcall TmainForm::SetFormState(bool enabled) {
 	matstrat1Box->Enabled = enabled;
 	matstrat2Box->Enabled = enabled;
 	matstrat3Box->Enabled = enabled;
+	nstratBoxChange(this);
 	Button4->Enabled = enabled;
 	vindentEdit->Enabled = enabled;
 	Editb->Enabled = enabled;
@@ -2869,6 +2875,7 @@ void __fastcall TmainForm::SetFormState(bool enabled) {
 	InputEdit1->Enabled = enabled;
 	AltInpCBox->Enabled = enabled;
 	CBoxPoints->Enabled = enabled;
+	MQCButton->Enabled = enabled;
 	if (enabled) {
 		Refresh->Caption = "Пуск";
 		Refresh->OnClick = &RefreshClick;
@@ -2877,4 +2884,17 @@ void __fastcall TmainForm::SetFormState(bool enabled) {
 		Refresh->Caption = "Стоп";
 		Refresh->OnClick = &StopRFClick;
 	}
+}
+
+void __fastcall TmainForm::MQCButtonClick(TObject *Sender) {
+	MQCForm->ShowModal();
+}
+// ---------------------------------------------------------------------------
+
+void __fastcall TmainForm::SetUS() {
+	UnlimStop = true;
+}
+
+void __fastcall TmainForm::ResetUS() {
+	UnlimStop = false;
 }
