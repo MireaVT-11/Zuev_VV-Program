@@ -26,6 +26,7 @@ extern bool NoAnim;
 
 void NewMat();
 void draw();
+UnicodeString DirToResDir(UnicodeString path);
 
 /* Перенесена в другой файл!
  struct TMaterial
@@ -154,6 +155,7 @@ __published: // IDE-managed Components
 	TButton *LineButton;
 	TCheckBox *CBoxPoints;
 	TCheckBox *BBCBox;
+	TButton *MQCButton;
 
 	void __fastcall RefreshClick(TObject *Sender);
 	void __fastcall FormCreate(TObject *Sender);
@@ -183,6 +185,7 @@ __published: // IDE-managed Components
 	void __fastcall CheckBox5Click(TObject *Sender);
 	void __fastcall ntEditChange(TObject *Sender);
 	void __fastcall LineButtonClick(TObject *Sender);
+	void __fastcall MQCButtonClick(TObject *Sender);
 
 private: // User declarations
 	void __fastcall BaseLoop(TObject *Sender, int k);
@@ -195,7 +198,9 @@ private: // User declarations
 
 public: // User declarations
 	__fastcall TmainForm(TComponent* Owner);
-	bool __fastcall Calculate(UnicodeString dtstamp);
+	bool __fastcall Calculate(UnicodeString dtstamp, bool hideGraph = false, UnicodeString subfolder = "", std::function<void(int)> percentCallBack = [](int i){;});
+	void __fastcall SetUS();
+	void __fastcall ResetUS();
 };
 
 // ---------------------------------------------------------------------------

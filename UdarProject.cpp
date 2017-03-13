@@ -8,6 +8,7 @@
 USEFORMNS("MatEdit.pas", Matedit, Form1);
 USEFORM("Graph.cpp", graphForm);
 USEFORM("Main.cpp", mainForm);
+USEFORM("QM.cpp", MQCForm);
 //---------------------------------------------------------------------------
 int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int) {
 	try {
@@ -16,6 +17,7 @@ int WINAPI _tWinMain(HINSTANCE, HINSTANCE, LPTSTR, int) {
 		TStyleManager::TrySetStyle("Turquoise Gray");
 		Application->CreateForm(__classid(TmainForm), &mainForm);
 		Application->CreateForm(__classid(TgraphForm), &graphForm);
+		Application->CreateForm(__classid(TMQCForm), &MQCForm);
 		Application->Run();
 	}
 	catch (Exception &exception) {
