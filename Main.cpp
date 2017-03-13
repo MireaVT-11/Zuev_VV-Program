@@ -565,6 +565,7 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 }
 
 #undef _varalpha
+#undef _dvaralpha
 
 // Нужно для заглубления ударника. Проверяет, будет ли элемент мишени с номером k заменён элементом ударника
 bool test_k(int k) {
@@ -577,25 +578,10 @@ bool test_k(int k) {
 	return false;
 }
 
-// Нажатие книпки "Пуск". Основная функция.
-void __fastcall TmainForm::RefreshClick(TObject *Sender) {
-	UnicodeString dtstamp;
-	DateTimeToString(dtstamp, "yymmddhhnnss", Sysutils::Now());
+bool __fastcall TmainForm::Calculate(UnicodeString dtstamp) {
 	Application->ProcessMessages();
 	graphForm->Canvas->Brush->Color = clWhite;
 	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
-	/* FILE *file, *file1, *file2, *file3;
-	 if (!NoAnim) {
-	 // (2015 год) Исправить или лучше даже переписать
-	 // file = fopen(AnsiString(FileEdit->Text).c_str(),
-	 // AnsiString("wt").c_str());
-	 // file1 = fopen(AnsiString(FileEdit->Text).c_str(),
-	 // AnsiString("wt").c_str());
-	 // file2 = fopen(AnsiString(FileEdit->Text).c_str(),
-	 // AnsiString("wt").c_str());
-	 // file3 = fopen(AnsiString(FileEdit->Text).c_str(),
-	 // AnsiString("wt").c_str());
-	 } */
 	GPa = 1.e9;
 	// *****************************************************************
 	// ЗАДАНИЕ НАЧАЛЬНЫХ ДАННЫХ (Считывание информации с формы)
@@ -833,6 +819,9 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			}
 		}
 	}
+	if (UnlimStop) {
+		throw new Exception("Прервано пользователем");
+	}
 	// *****************************************************************
 	tim = 0;
 
@@ -842,6 +831,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	for (int k = 1; k <= numberelem; k++)
 		InitLoop(Sender, k);
 #endif
+	bool cinemaEnabled = CinemaCBox->Checked;
 	UnicodeString path, exstamp;
 	int dirnmb = 0;
 	do {
@@ -852,7 +842,8 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	if (!Sysutils::DirectoryExists(DirToResDir(DirEdit->Text)))
 		MkDir(DirToResDir(DirEdit->Text));
 	MkDir(path);
-	MkDir(path + "Cinema\\");
+	if (cinemaEnabled)
+		MkDir(path + "Cinema\\");
 
 	{
 		auto BaseInfo = new TStringList();
@@ -870,7 +861,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		BaseInfo->Add("Размер уд. = " + rad0Edit->Text + "x" + h0Edit->Text + " (м)");
 		BaseInfo->Add("Размер м.  = " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text +
 			") (м)");
-		BaseInfo->SaveToFile(path + "/#" + exstamp + ".txt");
+		BaseInfo->SaveToFile(GetFileName("#", "", "", path, exstamp, "txt"));
 
 		delete BaseInfo;
 	}
@@ -878,13 +869,13 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	// Сохранение данных, вариант 4, теперь с ООП и лямбдами!
 	// Недоделанный, правда.
 
-	Saver *sT = new Saver(path + "/T_all." + exstamp + ".csv");
+	Saver *sT = new Saver(GetFileName("T", "all", "", path, exstamp));
 	for (int i = 1; i <= n4; ++i) {
 		sT->AddItem(FloatToStr((double)((int)((double)(i - 1) / (double)(n4 - 1) * 1000.0) / 10.0)) + "%", [i]()
 		{return RoundTo((T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2., -2);});
 	}
 
-	Saver *sData1 = new Saver(path + "/data_all.point1." + exstamp + ".csv");
+	Saver *sData1 = new Saver(GetFileName("data", "all", "point1", path, exstamp));
 	sData1->AddItem("epsrr", []() {return epsrr[point1];});
 	sData1->AddItem("epszz", []() {return epszz[point1];});
 	sData1->AddItem("epsrz", []() {return epsrz[point1];});
@@ -901,7 +892,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	sData1->AddItem("Z, mm", []()
 	{return (zcoord[itop[1][point1]] + zcoord[itop[2][point1]] + zcoord[itop[3][point1]]) / 0.003;});
 
-	Saver *sData2 = new Saver(path + "/data_all.point2." + exstamp + ".csv");
+	Saver *sData2 = new Saver(GetFileName("data", "all", "point2", path, exstamp));
 	sData2->AddItem("epsrr", []() {return epsrr[point2];});
 	sData2->AddItem("epszz", []() {return epszz[point2];});
 	sData2->AddItem("epsrz", []() {return epsrz[point2];});
@@ -918,7 +909,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	sData2->AddItem("Z, mm", []()
 	{return (zcoord[itop[1][point2]] + zcoord[itop[2][point2]] + zcoord[itop[3][point2]]) / 0.003;});
 
-	Saver *sData3 = new Saver(path + "/data_all.point3." + exstamp + ".csv");
+	Saver *sData3 = new Saver(GetFileName("data", "all", "point3", path, exstamp));
 	sData3->AddItem("epsrr", []() {return epsrr[point3];});
 	sData3->AddItem("epszz", []() {return epszz[point3];});
 	sData3->AddItem("epsrz", []() {return epsrz[point3];});
@@ -941,15 +932,20 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	// if (!NoAnim)
 	threegraphs(true, 0, false, path);
 	for (auto n = 0; n <= nt; n++) {
-		if (UnlimStop) {
-			return;
-		}
 		timepr = n * dtimepr;
+		int ctec = 0;
 		// Application->ProcessMessages(); // (2015 год) О господь!!!  //Уехало пониже.
 		if (tim + 2. * dtime > timepr && tim + dtime < timepr)
 			dtime = 0.51 * (timepr - tim);
 		while (tim < timepr) {
 		L1:
+			++ctec;
+			if (ctec > 300) {
+				throw new Exception("Решение, скорее всего, расходится. Выявлено на шаге " + IntToStr(n));
+			}
+			if (UnlimStop) {
+				throw new Exception("Прервано пользователем");
+			}
 			Application->ProcessMessages();
 			newspeed(); // speedr1,speedz1
 			// ************************************************************
@@ -1220,7 +1216,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		}
 		// if (!NoAnim) {
 		if (!(n % (nt / Min(1000, nt)))) {
-			bool cinema = CinemaCBox->Checked && !(n % (nt / CinemaEdit->Value));
+			bool cinema = cinemaEnabled && !(n % (nt / CinemaEdit->Value));
 			threegraphs(false, n / (nt / CinemaEdit->Value), cinema, path);
 			graphForm->Caption = FloatToStr(RoundTo(n * 100. / nt, -1)) + "%|"; // <-- (2015 год) Проверить здесь
 			graphForm->Caption = graphForm->Caption + FloatToStr(RoundTo(T_max, 0)) + "|" + FloatToStr(RoundTo(T_rec, 0));
@@ -1248,7 +1244,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	delete sData3;
 	delete sT;
 
-	FinalSaver *sTI = new FinalSaver(path + "/T_final." + exstamp + ".csv");
+	FinalSaver *sTI = new FinalSaver(GetFileName("T", "final", "", path, exstamp));
 	sTI->AddItem("R, %", [](int i) {return (double)(i - 1) / (double)(n4 - 1);}, [](long double v)
 	{return FloatToStr(RoundTo(v * 100, -2)) + "%";});
 	sTI->AddItem("T, K", [](int i) {return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
@@ -1268,7 +1264,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 			(UnicodeString)"epszzp", (UnicodeString)"epsrzp", (UnicodeString)"epsttp", (UnicodeString)"tet",
 		(UnicodeString)"sqI2p"};
 
-	FinalSaver *sD = new FinalSaver(path + "/data_final." + exstamp + ".csv");
+	FinalSaver *sD = new FinalSaver(GetFileName("data", "final", "", path, exstamp));
 	sD->AddItem("R, %", [](int i) {return (double)(i - 1) / (double)(n4 - 1);}, [](long double v)
 	{return FloatToStr(RoundTo(v * 100, -2)) + "%";});
 	for (int j = 0; j < dataSize; ++j) {
@@ -1308,6 +1304,40 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 		delete[]massn1;
 		delete[]massn2;
 	}
+	return true;
+}
+
+// Нажатие книпки "Пуск". Основная функция.
+void __fastcall TmainForm::RefreshClick(TObject *Sender) {
+	TDateTime etime = Sysutils::Now();
+	SetFormState(false);
+	UnicodeString dtstamp;
+	DateTimeToString(dtstamp, "yymmddhhnnss", etime);
+	bool res;
+	UnlimStop = false;
+	UnicodeString msg = "";
+	try {
+		res = Calculate(dtstamp);
+	}
+	catch (Exception &e) {
+		res = false;
+		msg = e.Message;
+	}
+	catch (...) {
+		res = false;
+		msg = "Неизвестная ошибка";
+	}
+	etime = Sysutils::Now() - etime;
+	UnicodeString resstr;
+	DateTimeToString(resstr, ":nn:ss.zzz", etime);
+	resstr = IntToStr((int)((double)etime * 24.)) + resstr;
+	resstr = (res) ? ("Выполнено успешно. Время выполнения: " + resstr) :
+		("Выполнение прервано через " + resstr + " с сообщением «" + msg + "»");
+	if (res)
+		Application->MessageBoxW(resstr.w_str(), ((UnicodeString)"Расчёт завершён").w_str(), 0x40);
+	else
+		Application->MessageBoxW(resstr.w_str(), ((UnicodeString)"Расчёт прерван").w_str(), 0x10);
+	SetFormState(true);
 }
 
 // *****************************************************************
@@ -2002,6 +2032,8 @@ void __fastcall TmainForm::FormCreate(TObject *) {
 	mainForm->matstrat1Box->ItemIndex = (Material.Length <= 3) ? Material.Length - 1 : 2;
 	mainForm->matstrat2Box->ItemIndex = (Material.Length <= 4) ? Material.Length - 1 : 3;
 	mainForm->matstrat3Box->ItemIndex = (Material.Length <= 5) ? Material.Length - 1 : 4;
+
+	SetFormState(true);
 
 	// *******************************************************************
 	// ПАРАМЕТРЫ МАТЕРИАЛОВ
@@ -2776,3 +2808,73 @@ void __fastcall TmainForm::LineButtonClick(TObject *Sender) {
 	delete bmp;
 }
 // ---------------------------------------------------------------------------
+
+void __fastcall TmainForm::StopRFClick(TObject *) {
+	UnlimStop = true;
+}
+
+void __fastcall TmainForm::SetFormState(bool enabled) {
+	alfEdit->Enabled = enabled;
+	c0Edit->Enabled = enabled;
+	clEdit->Enabled = enabled;
+	caEdit->Enabled = enabled;
+	jjjjBox->Enabled = enabled;
+	jjjjBoxChange(this);
+	dtimeprEdit->Enabled = enabled;
+	ntEdit->Enabled = enabled;
+	rad0Edit->Enabled = enabled;
+	rad1Edit->Enabled = enabled;
+	n3Edit->Enabled = enabled;
+	h0Edit->Enabled = enabled;
+	n1Edit->Enabled = enabled;
+	matstrat0Box->Enabled = enabled;
+	nstratBox->Enabled = enabled;
+	h2iEdit1->Enabled = enabled;
+	h2iEdit2->Enabled = enabled;
+	h2iEdit3->Enabled = enabled;
+	matstrat1Box->Enabled = enabled;
+	matstrat2Box->Enabled = enabled;
+	matstrat3Box->Enabled = enabled;
+	Button4->Enabled = enabled;
+	vindentEdit->Enabled = enabled;
+	Editb->Enabled = enabled;
+	Edits->Enabled = enabled;
+	Editn2->Enabled = enabled;
+	Editb2->Enabled = enabled;
+	Editinss->Enabled = enabled;
+	Editbsh->Enabled = enabled;
+	RadioGroup1->Enabled = enabled;
+	CheckBox3->Enabled = enabled;
+	CheckBox4->Enabled = enabled;
+	ComboBoxBuild->Enabled = enabled;
+	CheckBoxn->Enabled = enabled;
+	CheckBoxn2->Enabled = enabled;
+	CheckBoxns->Enabled = enabled;
+	CheckBoxnp1->Enabled = enabled;
+	CheckBoxnp2->Enabled = enabled;
+	CheckBoxnp3->Enabled = enabled;
+	CheckBoxno2->Enabled = enabled;
+	CheckBoxb->Enabled = enabled;
+	CheckBoxb2->Enabled = enabled;
+	CheckBoxbs->Enabled = enabled;
+	CheckBoxs->Enabled = enabled;
+	CheckBoxinss->Enabled = enabled;
+	CheckBoxbsh->Enabled = enabled;
+	BBCBox->Enabled = enabled;
+	Button3->Enabled = enabled;
+	DirEdit->Enabled = enabled;
+	CinemaCBox->Enabled = enabled;
+	CinemaEdit->Enabled = enabled;
+	CheckBoxStakan->Enabled = enabled;
+	InputEdit1->Enabled = enabled;
+	AltInpCBox->Enabled = enabled;
+	CBoxPoints->Enabled = enabled;
+	if (enabled) {
+		Refresh->Caption = "Пуск";
+		Refresh->OnClick = &RefreshClick;
+	}
+	else {
+		Refresh->Caption = "Стоп";
+		Refresh->OnClick = &StopRFClick;
+	}
+}
