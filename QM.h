@@ -115,6 +115,7 @@ __published: // IDE-managed Components
 	TFileOpenDialog *FileOpenDialog;
 	TXMLDocument *XML;
 	TCheckBox *HideGraphCBox;
+	TButton *AddFormBtn;
 	void __fastcall SaveBtnClick(TObject *Sender);
 	void __fastcall AddBtnClick(TObject *Sender);
 	void __fastcall EListItemChecked(TObject *Sender, TListItem *Item);
@@ -127,6 +128,7 @@ __published: // IDE-managed Components
 	void __fastcall StartBtnClick(TObject *Sender);
 	void __fastcall FormCloseQuery(TObject *Sender, bool &CanClose);
 	void __fastcall EditBtnClick(TObject *Sender);
+	void __fastcall AddFormBtnClick(TObject *Sender);
 
 private: // User declarations
 	QC* computeQueue;
