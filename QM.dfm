@@ -49,7 +49,7 @@ object MQCForm: TMQCForm
   end
   object DelBtn: TButton
     Left = 415
-    Top = 39
+    Top = 70
     Width = 134
     Height = 25
     Caption = #1059#1076#1072#1083#1080#1090#1100
@@ -59,16 +59,17 @@ object MQCForm: TMQCForm
   end
   object EditBtn: TButton
     Left = 415
-    Top = 101
+    Top = 132
     Width = 134
     Height = 25
     Caption = #1048#1079#1084#1077#1085#1080#1090#1100
     Enabled = False
     TabOrder = 3
+    OnClick = EditBtnClick
   end
   object DubBtn: TButton
     Left = 415
-    Top = 70
+    Top = 101
     Width = 134
     Height = 25
     Caption = #1044#1091#1073#1083#1080#1088#1086#1074#1072#1090#1100
@@ -78,7 +79,7 @@ object MQCForm: TMQCForm
   end
   object LoadBtn: TButton
     Left = 415
-    Top = 149
+    Top = 181
     Width = 134
     Height = 25
     Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
@@ -87,7 +88,7 @@ object MQCForm: TMQCForm
   end
   object SaveBtn: TButton
     Left = 415
-    Top = 180
+    Top = 212
     Width = 134
     Height = 25
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
@@ -132,6 +133,15 @@ object MQCForm: TMQCForm
     Checked = True
     State = cbChecked
     TabOrder = 10
+  end
+  object AddFormBtn: TButton
+    Left = 415
+    Top = 39
+    Width = 134
+    Height = 25
+    Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1089' '#1092#1086#1088#1084#1099
+    TabOrder = 11
+    OnClick = AddFormBtnClick
   end
   object FileSaveDialog: TFileSaveDialog
     DefaultExtension = '*.xbcq'

@@ -29,7 +29,7 @@ var
 const
   //Содержит кратные приставки для данных в Юникоде
   pref: array [0 .. 8] of UnicodeString = ('', #$041A, #$041C, #$0413, #$0422, #$041F, #$042D, #$0417, #$0419);
-  prefpost: UnicodeString = #$0438#$20#$0411; //='и Б'
+  prefpost: UnicodeString = #$0438#$0411; //='иБ'
 begin
   if InRange(v, 0, 10) then
     Exit(UnicodeString(FloatToStr(v)) + ' ' + pref[0] + prefpost);

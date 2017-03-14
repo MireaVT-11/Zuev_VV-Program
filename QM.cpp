@@ -3,8 +3,12 @@
 #include <vcl.h>
 #include <stdlib>
 #include <list>
+#include <System.SysUtils.hpp>
 #include <Vcl.ValEdit.hpp>
 #include <System.StrUtils.hpp>
+#include <Vcl.Forms.hpp>
+#include <Vcl.Controls.hpp>
+#include <Vcl.ExtCtrls.hpp>
 #pragma hdrstop
 
 #include "QM.h"
@@ -207,35 +211,63 @@ void QC::ReadFromFile(UnicodeString path) {
 
 void QC::Run(TListView* list, bool hideGraph) {
 	int i = 0;
+	auto startTime = Now();
+	auto report = new TStringList();
 	UnicodeString sstamp;
-	DateTimeToString(sstamp, "yymmddhhnnss", Now());
+	report->Add("Очередь расчёта: «" + name + "»");
+	report->Add("Запущено на выполнение: " + DateTimeToStr(startTime));
+	DateTimeToString(sstamp, "yymmddhhnnss", startTime);
 	for (auto v : *elements) {
+		UnicodeString repres = "";
 		if (v->status == QC::Status::Ready) {
+			auto etime = Now();
 			auto elem = list->Items->Item[i];
 			elem->Checked = false;
 			nowRun = i;
 			v->status = QC::Status::Computing;
-			UnicodeString dtstamp;
-			DateTimeToString(dtstamp, "yymmddhhnnss", Now());
+			UnicodeString dtstamp, msg = "";
+			DateTimeToString(dtstamp, "yymmddhhnnss", etime);
 			QC::ResetItem(elem, v, 0);
 			SetCEV(v);
 			Application->ProcessMessages();
-
 			bool res;
 			mainForm->ResetUS();
+			etime = Now();
 			try {
 				res = mainForm->Calculate(dtstamp, hideGraph, "#" + name + "\\series" + sstamp + "\\" +
 					ReplaceStr(ReplaceStr(v->name, "/", "_"), "\\", "_") + " ", [v, elem](int i) {QC::ResetItem(elem, v, i);});
 			}
+			catch (Exception &e) {
+				res = false;
+				msg = e.Message;
+			}
 			catch (...) {
 				res = false;
+				msg = "Неизвестная ошибка";
 			}
-
+			etime = Now() - etime;
 			v->status = (res) ? QC::Status::Complete : QC::Status::Error;
 			QC::ResetItem(elem, v);
+			UnicodeString resstr;
+			DateTimeToString(resstr, ":nn:ss.zzz", etime);
+			resstr = IntToStr((int)((double)etime * 24.)) + resstr;
+			if (res) {
+				repres = "Выполнено успешно за " + resstr;
+			}
+			else {
+				repres = "Выполнение прервано через " + resstr + ((msg != "") ? (" с сообщением «" + msg + "»") : "");
+			}
 		}
+		else {
+			repres = "Пропущено";
+		}
+		report->Add((UnicodeString)"  [" + ((i < 100) ? ((i < 10) ? "  " : " ") : "") + IntToStr(i) + "|" + TimeToStr(Now()) +
+			"]«" + v->name + "»");
+		report->Add("      " + repres);
 		++i;
 	}
+	report->SaveToFile(DirToResDir(mainForm->DirEdit->Text) + "#" + name + "\\series" + sstamp + "\\#report.txt");
+	delete report;
 	nowRun = -1;
 }
 
@@ -257,11 +289,15 @@ void __fastcall TMQCForm::SaveBtnClick(TObject *Sender) {
 // ---------------------------------------------------------------------------
 void __fastcall TMQCForm::AddBtnClick(TObject *Sender) {
 	QC::ResetItem(EList->Items->Add(), computeQueue->AddItem());
+	EList->ItemIndex = EList->Items->Count - 1;
+	EditBtn->Click();
 }
 // ---------------------------------------------------------------------------
 
 void __fastcall TMQCForm::EListItemChecked(TObject *Sender, TListItem *Item) {
 	auto elem = computeQueue->GetElementByIndex(Item->Index);
+	if (elem == NULL)
+		return;
 	if (Item->Checked) {
 		elem->status = QC::Status::Ready;
 	}
@@ -284,6 +320,7 @@ void __fastcall TMQCForm::LoadBtnClick(TObject *Sender) {
 void __fastcall TMQCForm::EListSelectItem(TObject *Sender, TListItem *Item, bool Selected) {
 	DelBtn->Enabled = Selected;
 	DubBtn->Enabled = Selected;
+	EditBtn->Enabled = Selected;
 }
 // ---------------------------------------------------------------------------
 
@@ -296,8 +333,11 @@ void __fastcall TMQCForm::DubBtnClick(TObject *Sender) {
 // ---------------------------------------------------------------------------
 
 void __fastcall TMQCForm::DelBtnClick(TObject *Sender) {
-	computeQueue->DeleteItem(EList->ItemIndex);
-	EList->DeleteSelected();
+	if (Application->MessageBoxW(("Удалить «" + computeQueue->GetElementByIndex(EList->ItemIndex)->name + "»?").w_str(),
+		((UnicodeString)"Удаление элемента").w_str(), MB_ICONQUESTION + MB_YESNO) == mrYes) {
+		computeQueue->DeleteItem(EList->ItemIndex);
+		EList->DeleteSelected();
+	}
 }
 // ---------------------------------------------------------------------------
 
@@ -347,6 +387,51 @@ void SetCEV(QC::ComputeElement* v) {
 	mainForm->AltInpCBox->Checked = v->ohPoints;
 }
 
+void GetCEV(QC::ComputeElement* v) {
+	v->fixation = mainForm->jjjjBox->ItemIndex;
+	v->fixationT = StrToInt(mainForm->tEdit->Text);
+	v->timePeriod = StrToFloat(mainForm->dtimeprEdit->Text);
+	v->timeStepCount = StrToInt(mainForm->ntEdit->Text);
+	v->overheadRadius = StrToFloat(mainForm->rad0Edit->Text);
+	v->baseRadius = StrToFloat(mainForm->rad1Edit->Text);
+	v->rFECount = StrToInt(mainForm->n3Edit->Text);
+	v->overheadHight = StrToFloat(mainForm->h0Edit->Text);
+	v->zFECount = StrToInt(mainForm->n1Edit->Text);
+	v->ohMaterial = mainForm->matstrat0Box->ItemIndex;
+	v->stratCount = mainForm->nstratBox->ItemIndex + 1;
+	v->baseStrat1Hight = StrToFloat(mainForm->h2iEdit1->Text);
+	v->baseStrat2Hight = StrToFloat(mainForm->h2iEdit2->Text);
+	v->baseStrat3Hight = StrToFloat(mainForm->h2iEdit3->Text);
+	v->baseStrat1Material = mainForm->matstrat1Box->ItemIndex;
+	v->baseStrat2Material = mainForm->matstrat2Box->ItemIndex;
+	v->baseStrat3Material = mainForm->matstrat3Box->ItemIndex;
+	v->showHeat = mainForm->CheckBox5->Checked;
+	v->beautyHeat = mainForm->BeautyCBox->Checked;
+	v->verticalStrats = mainForm->CheckBox3->Checked;
+	v->sinImpact = mainForm->RadioGroup1->ItemIndex == 1;
+	v->bottomWave = mainForm->CheckBoxn->Checked;
+	v->bottomWaveForte = mainForm->CheckBoxns->Checked;
+	v->bottomContWave1 = mainForm->CheckBoxnp1->Checked;
+	v->bottomContWave2 = mainForm->CheckBoxnp2->Checked;
+	v->bottomContWave3 = mainForm->CheckBoxnp3->Checked;
+	v->lateralSide = mainForm->CheckBoxb->Checked;
+	v->lateralSideForte = mainForm->CheckBoxbs->Checked;
+	v->movingOverhead = mainForm->CheckBoxs->Checked;
+	v->internalWave = mainForm->CheckBoxinss->Checked;
+	v->indentor = mainForm->CheckBoxbsh->Checked;
+	v->bottomImpact = mainForm->BBCBox->Checked;
+	v->glassful = mainForm->CheckBoxStakan->Checked;
+	v->overheadSpeed = StrToFloat(mainForm->vindentEdit->Text);
+	v->lateralWaveSpeed = StrToFloat(mainForm->Editb->Text);
+	v->internalWaveSpeed = StrToFloat(mainForm->Editinss->Text);
+	v->indentorSpeed = StrToFloat(mainForm->Editbsh->Text);
+	v->cinema = mainForm->CinemaCBox->Checked;
+	v->cinemaFrameCount = mainForm->CinemaEdit->Value;
+	v->grayScale = mainForm->BWCBox->Checked;
+	v->recess = mainForm->InputEdit1->Value;
+	v->ohPoints = mainForm->AltInpCBox->Checked;
+}
+
 void __fastcall TMQCForm::AbNowBtnClick(TObject *Sender) {
 	mainForm->SetUS();
 }
@@ -362,10 +447,12 @@ void __fastcall TMQCForm::AbAllBtnClick(TObject *Sender) {
 // ---------------------------------------------------------------------------
 void __fastcall TMQCForm::StartBtnClick(TObject *Sender) {
 	AddBtn->Enabled = false;
+	AddFormBtn->Enabled = false;
 	DelBtn->Enabled = false;
 	DubBtn->Enabled = false;
 	LoadBtn->Enabled = false;
 	SaveBtn->Enabled = false;
+	EditBtn->Enabled = false;
 	AbNowBtn->Enabled = true;
 	AbAllBtn->Enabled = true;
 	EList->Enabled = false;
@@ -373,11 +460,13 @@ void __fastcall TMQCForm::StartBtnClick(TObject *Sender) {
 	HideGraphCBox->Enabled = false;
 	computeQueue->Run(EList, HideGraphCBox->Checked);
 	AddBtn->Enabled = true;
+	AddFormBtn->Enabled = true;
 	LoadBtn->Enabled = true;
 	SaveBtn->Enabled = true;
 	AbNowBtn->Enabled = false;
 	AbAllBtn->Enabled = false;
 	EList->Enabled = true;
+	EList->ItemIndex = -1;
 	StartBtn->Enabled = true;
 	HideGraphCBox->Enabled = true;
 }
@@ -385,5 +474,124 @@ void __fastcall TMQCForm::StartBtnClick(TObject *Sender) {
 
 void __fastcall TMQCForm::FormCloseQuery(TObject *Sender, bool &CanClose) {
 	CanClose = computeQueue->GetREI() == -1;
+}
+
+// ---------------------------------------------------------------------------
+
+void __fastcall TMQCForm::EditBtnClick(TObject *Sender) {
+	auto elem = computeQueue->GetElementByIndex(EList->ItemIndex);
+	if (elem == NULL)
+		return;
+
+	const int icnt = 12;
+	int* ival[icnt] = {
+		&elem->stratCount, &elem->ohMaterial, &elem->baseStrat1Material, &elem->baseStrat2Material, &elem->baseStrat3Material,
+		&elem->fixation, &elem->fixationT, &elem->rFECount, &elem->zFECount, &elem->timeStepCount, &elem->recess,
+		&elem->cinemaFrameCount};
+	UnicodeString iname[icnt] = {
+		"Число слоёв", "Материал ударника", "Материал слоя 1", "Материал слоя 2", "Материал слоя 3", "Режим фиксации",
+		"Период для режима 5", "Число разбиений по радиусу", "Число разбиений по высоте", "Число разбиений по времени",
+		"Заглубление", "Число кадров анимации"};
+	const int bcnt = 19;
+	bool* bval[bcnt] = {
+		&elem->ohPoints, &elem->sinImpact, &elem->verticalStrats, &elem->bottomWave, &elem->bottomWaveForte,
+		&elem->bottomContWave1, &elem->bottomContWave2, &elem->bottomContWave3, &elem->lateralSide, &elem->lateralSideForte,
+		&elem->movingOverhead, &elem->internalWave, &elem->indentor, &elem->bottomImpact, &elem->glassful, &elem->showHeat,
+		&elem->beautyHeat, &elem->grayScale, &elem->cinema};
+	UnicodeString bname[bcnt] = {
+		"Точки в ударнике", "Синусоидальный удар", "Вертикальные слои", "Нижняя волна", "Сильная нижняя волна",
+		"Пространственная нижняя волна 1", "Пространственная нижняя волна 2", "Пространственная нижняя волна 3", "Боковая волна",
+		"Сильная боковая волна", "Снаряд", "Внутрення волна", "Индентор", "Нижний удар", "«Стакан»", "Показывать нагрев",
+		"Сглаживание нагрева", "Чёрно-белая графика", "Записывать анимацию"};
+	const int fcnt = 11;
+	long double* fval[fcnt] = {
+		&elem->timePeriod, &elem->baseRadius, &elem->overheadRadius, &elem->overheadHight, &elem->baseStrat1Hight,
+		&elem->baseStrat2Hight, &elem->baseStrat3Hight, &elem->internalWaveSpeed, &elem->lateralWaveSpeed, &elem->overheadSpeed,
+		&elem->indentorSpeed};
+	UnicodeString fname[fcnt] = {
+		"Временной период", "Радиус основания", "Радиус ударника", "Высота ударника", "Высота слоя 1", "Высота слоя 2",
+		"Высота слоя 3", "Скорость внутренней волны", "Скорость боковой волны", "Скорость ударника", "Скорость индентора"};
+
+	auto form = new TForm(this);
+	form->Caption = "Изменить: " + elem->name;
+	form->BorderStyle = bsToolWindow;
+	form->ClientWidth = 400;
+	form->ClientHeight = 500;
+	form->Position = poOwnerFormCenter;
+
+	auto btnOk = new TButton(form);
+	btnOk->Parent = form;
+	btnOk->Width = 100;
+	btnOk->Height = 25;
+	btnOk->Caption = "Изменить";
+	btnOk->Left = 290;
+	btnOk->Top = 465;
+	btnOk->ModalResult = mrOk;
+
+	auto btnCancel = new TButton(form);
+	btnCancel->Parent = form;
+	btnCancel->Width = 100;
+	btnCancel->Height = 25;
+	btnCancel->Caption = "Отмена";
+	btnCancel->Left = 186;
+	btnCancel->Top = 465;
+	btnCancel->ModalResult = mrCancel;
+
+	auto nameEdit = new TLabeledEdit(form);
+	nameEdit->Parent = form;
+	nameEdit->Width = 380;
+	nameEdit->Height = 21;
+	nameEdit->Left = 10;
+	nameEdit->Top = 20;
+	nameEdit->EditLabel->Caption = "Название";
+	nameEdit->Text = elem->name;
+
+	auto valEdit = new TValueListEditor(form);
+	valEdit->Parent = form;
+	valEdit->Width = 380;
+	valEdit->Height = 414;
+	valEdit->Top = 47;
+	valEdit->Left = 10;
+	valEdit->ColWidths[0] = 220;
+	valEdit->TitleCaptions->Text = "Величина\r\nЗначение";
+
+	int ei = 0;
+	for (int i = 0; i < icnt; ++ei, ++i) {
+		valEdit->Strings->AddPair(iname[i], IntToStr(*ival[i]));
+	}
+	for (int i = 0; i < bcnt; ++ei, ++i) {
+		valEdit->Strings->AddPair(bname[i], BoolToStr(*bval[i], true));
+		valEdit->ItemProps[ei]->PickList->Text = BoolToStr(false, true) + "\r\n" + BoolToStr(true, true);
+		valEdit->ItemProps[ei]->EditStyle = esPickList;
+	}
+	for (int i = 0; i < fcnt; ++ei, ++i) {
+		valEdit->Strings->AddPair(fname[i], FloatToStr(*fval[i]));
+	}
+
+	if (form->ShowModal() == mrOk) {
+		elem->name = nameEdit->Text;
+		ei = 0;
+		for (int i = 0; i < icnt; ++ei, ++i) {
+			*ival[i] = StrToInt(valEdit->Strings->ValueFromIndex[ei]);
+		}
+		for (int i = 0; i < bcnt; ++ei, ++i) {
+			*bval[i] = StrToBool(valEdit->Strings->ValueFromIndex[ei]);
+		}
+		for (int i = 0; i < fcnt; ++ei, ++i) {
+			*fval[i] = StrToFloat(valEdit->Strings->ValueFromIndex[ei]);
+		}
+		QC::ResetItem(EList->Selected, elem);
+	}
+
+	delete form;
+}
+
+// ---------------------------------------------------------------------------
+void __fastcall TMQCForm::AddFormBtnClick(TObject *Sender) {
+	auto v = computeQueue->AddItem();
+	QC::ResetItem(EList->Items->Add(), v);
+	EList->ItemIndex = EList->Items->Count - 1;
+	GetCEV(v);
+	EditBtn->Click();
 }
 // ---------------------------------------------------------------------------
