@@ -15,6 +15,7 @@
 #include <Xml.xmldom.hpp>
 #include <Xml.XMLIntf.hpp>
 #include <Xml.adomxmldom.hpp>
+#include <Vcl.ExtCtrls.hpp>
 #include <stdlib>
 #include <list>
 
@@ -125,6 +126,7 @@ __published: // IDE-managed Components
 	void __fastcall AbAllBtnClick(TObject *Sender);
 	void __fastcall StartBtnClick(TObject *Sender);
 	void __fastcall FormCloseQuery(TObject *Sender, bool &CanClose);
+	void __fastcall EditBtnClick(TObject *Sender);
 
 private: // User declarations
 	QC* computeQueue;

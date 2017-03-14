@@ -65,6 +65,7 @@ object MQCForm: TMQCForm
     Caption = #1048#1079#1084#1077#1085#1080#1090#1100
     Enabled = False
     TabOrder = 3
+    OnClick = EditBtnClick
   end
   object DubBtn: TButton
     Left = 415

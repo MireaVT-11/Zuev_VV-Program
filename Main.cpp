@@ -1218,8 +1218,8 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 			percentCallBack((n * 100) / nt);
 		}
 		// if (!NoAnim) {
-		if (!(n % (nt / Min(1000, nt)))) {
-			bool cinema = cinemaEnabled && !(n % (nt / CinemaEdit->Value));
+		bool cinema = cinemaEnabled && !(n % (nt / CinemaEdit->Value));
+		if (cinema || !(n % (nt / Min(1000, nt)))) {
 			if (!hideGraph || (hideGraph && cinema)) {
 				threegraphs(false, n / (nt / CinemaEdit->Value), cinema, path);
 				graphForm->Caption = FloatToStr(RoundTo(n * 100. / nt, -1)) + "%|"; // <-- (2015 год) Проверить здесь
