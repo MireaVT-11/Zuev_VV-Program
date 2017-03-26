@@ -886,7 +886,13 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 	sData1->AddItem("epszzp", []() {return epszzp[point1];});
 	sData1->AddItem("epsrzp", []() {return epsrzp[point1];});
 	sData1->AddItem("epsttp", []() {return epsttp[point1];});
+	sData1->AddItem("sigmarr", []() {return sigmarr[point1];});
+	sData1->AddItem("sigmazz", []() {return sigmazz[point1];});
+	sData1->AddItem("sigmarz", []() {return sigmarz[point1];});
+	sData1->AddItem("sigmatt", []() {return sigmatt[point1];});
 	sData1->AddItem("tet", []() {return tet[point1];});
+	sData1->AddItem("p", []() {return p[point1];});
+	sData1->AddItem("Y2", []() {return Y2[point1];});
 	sData1->AddItem("sqI2p", []() {return sqI2p[point1];});
 	sData1->AddItem("T, K", []() {return (T[point1] + T[point1 + ((point1 % 2) ? 1 : -1)]);});
 	sData1->AddItem("R, mm", []()
@@ -903,7 +909,13 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 	sData2->AddItem("epszzp", []() {return epszzp[point2];});
 	sData2->AddItem("epsrzp", []() {return epsrzp[point2];});
 	sData2->AddItem("epsttp", []() {return epsttp[point2];});
+	sData2->AddItem("sigmarr", []() {return sigmarr[point2];});
+	sData2->AddItem("sigmazz", []() {return sigmazz[point2];});
+	sData2->AddItem("sigmarz", []() {return sigmarz[point2];});
+	sData2->AddItem("sigmatt", []() {return sigmatt[point2];});
 	sData2->AddItem("tet", []() {return tet[point2];});
+	sData2->AddItem("p", []() {return p[point2];});
+	sData2->AddItem("Y2", []() {return Y2[point2];});
 	sData2->AddItem("sqI2p", []() {return sqI2p[point2];});
 	sData2->AddItem("T, K", []() {return (T[point2] + T[point2 + ((point2 % 2) ? 1 : -1)]);});
 	sData2->AddItem("R, mm", []()
@@ -920,7 +932,13 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 	sData3->AddItem("epszzp", []() {return epszzp[point3];});
 	sData3->AddItem("epsrzp", []() {return epsrzp[point3];});
 	sData3->AddItem("epsttp", []() {return epsttp[point3];});
+	sData3->AddItem("sigmarr", []() {return sigmarr[point3];});
+	sData3->AddItem("sigmazz", []() {return sigmazz[point3];});
+	sData3->AddItem("sigmarz", []() {return sigmarz[point3];});
+	sData3->AddItem("sigmatt", []() {return sigmatt[point3];});
 	sData3->AddItem("tet", []() {return tet[point3];});
+	sData3->AddItem("p", []() {return p[point3];});
+	sData3->AddItem("Y2", []() {return Y2[point3];});
 	sData3->AddItem("sqI2p", []() {return sqI2p[point3];});
 	sData3->AddItem("T, K", []() {return (T[point3] + T[point3 + ((point3 % 2) ? 1 : -1)]);});
 	sData3->AddItem("R, mm", []()
@@ -1264,10 +1282,7 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 
 	const int dataSize = 10;
 	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p};
-	UnicodeString dname[dataSize] = {
-		(UnicodeString)"epsrr", (UnicodeString)"epszz", (UnicodeString)"epsrz", (UnicodeString)"epstt", (UnicodeString)"epsrrp",
-			(UnicodeString)"epszzp", (UnicodeString)"epsrzp", (UnicodeString)"epsttp", (UnicodeString)"tet",
-		(UnicodeString)"sqI2p"};
+	UnicodeString dname[dataSize] = {"epsrr", "epszz", "epsrz", "epstt", "epsrrp", "epszzp", "epsrzp", "epsttp", "tet", "sqI2p"};
 
 	FinalSaver *sD = new FinalSaver(GetFileName("data", "final", "", path, exstamp));
 	sD->AddItem("R, %", [](int i) {return (double)(i - 1) / (double)(n4 - 1);}, [](long double v)
@@ -1322,7 +1337,7 @@ void __fastcall TmainForm::RefreshClick(TObject *Sender) {
 	UnlimStop = false;
 	UnicodeString msg = "";
 	try {
-		res = Calculate("exper" + dtstamp);
+		res = Calculate(dtstamp, false, "exper");
 	}
 	catch (Exception &e) {
 		res = false;
