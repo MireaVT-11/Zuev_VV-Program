@@ -50,6 +50,7 @@ long double T_rec = T0;
 long double T_plast[nel];
 long double T_elast[nel];
 long double T_in[nel];
+long double T_m[nel];
 #undef Cels2Kelvin
 
 long double amaselm[nel];
@@ -297,8 +298,9 @@ void __fastcall TmainForm::InitLoop(TObject *, int k) {
 	epszzp[k] = 0.;
 	epsrzp[k] = 0.;
 	epsttp[k] = 0.;
-	T[k] = T_old[k] = T_plast[k] = T_elast[k] = T0;
-	T_in[k] = 0;
+	sqI2p[k] = 0.;
+	T[k] = T_old[k] = T_plast[k] = T_elast[k] = T_m[k] = T0;
+	T_in[k] = 0.;
 }
 
 #define _varalpha(t, maa, mia, mint, maxt) ((mia)+((maa)-(mia))/(1.0+exp((-20.0/((maxt)-(mint)))*((t)-((maxt)+(mint))/2.0))))
@@ -311,7 +313,7 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	if (Material[matelm[k]].VarAlpha.Enabled) {
 		// ВНИМАНИЕ! «varalpha» — это макрос!
 		alphadot = alphas[k];
-		alphas[k] = _varalpha(T[k], Material[matelm[k]].alpha, Material[matelm[k]].VarAlpha.MinAlpha,
+		alphas[k] = _varalpha(T_m[k], Material[matelm[k]].alpha, Material[matelm[k]].VarAlpha.MinAlpha,
 			Material[matelm[k]].VarAlpha.MinT, Material[matelm[k]].VarAlpha.MaxT);
 		alphadot = alphas[k] - alphadot;
 		// Здесь вводится зависимость разупрочнения от температуры:
@@ -433,7 +435,7 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	// Ниже: d(alpha)/dT*dT/dt, если alpha не константа.
 	if (Material[matelm[k]].VarAlpha.Enabled) {
 		// ВНИМАНИЕ! «dvaralpha» — это макрос!
-		psidot[k] += _dvaralpha(T[k], Material[matelm[k]].alpha, Material[matelm[k]].VarAlpha.MinAlpha,
+		psidot[k] += _dvaralpha(T_m[k], Material[matelm[k]].alpha, Material[matelm[k]].VarAlpha.MinAlpha,
 			Material[matelm[k]].VarAlpha.MinT, Material[matelm[k]].VarAlpha.MaxT) * (T[k] - T_old[k]) / dtime;
 	}
 
@@ -553,12 +555,14 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	// T[k] = 2.L*(T_plast[k]-T_elast[k])+T0;
 	long double eee = depsrr + depszz + /* epsrz[k] */ +depstt;
 	T_old[k] = T[k];
-	long double Tplast = (2 * T0 * G * H * (srr[k] * depsrr + szz[k] * depszz + srz[k] * depsrz + stt[k] * depstt)) /
+	long double Tplast = (2. * T0 * G * H * (srr[k] * depsrr + szz[k] * depszz + srz[k] * depsrz + stt[k] * depstt)) /
 		(ro0s[k] * ctep * Told * Heps);
 	T_plast[k] += Tplast;
-	long double Telast = -(T0 * (3 * lmb + 2 * mu) * gammatep * (eee)) / (ctep * ro0s[k]);
+	long double Telast = -(T0 * (3. * lmb + 2. * mu) * gammatep * (eee)) / (ctep * ro0s[k]);
 	T_elast[k] += Telast;
 	T[k] = (Tplast + Telast) + Told;
+	if (T[k] > T_m[k])
+		T_m[k] = T[k];
 	if (T[k] > T_rec)
 		T_rec = T[k];
 	if (T_rec >= T_max)
@@ -847,7 +851,7 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 	if (cinemaEnabled)
 		MkDir(path + "Cinema\\");
 
-	{
+SavingStartInformation: {
 		auto BaseInfo = new TStringList();
 		BaseInfo->Add("Время      = " + GetScPref(dtimepr*nt, 5, "с"));
 		BaseInfo->Add("Материал 0 = " + Material[matstrat0Box->ItemIndex].ToString());
@@ -866,6 +870,13 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 		BaseInfo->SaveToFile(GetFileName("#", "", "", path, exstamp, "txt"));
 
 		delete BaseInfo;
+	}
+
+	int minpp[nel];
+	long double tcrd = max(zcoord[itop[1][TElemTarget[1]]], max(zcoord[itop[2][TElemTarget[1]]], zcoord[itop[3][TElemTarget[1]]]))
+		/ 0.001;
+	for (int i = 1; i <= 2 * (int)n4; ++i) {
+		minpp[i] = -1;
 	}
 
 	// Сохранение данных, вариант 4, теперь с ООП и лямбдами!
@@ -894,7 +905,7 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 	sData1->AddItem("p", []() {return p[point1];});
 	sData1->AddItem("Y2", []() {return Y2[point1];});
 	sData1->AddItem("sqI2p", []() {return sqI2p[point1];});
-	sData1->AddItem("T, K", []() {return (T[point1] + T[point1 + ((point1 % 2) ? 1 : -1)]);});
+	sData1->AddItem("T, K", []() {return (T[point1] + T[point1 + ((point1 % 2) ? 1 : -1)]) / 2.0;});
 	sData1->AddItem("R, mm", []()
 	{return (rcoord[itop[1][point1]] + rcoord[itop[2][point1]] + rcoord[itop[3][point1]]) / 0.003;});
 	sData1->AddItem("Z, mm", []()
@@ -917,7 +928,7 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 	sData2->AddItem("p", []() {return p[point2];});
 	sData2->AddItem("Y2", []() {return Y2[point2];});
 	sData2->AddItem("sqI2p", []() {return sqI2p[point2];});
-	sData2->AddItem("T, K", []() {return (T[point2] + T[point2 + ((point2 % 2) ? 1 : -1)]);});
+	sData2->AddItem("T, K", []() {return (T[point2] + T[point2 + ((point2 % 2) ? 1 : -1)]) / 2.0;});
 	sData2->AddItem("R, mm", []()
 	{return (rcoord[itop[1][point2]] + rcoord[itop[2][point2]] + rcoord[itop[3][point2]]) / 0.003;});
 	sData2->AddItem("Z, mm", []()
@@ -940,7 +951,7 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 	sData3->AddItem("p", []() {return p[point3];});
 	sData3->AddItem("Y2", []() {return Y2[point3];});
 	sData3->AddItem("sqI2p", []() {return sqI2p[point3];});
-	sData3->AddItem("T, K", []() {return (T[point3] + T[point3 + ((point3 % 2) ? 1 : -1)]);});
+	sData3->AddItem("T, K", []() {return (T[point3] + T[point3 + ((point3 % 2) ? 1 : -1)]) / 2.0;});
 	sData3->AddItem("R, mm", []()
 	{return (rcoord[itop[1][point3]] + rcoord[itop[2][point3]] + rcoord[itop[3][point3]]) / 0.003;});
 	sData3->AddItem("Z, mm", []()
@@ -1280,9 +1291,10 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 	sTI->Final();
 	delete sTI;
 
-	const int dataSize = 10;
-	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, sqI2p};
-	UnicodeString dname[dataSize] = {"epsrr", "epszz", "epsrz", "epstt", "epsrrp", "epszzp", "epsrzp", "epsttp", "tet", "sqI2p"};
+	const int dataSize = 11;
+	long double *data[dataSize] = {epsrr, epszz, epsrz, epstt, epsrrp, epszzp, epsrzp, epsttp, tet, p, sqI2p};
+	UnicodeString dname[dataSize] = {
+		"epsrr", "epszz", "epsrz", "epstt", "epsrrp", "epszzp", "epsrzp", "epsttp", "tet", "p", "sqI2p"};
 
 	FinalSaver *sD = new FinalSaver(GetFileName("data", "final", "", path, exstamp));
 	sD->AddItem("R, %", [](int i) {return (double)(i - 1) / (double)(n4 - 1);}, [](long double v)
@@ -1291,7 +1303,18 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 		long double *dj = data[j];
 		sD->AddItem(dname[j], [dj](int i) {return dj[TElemTarget[i]];});
 	}
-	sD->AddItem("T, K", [](int i) {return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2;});
+	sD->AddItem("T, K", [](int i) {return (T[TElemTarget[i]] + T[TElemTarget[i] - 1]) / 2.;});
+
+	for (int i = 2 * n2 * n4; i > 0; --i) {
+		if (I2p[i] > 0)
+			minpp[(i - 1) % (2 * (int)n4) + 1] = i;
+	}
+	sD->AddItem("MaxPD, mm", [tcrd, &minpp](int i) {int res = min(minpp[2 * i], minpp[2 * i - 1]);
+		if (res < 0)
+			res = max(minpp[2 * i], minpp[2 * i - 1]);
+		if (res < 0)
+			return 0.L;
+		return tcrd - (zcoord[itop[1][res]] + zcoord[itop[2][res]] + zcoord[itop[3][res]]) / 0.003;});
 
 	for (int i = 1; i <= n4; ++i) {
 		sD->SaveValues(i);
