@@ -19,8 +19,8 @@ object MQCForm: TMQCForm
   object EList: TListView
     Left = 8
     Top = 8
-    Width = 401
-    Height = 428
+    Width = 400
+    Height = 405
     Checkboxes = True
     Columns = <
       item
@@ -142,6 +142,14 @@ object MQCForm: TMQCForm
     Caption = #1044#1086#1073#1072#1074#1080#1090#1100' '#1089' '#1092#1086#1088#1084#1099
     TabOrder = 11
     OnClick = AddFormBtnClick
+  end
+  object ProgressBar: TProgressBar
+    Left = 8
+    Top = 419
+    Width = 400
+    Height = 17
+    Max = 1000
+    TabOrder = 12
   end
   object FileSaveDialog: TFileSaveDialog
     DefaultExtension = '*.xbcq'

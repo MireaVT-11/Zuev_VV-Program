@@ -11,7 +11,7 @@
 #include <Vcl.Imaging.pngimage.hpp>
 
 #include "Main.h"
-#include "Matedit.hpp";
+#include "Matedit.hpp"
 #include "Extendedutils.hpp"
 #include "Saver.h"
 #include "QM.h"
@@ -299,6 +299,7 @@ void __fastcall TmainForm::InitLoop(TObject *, int k) {
 	epsrzp[k] = 0.;
 	epsttp[k] = 0.;
 	sqI2p[k] = 0.;
+	tet[k] = 0.;
 	T[k] = T_old[k] = T_plast[k] = T_elast[k] = T_m[k] = T0;
 	T_in[k] = 0.;
 }

@@ -19,6 +19,7 @@
 #include <Vcl.Samples.Spin.hpp>
 #include <Vcl.FileCtrl.hpp>
 #include <StrUtils.hpp>
+#include <Vcl.ComCtrls.hpp>
 // #include <Vcl.Bind.DBEngExt.hpp>
 // #include <Vcl.Bind.Editors.hpp>
 

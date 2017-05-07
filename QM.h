@@ -23,7 +23,7 @@
 
 class QC {
 public:
-	enum Status: int {
+	enum Status : int {
 		Error = 0, Ready, Complete, Computing, Missing
 	};
 
@@ -79,6 +79,7 @@ public:
 
 private:
 	std::list<ComputeElement*> *elements;
+
 	int nowRun;
 
 public:
@@ -95,8 +96,11 @@ public:
 	void SaveToFile(UnicodeString path);
 	void ReadFromFile(UnicodeString path);
 	void Run(TListView* list, bool hideGraph);
-    int GetREI(){return nowRun;}
-    static void ResetItem(TListItem* li, ComputeElement* v, int cproc = -1);
+
+	int GetREI() {
+		return nowRun;
+	}
+	static void ResetItem(TListItem* li, ComputeElement* v, int cproc = -1);
 };
 
 class TMQCForm : public TForm {
@@ -116,6 +120,8 @@ __published: // IDE-managed Components
 	TXMLDocument *XML;
 	TCheckBox *HideGraphCBox;
 	TButton *AddFormBtn;
+	TProgressBar *ProgressBar;
+
 	void __fastcall SaveBtnClick(TObject *Sender);
 	void __fastcall AddBtnClick(TObject *Sender);
 	void __fastcall EListItemChecked(TObject *Sender, TListItem *Item);
@@ -135,6 +141,12 @@ private: // User declarations
 
 public: // User declarations
 	__fastcall TMQCForm(TComponent* Owner);
+
+	void __fastcall SetPBVal(int val, int max) {
+		int pos = (double)val / (double)max * ProgressBar->Max;
+		if (pos != ProgressBar->Position)
+			ProgressBar->Position = pos;
+	}
 };
 
 // ---------------------------------------------------------------------------

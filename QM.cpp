@@ -101,54 +101,119 @@ void QC::SaveToFile(UnicodeString path) {
 	xml->LoadFromXML(blank);
 	xml->Active = true;
 	auto tnode = xml->Node->ChildNodes->GetNode((UnicodeString)"xbcq");
+	QC::ComputeElement* lel = new QC::ComputeElement();
 	for (auto v : *elements) {
 		auto cn = tnode->AddChild((UnicodeString)"ComputeElement");
 		cn->Attributes[(UnicodeString)"name"] = v->name;
-		cn->Attributes[(UnicodeString)"fixation"] = v->fixation;
-		cn->Attributes[(UnicodeString)"fixationT"] = v->fixationT;
-		cn->Attributes[(UnicodeString)"timePeriod"] = FloatToStr(v->timePeriod);
-		cn->Attributes[(UnicodeString)"timeStepCount"] = v->timeStepCount;
-		cn->Attributes[(UnicodeString)"overheadRadius"] = FloatToStr(v->overheadRadius);
-		cn->Attributes[(UnicodeString)"baseRadius"] = FloatToStr(v->baseRadius);
-		cn->Attributes[(UnicodeString)"rFECount"] = v->rFECount;
-		cn->Attributes[(UnicodeString)"zFECount"] = v->zFECount;
-		cn->Attributes[(UnicodeString)"overheadHight"] = FloatToStr(v->overheadHight);
-		cn->Attributes[(UnicodeString)"baseStrat1Hight"] = FloatToStr(v->baseStrat1Hight);
-		cn->Attributes[(UnicodeString)"baseStrat2Hight"] = FloatToStr(v->baseStrat2Hight);
-		cn->Attributes[(UnicodeString)"baseStrat3Hight"] = FloatToStr(v->baseStrat3Hight);
-		cn->Attributes[(UnicodeString)"recess"] = v->recess;
-		cn->Attributes[(UnicodeString)"ohPoints"] = (int)v->ohPoints;
-		cn->Attributes[(UnicodeString)"verticalStrats"] = (int)v->verticalStrats;
-		cn->Attributes[(UnicodeString)"stratCount"] = v->stratCount;
-		cn->Attributes[(UnicodeString)"ohMaterial"] = v->ohMaterial;
-		cn->Attributes[(UnicodeString)"baseStrat1Material"] = v->baseStrat1Material;
-		cn->Attributes[(UnicodeString)"baseStrat2Material"] = v->baseStrat2Material;
-		cn->Attributes[(UnicodeString)"baseStrat3Material"] = v->baseStrat3Material;
-		cn->Attributes[(UnicodeString)"sinImpact"] = (int)v->sinImpact;
-		cn->Attributes[(UnicodeString)"bottomWave"] = (int)v->bottomWave;
-		cn->Attributes[(UnicodeString)"bottomWaveForte"] = (int)v->bottomWaveForte;
-		cn->Attributes[(UnicodeString)"bottomContWave1"] = (int)v->bottomContWave1;
-		cn->Attributes[(UnicodeString)"bottomContWave2"] = (int)v->bottomContWave2;
-		cn->Attributes[(UnicodeString)"bottomContWave3"] = (int)v->bottomContWave3;
-		cn->Attributes[(UnicodeString)"lateralSide"] = (int)v->lateralSide;
-		cn->Attributes[(UnicodeString)"lateralSideForte"] = (int)v->lateralSideForte;
-		cn->Attributes[(UnicodeString)"movingOverhead"] = (int)v->movingOverhead;
-		cn->Attributes[(UnicodeString)"internalWave"] = (int)v->internalWave;
-		cn->Attributes[(UnicodeString)"indentor"] = (int)v->indentor;
-		cn->Attributes[(UnicodeString)"bottomImpact"] = (int)v->bottomImpact;
-		cn->Attributes[(UnicodeString)"glassful"] = (int)v->glassful;
-		cn->Attributes[(UnicodeString)"overheadSpeed"] = FloatToStr(v->overheadSpeed);
-		cn->Attributes[(UnicodeString)"lateralWaveSpeed"] = FloatToStr(v->lateralWaveSpeed);
-		cn->Attributes[(UnicodeString)"internalWaveSpeed"] = FloatToStr(v->internalWaveSpeed);
-		cn->Attributes[(UnicodeString)"indentorSpeed"] = FloatToStr(v->indentorSpeed);
-		cn->Attributes[(UnicodeString)"showHeat"] = (int)v->showHeat;
-		cn->Attributes[(UnicodeString)"beautyHeat"] = (int)v->beautyHeat;
-		cn->Attributes[(UnicodeString)"cinema"] = (int)v->cinema;
-		cn->Attributes[(UnicodeString)"cinemaFrameCount"] = v->cinemaFrameCount;
-		cn->Attributes[(UnicodeString)"grayScale"] = (int)v->grayScale;
+		if (v->fixation != lel->fixation)
+			cn->Attributes[(UnicodeString)"fixation"] = v->fixation;
+		if (v->fixationT != lel->fixationT)
+			cn->Attributes[(UnicodeString)"fixationT"] = v->fixationT;
+		if (v->timePeriod != lel->timePeriod)
+			cn->Attributes[(UnicodeString)"timePeriod"] = FloatToStr(v->timePeriod);
+		if (v->timeStepCount != lel->timeStepCount)
+			cn->Attributes[(UnicodeString)"timeStepCount"] = v->timeStepCount;
+		if (v->overheadRadius != lel->overheadRadius)
+			cn->Attributes[(UnicodeString)"overheadRadius"] = FloatToStr(v->overheadRadius);
+		if (v->baseRadius != lel->baseRadius)
+			cn->Attributes[(UnicodeString)"baseRadius"] = FloatToStr(v->baseRadius);
+		if (v->rFECount != lel->rFECount)
+			cn->Attributes[(UnicodeString)"rFECount"] = v->rFECount;
+		if (v->zFECount != lel->zFECount)
+			cn->Attributes[(UnicodeString)"zFECount"] = v->zFECount;
+		if (v->overheadHight != lel->overheadHight)
+			cn->Attributes[(UnicodeString)"overheadHight"] = FloatToStr(v->overheadHight);
+		if (v->baseStrat1Hight != lel->baseStrat1Hight)
+			cn->Attributes[(UnicodeString)"baseStrat1Hight"] = FloatToStr(v->baseStrat1Hight);
+		if (v->baseStrat2Hight != lel->baseStrat2Hight)
+			cn->Attributes[(UnicodeString)"baseStrat2Hight"] = FloatToStr(v->baseStrat2Hight);
+		if (v->baseStrat3Hight != lel->baseStrat3Hight)
+			cn->Attributes[(UnicodeString)"baseStrat3Hight"] = FloatToStr(v->baseStrat3Hight);
+		if (v->recess != lel->recess)
+			cn->Attributes[(UnicodeString)"recess"] = v->recess;
+		if (v->ohPoints != lel->ohPoints)
+			cn->Attributes[(UnicodeString)"ohPoints"] = BoolToStr(v->ohPoints, true);
+		if (v->verticalStrats != lel->verticalStrats)
+			cn->Attributes[(UnicodeString)"verticalStrats"] = BoolToStr(v->verticalStrats, true);
+		if (v->stratCount != lel->stratCount)
+			cn->Attributes[(UnicodeString)"stratCount"] = v->stratCount;
+		if (v->ohMaterial != lel->ohMaterial)
+			cn->Attributes[(UnicodeString)"ohMaterial"] = v->ohMaterial;
+		if (v->baseStrat1Material != lel->baseStrat1Material)
+			cn->Attributes[(UnicodeString)"baseStrat1Material"] = v->baseStrat1Material;
+		if (v->baseStrat2Material != lel->baseStrat2Material)
+			cn->Attributes[(UnicodeString)"baseStrat2Material"] = v->baseStrat2Material;
+		if (v->baseStrat3Material != lel->baseStrat3Material)
+			cn->Attributes[(UnicodeString)"baseStrat3Material"] = v->baseStrat3Material;
+		if (v->sinImpact != lel->sinImpact)
+			cn->Attributes[(UnicodeString)"sinImpact"] = BoolToStr(v->sinImpact, true);
+		if (v->bottomWave != lel->bottomWave)
+			cn->Attributes[(UnicodeString)"bottomWave"] = BoolToStr(v->bottomWave, true);
+		if (v->bottomWaveForte != lel->bottomWaveForte)
+			cn->Attributes[(UnicodeString)"bottomWaveForte"] = BoolToStr(v->bottomWaveForte, true);
+		if (v->bottomContWave1 != lel->bottomContWave1)
+			cn->Attributes[(UnicodeString)"bottomContWave1"] = BoolToStr(v->bottomContWave1, true);
+		if (v->bottomContWave2 != lel->bottomContWave2)
+			cn->Attributes[(UnicodeString)"bottomContWave2"] = BoolToStr(v->bottomContWave2, true);
+		if (v->bottomContWave3 != lel->bottomContWave3)
+			cn->Attributes[(UnicodeString)"bottomContWave3"] = BoolToStr(v->bottomContWave3, true);
+		if (v->lateralSide != lel->lateralSide)
+			cn->Attributes[(UnicodeString)"lateralSide"] = BoolToStr(v->lateralSide, true);
+		if (v->lateralSideForte != lel->lateralSideForte)
+			cn->Attributes[(UnicodeString)"lateralSideForte"] = BoolToStr(v->lateralSideForte, true);
+		if (v->movingOverhead != lel->movingOverhead)
+			cn->Attributes[(UnicodeString)"movingOverhead"] = BoolToStr(v->movingOverhead, true);
+		if (v->internalWave != lel->internalWave)
+			cn->Attributes[(UnicodeString)"internalWave"] = BoolToStr(v->internalWave, true);
+		if (v->indentor != lel->indentor)
+			cn->Attributes[(UnicodeString)"indentor"] = BoolToStr(v->indentor, true);
+		if (v->bottomImpact != lel->bottomImpact)
+			cn->Attributes[(UnicodeString)"bottomImpact"] = BoolToStr(v->bottomImpact, true);
+		if (v->glassful != lel->glassful)
+			cn->Attributes[(UnicodeString)"glassful"] = BoolToStr(v->glassful, true);
+		if (v->overheadSpeed != lel->overheadSpeed)
+			cn->Attributes[(UnicodeString)"overheadSpeed"] = FloatToStr(v->overheadSpeed);
+		if (v->lateralWaveSpeed != lel->lateralWaveSpeed)
+			cn->Attributes[(UnicodeString)"lateralWaveSpeed"] = FloatToStr(v->lateralWaveSpeed);
+		if (v->internalWaveSpeed != lel->internalWaveSpeed)
+			cn->Attributes[(UnicodeString)"internalWaveSpeed"] = FloatToStr(v->internalWaveSpeed);
+		if (v->indentorSpeed != lel->indentorSpeed)
+			cn->Attributes[(UnicodeString)"indentorSpeed"] = FloatToStr(v->indentorSpeed);
+		if (v->showHeat != lel->showHeat)
+			cn->Attributes[(UnicodeString)"showHeat"] = BoolToStr(v->showHeat, true);
+		if (v->beautyHeat != lel->beautyHeat)
+			cn->Attributes[(UnicodeString)"beautyHeat"] = BoolToStr(v->beautyHeat, true);
+		if (v->cinema != lel->cinema)
+			cn->Attributes[(UnicodeString)"cinema"] = BoolToStr(v->cinema, true);
+		if (v->cinemaFrameCount != lel->cinemaFrameCount)
+			cn->Attributes[(UnicodeString)"cinemaFrameCount"] = v->cinemaFrameCount;
+		if (v->grayScale != lel->grayScale)
+			cn->Attributes[(UnicodeString)"grayScale"] = BoolToStr(v->grayScale, true);
+		lel = v;
 	}
 	xml->SaveToFile(path);
 	xml->Active = false;
+}
+
+int ReadXmlValue(UnicodeString name, _di_IXMLNode node, int def = 0) {
+	if (node->HasAttribute(name))
+		return StrToInt(node->Attributes[name]);
+	else
+		return def;
+}
+
+long double ReadXmlValue(UnicodeString name, _di_IXMLNode node, long double def = 0) {
+	if (node->HasAttribute(name))
+		return StrToFloat(node->Attributes[name]);
+	else
+		return def;
+}
+
+bool ReadXmlValue(UnicodeString name, _di_IXMLNode node, bool def = false) {
+	if (node->HasAttribute(name))
+		return StrToBool(node->Attributes[name]);
+	else
+		return def;
 }
 
 void QC::ReadFromFile(UnicodeString path) {
@@ -157,59 +222,66 @@ void QC::ReadFromFile(UnicodeString path) {
 	name = ChangeFileExt(ExtractFileName(path), "");
 	xml->Active = true;
 	elements->clear();
+	QC::ComputeElement* lel = new QC::ComputeElement();
 	auto tnode = xml->Node->ChildNodes->GetNode((UnicodeString)"xbcq");
 	for (int i = 0; i < tnode->ChildNodes->Count; ++i) {
 		auto v = new QC::ComputeElement();
 		auto cn = tnode->ChildNodes->Nodes[i];
 		v->status = QC::Status::Ready;
 		v->name = cn->Attributes[(UnicodeString)"name"];
-		v->fixation = cn->Attributes[(UnicodeString)"fixation"];
-		v->fixationT = cn->Attributes[(UnicodeString)"fixationT"];
-		v->timePeriod = StrToFloat(cn->Attributes[(UnicodeString)"timePeriod"]);
-		v->timeStepCount = cn->Attributes[(UnicodeString)"timeStepCount"];
-		v->overheadRadius = StrToFloat(cn->Attributes[(UnicodeString)"overheadRadius"]);
-		v->baseRadius = StrToFloat(cn->Attributes[(UnicodeString)"baseRadius"]);
-		v->rFECount = cn->Attributes[(UnicodeString)"rFECount"];
-		v->zFECount = cn->Attributes[(UnicodeString)"zFECount"];
-		v->overheadHight = StrToFloat(cn->Attributes[(UnicodeString)"overheadHight"]);
-		v->baseStrat1Hight = StrToFloat(cn->Attributes[(UnicodeString)"baseStrat1Hight"]);
-		v->baseStrat2Hight = StrToFloat(cn->Attributes[(UnicodeString)"baseStrat2Hight"]);
-		v->baseStrat3Hight = StrToFloat(cn->Attributes[(UnicodeString)"baseStrat3Hight"]);
-		v->recess = cn->Attributes[(UnicodeString)"recess"];
-		v->ohPoints = (int)cn->Attributes[(UnicodeString)"ohPoints"];
-		v->verticalStrats = (int)cn->Attributes[(UnicodeString)"verticalStrats"];
-		v->stratCount = cn->Attributes[(UnicodeString)"stratCount"];
-		v->ohMaterial = cn->Attributes[(UnicodeString)"ohMaterial"];
-		v->baseStrat1Material = cn->Attributes[(UnicodeString)"baseStrat1Material"];
-		v->baseStrat2Material = cn->Attributes[(UnicodeString)"baseStrat2Material"];
-		v->baseStrat3Material = cn->Attributes[(UnicodeString)"baseStrat3Material"];
-		v->sinImpact = (int)cn->Attributes[(UnicodeString)"sinImpact"];
-		v->bottomWave = (int)cn->Attributes[(UnicodeString)"bottomWave"];
-		v->bottomWaveForte = (int)cn->Attributes[(UnicodeString)"bottomWaveForte"];
-		v->bottomContWave1 = (int)cn->Attributes[(UnicodeString)"bottomContWave1"];
-		v->bottomContWave2 = (int)cn->Attributes[(UnicodeString)"bottomContWave2"];
-		v->bottomContWave3 = (int)cn->Attributes[(UnicodeString)"bottomContWave3"];
-		v->lateralSide = (int)cn->Attributes[(UnicodeString)"lateralSide"];
-		v->lateralSideForte = (int)cn->Attributes[(UnicodeString)"lateralSideForte"];
-		v->movingOverhead = (int)cn->Attributes[(UnicodeString)"movingOverhead"];
-		v->internalWave = (int)cn->Attributes[(UnicodeString)"internalWave"];
-		v->indentor = (int)cn->Attributes[(UnicodeString)"indentor"];
-		v->bottomImpact = (int)cn->Attributes[(UnicodeString)"bottomImpact"];
-		v->glassful = (int)cn->Attributes[(UnicodeString)"glassful"];
-		v->overheadSpeed = StrToFloat(cn->Attributes[(UnicodeString)"overheadSpeed"]);
-		v->lateralWaveSpeed = StrToFloat(cn->Attributes[(UnicodeString)"lateralWaveSpeed"]);
-		v->internalWaveSpeed = StrToFloat(cn->Attributes[(UnicodeString)"internalWaveSpeed"]);
-		v->indentorSpeed = StrToFloat(cn->Attributes[(UnicodeString)"indentorSpeed"]);
-		v->showHeat = (int)cn->Attributes[(UnicodeString)"showHeat"];
-		v->beautyHeat = (int)cn->Attributes[(UnicodeString)"beautyHeat"];
-		v->cinema = (int)cn->Attributes[(UnicodeString)"cinema"];
-		v->cinemaFrameCount = cn->Attributes[(UnicodeString)"cinemaFrameCount"];
-		v->grayScale = (int)cn->Attributes[(UnicodeString)"grayScale"];
+		v->fixation = ReadXmlValue("fixation", cn, lel->fixation);
+		v->fixationT = ReadXmlValue("fixationT", cn, lel->fixationT);
+		v->timePeriod = ReadXmlValue("timePeriod", cn, lel->timePeriod);
+		v->timeStepCount = ReadXmlValue("timeStepCount", cn, lel->timeStepCount);
+		v->overheadRadius = ReadXmlValue("overheadRadius", cn, lel->overheadRadius);
+		v->baseRadius = ReadXmlValue("baseRadius", cn, lel->baseRadius);
+		v->rFECount = ReadXmlValue("rFECount", cn, lel->rFECount);
+		v->zFECount = ReadXmlValue("zFECount", cn, lel->zFECount);
+		v->overheadHight = ReadXmlValue("overheadHight", cn, lel->overheadHight);
+		v->baseStrat1Hight = ReadXmlValue("baseStrat1Hight", cn, lel->baseStrat1Hight);
+		v->baseStrat2Hight = ReadXmlValue("baseStrat2Hight", cn, lel->baseStrat2Hight);
+		v->baseStrat3Hight = ReadXmlValue("baseStrat3Hight", cn, lel->baseStrat3Hight);
+		v->recess = ReadXmlValue("recess", cn, lel->recess);
+		v->ohPoints = ReadXmlValue("ohPoints", cn, lel->ohPoints);
+		v->verticalStrats = ReadXmlValue("verticalStrats", cn, lel->verticalStrats);
+		v->stratCount = ReadXmlValue("stratCount", cn, lel->stratCount);
+		v->ohMaterial = ReadXmlValue("ohMaterial", cn, lel->ohMaterial);
+		v->baseStrat1Material = ReadXmlValue("baseStrat1Material", cn, lel->baseStrat1Material);
+		v->baseStrat2Material = ReadXmlValue("baseStrat2Material", cn, lel->baseStrat2Material);
+		v->baseStrat3Material = ReadXmlValue("baseStrat3Material", cn, lel->baseStrat3Material);
+		v->sinImpact = ReadXmlValue("sinImpact", cn, lel->sinImpact);
+		v->bottomWave = ReadXmlValue("bottomWave", cn, lel->bottomWave);
+		v->bottomWaveForte = ReadXmlValue("bottomWaveForte", cn, lel->bottomWaveForte);
+		v->bottomContWave1 = ReadXmlValue("bottomContWave1", cn, lel->bottomContWave1);
+		v->bottomContWave2 = ReadXmlValue("bottomContWave2", cn, lel->bottomContWave2);
+		v->bottomContWave3 = ReadXmlValue("bottomContWave3", cn, lel->bottomContWave3);
+		v->lateralSide = ReadXmlValue("lateralSide", cn, lel->lateralSide);
+		v->lateralSideForte = ReadXmlValue("lateralSideForte", cn, lel->lateralSideForte);
+		v->movingOverhead = ReadXmlValue("movingOverhead", cn, lel->movingOverhead);
+		v->internalWave = ReadXmlValue("internalWave", cn, lel->internalWave);
+		v->indentor = ReadXmlValue("indentor", cn, lel->indentor);
+		v->bottomImpact = ReadXmlValue("bottomImpact", cn, lel->bottomImpact);
+		v->glassful = ReadXmlValue("glassful", cn, lel->glassful);
+		v->overheadSpeed = ReadXmlValue("overheadSpeed", cn, lel->overheadSpeed);
+		v->lateralWaveSpeed = ReadXmlValue("lateralWaveSpeed", cn, lel->lateralWaveSpeed);
+		v->internalWaveSpeed = ReadXmlValue("internalWaveSpeed", cn, lel->internalWaveSpeed);
+		v->indentorSpeed = ReadXmlValue("indentorSpeed", cn, lel->indentorSpeed);
+		v->showHeat = ReadXmlValue("showHeat", cn, lel->showHeat);
+		v->beautyHeat = ReadXmlValue("beautyHeat", cn, lel->beautyHeat);
+		v->cinema = ReadXmlValue("cinema", cn, lel->cinema);
+		v->cinemaFrameCount = ReadXmlValue("cinemaFrameCount", cn, lel->cinemaFrameCount);
+		v->grayScale = ReadXmlValue("grayScale", cn, lel->grayScale);
 		elements->push_back(v);
+		lel = v;
 	}
 }
 
-void QC::Run(TListView* list, bool hideGraph) {
+void SetPBVal(int v, int max)
+{
+	MQCForm->SetPBVal(v, max);
+}
+
+void QC::Run(TListView * list, bool hideGraph) {
 	int i = 0;
 	auto startTime = Now();
 	auto report = new TStringList();
@@ -217,6 +289,11 @@ void QC::Run(TListView* list, bool hideGraph) {
 	report->Add("Очередь расчёта: «" + name + "»");
 	report->Add("Запущено на выполнение: " + DateTimeToStr(startTime));
 	DateTimeToString(sstamp, "yymmddhhnnss", startTime);
+	int rcnt = 0;
+	for (auto v : *elements)
+		if (v->status == QC::Status::Ready)
+			++rcnt;
+	int cnt = 0;
 	for (auto v : *elements) {
 		UnicodeString repres = "";
 		if (v->status == QC::Status::Ready) {
@@ -224,6 +301,7 @@ void QC::Run(TListView* list, bool hideGraph) {
 			auto elem = list->Items->Item[i];
 			elem->Checked = false;
 			nowRun = i;
+			++cnt;
 			v->status = QC::Status::Computing;
 			UnicodeString dtstamp, msg = "";
 			DateTimeToString(dtstamp, "yymmddhhnnss", etime);
@@ -235,7 +313,7 @@ void QC::Run(TListView* list, bool hideGraph) {
 			etime = Now();
 			try {
 				res = mainForm->Calculate(dtstamp, hideGraph, "#" + name + "\\series" + sstamp + "\\" +
-					ReplaceStr(ReplaceStr(v->name, "/", "_"), "\\", "_") + " ", [v, elem](int i) {QC::ResetItem(elem, v, i);});
+					ReplaceStr(ReplaceStr(v->name, "/", "_"), "\\", "_") + " ", [v, elem, rcnt, cnt](int i) {SetPBVal((cnt-1)*100+i, rcnt*100); QC::ResetItem(elem, v, i);});
 			}
 			catch (Exception &e) {
 				res = false;
@@ -277,7 +355,7 @@ __fastcall TMQCForm::TMQCForm(TComponent * Owner) : TForm(Owner) {
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TMQCForm::SaveBtnClick(TObject *Sender) {
+void __fastcall TMQCForm::SaveBtnClick(TObject * Sender) {
 	FileSaveDialog->FileName = computeQueue->name;
 	if (FileSaveDialog->Execute()) {
 		computeQueue->SaveToFile(FileSaveDialog->FileName);
@@ -287,14 +365,14 @@ void __fastcall TMQCForm::SaveBtnClick(TObject *Sender) {
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TMQCForm::AddBtnClick(TObject *Sender) {
+void __fastcall TMQCForm::AddBtnClick(TObject * Sender) {
 	QC::ResetItem(EList->Items->Add(), computeQueue->AddItem());
 	EList->ItemIndex = EList->Items->Count - 1;
 	EditBtn->Click();
 }
 // ---------------------------------------------------------------------------
 
-void __fastcall TMQCForm::EListItemChecked(TObject *Sender, TListItem *Item) {
+void __fastcall TMQCForm::EListItemChecked(TObject * Sender, TListItem * Item) {
 	auto elem = computeQueue->GetElementByIndex(Item->Index);
 	if (elem == NULL)
 		return;
@@ -308,7 +386,7 @@ void __fastcall TMQCForm::EListItemChecked(TObject *Sender, TListItem *Item) {
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TMQCForm::LoadBtnClick(TObject *Sender) {
+void __fastcall TMQCForm::LoadBtnClick(TObject * Sender) {
 	if (FileOpenDialog->Execute()) {
 		computeQueue->ReadFromFile(FileOpenDialog->FileName);
 		computeQueue->FillList(EList);
@@ -317,14 +395,14 @@ void __fastcall TMQCForm::LoadBtnClick(TObject *Sender) {
 }
 // ---------------------------------------------------------------------------
 
-void __fastcall TMQCForm::EListSelectItem(TObject *Sender, TListItem *Item, bool Selected) {
+void __fastcall TMQCForm::EListSelectItem(TObject * Sender, TListItem * Item, bool Selected) {
 	DelBtn->Enabled = Selected;
 	DubBtn->Enabled = Selected;
 	EditBtn->Enabled = Selected;
 }
 // ---------------------------------------------------------------------------
 
-void __fastcall TMQCForm::DubBtnClick(TObject *Sender) {
+void __fastcall TMQCForm::DubBtnClick(TObject * Sender) {
 	auto vd = computeQueue->AddItem(), vs = computeQueue->GetElementByIndex(EList->ItemIndex);
 	memcpy(vd, vs, sizeof(QC::ComputeElement));
 	vd->name = vs->name; // дабы не вводить менеджер памяти в заблуждение
@@ -332,7 +410,7 @@ void __fastcall TMQCForm::DubBtnClick(TObject *Sender) {
 }
 // ---------------------------------------------------------------------------
 
-void __fastcall TMQCForm::DelBtnClick(TObject *Sender) {
+void __fastcall TMQCForm::DelBtnClick(TObject * Sender) {
 	if (Application->MessageBoxW(("Удалить «" + computeQueue->GetElementByIndex(EList->ItemIndex)->name + "»?").w_str(),
 		((UnicodeString)"Удаление элемента").w_str(), MB_ICONQUESTION + MB_YESNO) == mrYes) {
 		computeQueue->DeleteItem(EList->ItemIndex);
@@ -341,7 +419,7 @@ void __fastcall TMQCForm::DelBtnClick(TObject *Sender) {
 }
 // ---------------------------------------------------------------------------
 
-void SetCEV(QC::ComputeElement* v) {
+void SetCEV(QC::ComputeElement * v) {
 	mainForm->jjjjBox->ItemIndex = v->fixation;
 	mainForm->tEdit->Text = IntToStr(v->fixationT);
 	mainForm->dtimeprEdit->Text = FloatToStr(v->timePeriod);
@@ -387,7 +465,7 @@ void SetCEV(QC::ComputeElement* v) {
 	mainForm->AltInpCBox->Checked = v->ohPoints;
 }
 
-void GetCEV(QC::ComputeElement* v) {
+void GetCEV(QC::ComputeElement * v) {
 	v->fixation = mainForm->jjjjBox->ItemIndex;
 	v->fixationT = StrToInt(mainForm->tEdit->Text);
 	v->timePeriod = StrToFloat(mainForm->dtimeprEdit->Text);
@@ -432,20 +510,21 @@ void GetCEV(QC::ComputeElement* v) {
 	v->ohPoints = mainForm->AltInpCBox->Checked;
 }
 
-void __fastcall TMQCForm::AbNowBtnClick(TObject *Sender) {
+void __fastcall TMQCForm::AbNowBtnClick(TObject * Sender) {
 	mainForm->SetUS();
 }
 // ---------------------------------------------------------------------------
 
-void __fastcall TMQCForm::AbAllBtnClick(TObject *Sender) {
-	mainForm->SetUS();
+void __fastcall TMQCForm::AbAllBtnClick(TObject * Sender) {
 	for (int i = 0; i < EList->Items->Count; ++i)
 		if (EList->Items->Item[i]->Checked)
 			EList->Items->Item[i]->Checked = false;
+	mainForm->SetUS();
+	ProgressBar->State = pbsError;
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TMQCForm::StartBtnClick(TObject *Sender) {
+void __fastcall TMQCForm::StartBtnClick(TObject * Sender) {
 	AddBtn->Enabled = false;
 	AddFormBtn->Enabled = false;
 	DelBtn->Enabled = false;
@@ -458,6 +537,8 @@ void __fastcall TMQCForm::StartBtnClick(TObject *Sender) {
 	EList->Enabled = false;
 	StartBtn->Enabled = false;
 	HideGraphCBox->Enabled = false;
+	ProgressBar->Position = 0;
+	ProgressBar->State = pbsNormal;
 	computeQueue->Run(EList, HideGraphCBox->Checked);
 	AddBtn->Enabled = true;
 	AddFormBtn->Enabled = true;
@@ -472,13 +553,13 @@ void __fastcall TMQCForm::StartBtnClick(TObject *Sender) {
 }
 // ---------------------------------------------------------------------------
 
-void __fastcall TMQCForm::FormCloseQuery(TObject *Sender, bool &CanClose) {
+void __fastcall TMQCForm::FormCloseQuery(TObject * Sender, bool &CanClose) {
 	CanClose = computeQueue->GetREI() == -1;
 }
 
 // ---------------------------------------------------------------------------
 
-void __fastcall TMQCForm::EditBtnClick(TObject *Sender) {
+void __fastcall TMQCForm::EditBtnClick(TObject * Sender) {
 	auto elem = computeQueue->GetElementByIndex(EList->ItemIndex);
 	if (elem == NULL)
 		return;
@@ -587,7 +668,7 @@ void __fastcall TMQCForm::EditBtnClick(TObject *Sender) {
 }
 
 // ---------------------------------------------------------------------------
-void __fastcall TMQCForm::AddFormBtnClick(TObject *Sender) {
+void __fastcall TMQCForm::AddFormBtnClick(TObject * Sender) {
 	auto v = computeQueue->AddItem();
 	QC::ResetItem(EList->Items->Add(), v);
 	EList->ItemIndex = EList->Items->Count - 1;
