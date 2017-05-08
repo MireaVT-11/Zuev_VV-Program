@@ -18,6 +18,7 @@
 #include <Vcl.ExtCtrls.hpp>
 #include <stdlib>
 #include <list>
+#include "MatEdit.hpp"
 
 // ---------------------------------------------------------------------------
 
@@ -79,7 +80,7 @@ public:
 
 private:
 	std::list<ComputeElement*> *elements;
-
+	DynamicArray<TMaterial> *materials;
 	int nowRun;
 
 public:
@@ -121,6 +122,7 @@ __published: // IDE-managed Components
 	TCheckBox *HideGraphCBox;
 	TButton *AddFormBtn;
 	TProgressBar *ProgressBar;
+	TButton *FillFormBtn;
 
 	void __fastcall SaveBtnClick(TObject *Sender);
 	void __fastcall AddBtnClick(TObject *Sender);
@@ -135,6 +137,7 @@ __published: // IDE-managed Components
 	void __fastcall FormCloseQuery(TObject *Sender, bool &CanClose);
 	void __fastcall EditBtnClick(TObject *Sender);
 	void __fastcall AddFormBtnClick(TObject *Sender);
+	void __fastcall FillFormBtnClick(TObject *Sender);
 
 private: // User declarations
 	QC* computeQueue;

@@ -4,7 +4,7 @@ object MQCForm: TMQCForm
   BorderIcons = [biSystemMenu]
   BorderStyle = bsToolWindow
   ClientHeight = 444
-  ClientWidth = 560
+  ClientWidth = 556
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
   Font.Color = clWindowText
@@ -39,7 +39,7 @@ object MQCForm: TMQCForm
     OnItemChecked = EListItemChecked
   end
   object AddBtn: TButton
-    Left = 415
+    Left = 414
     Top = 8
     Width = 134
     Height = 25
@@ -48,7 +48,7 @@ object MQCForm: TMQCForm
     OnClick = AddBtnClick
   end
   object DelBtn: TButton
-    Left = 415
+    Left = 414
     Top = 70
     Width = 134
     Height = 25
@@ -58,7 +58,7 @@ object MQCForm: TMQCForm
     OnClick = DelBtnClick
   end
   object EditBtn: TButton
-    Left = 415
+    Left = 414
     Top = 132
     Width = 134
     Height = 25
@@ -68,7 +68,7 @@ object MQCForm: TMQCForm
     OnClick = EditBtnClick
   end
   object DubBtn: TButton
-    Left = 415
+    Left = 414
     Top = 101
     Width = 134
     Height = 25
@@ -78,8 +78,8 @@ object MQCForm: TMQCForm
     OnClick = DubBtnClick
   end
   object LoadBtn: TButton
-    Left = 415
-    Top = 181
+    Left = 414
+    Top = 213
     Width = 134
     Height = 25
     Caption = #1047#1072#1075#1088#1091#1079#1080#1090#1100
@@ -87,8 +87,8 @@ object MQCForm: TMQCForm
     OnClick = LoadBtnClick
   end
   object SaveBtn: TButton
-    Left = 415
-    Top = 212
+    Left = 414
+    Top = 244
     Width = 134
     Height = 25
     Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
@@ -96,7 +96,7 @@ object MQCForm: TMQCForm
     OnClick = SaveBtnClick
   end
   object AbNowBtn: TButton
-    Left = 415
+    Left = 414
     Top = 324
     Width = 134
     Height = 25
@@ -106,7 +106,7 @@ object MQCForm: TMQCForm
     OnClick = AbNowBtnClick
   end
   object AbAllBtn: TButton
-    Left = 415
+    Left = 414
     Top = 355
     Width = 134
     Height = 25
@@ -116,7 +116,7 @@ object MQCForm: TMQCForm
     OnClick = AbAllBtnClick
   end
   object StartBtn: TButton
-    Left = 415
+    Left = 414
     Top = 400
     Width = 134
     Height = 36
@@ -125,7 +125,7 @@ object MQCForm: TMQCForm
     OnClick = StartBtnClick
   end
   object HideGraphCBox: TCheckBox
-    Left = 415
+    Left = 413
     Top = 301
     Width = 137
     Height = 17
@@ -135,7 +135,7 @@ object MQCForm: TMQCForm
     TabOrder = 10
   end
   object AddFormBtn: TButton
-    Left = 415
+    Left = 414
     Top = 39
     Width = 134
     Height = 25
@@ -150,6 +150,16 @@ object MQCForm: TMQCForm
     Height = 17
     Max = 1000
     TabOrder = 12
+  end
+  object FillFormBtn: TButton
+    Left = 414
+    Top = 163
+    Width = 134
+    Height = 25
+    Caption = #1047#1072#1087#1080#1089#1072#1090#1100' '#1085#1072' '#1092#1086#1088#1084#1091
+    Enabled = False
+    TabOrder = 13
+    OnClick = FillFormBtnClick
   end
   object FileSaveDialog: TFileSaveDialog
     DefaultExtension = '*.xbcq'
@@ -166,8 +176,8 @@ object MQCForm: TMQCForm
     OkButtonLabel = #1057#1086#1093#1088#1072#1085#1080#1090#1100
     Options = [fdoOverWritePrompt, fdoStrictFileTypes]
     Title = #1057#1086#1093#1088#1072#1085#1077#1085#1080#1077' '#1092#1072#1081#1083#1072' '#1086#1095#1077#1088#1077#1076#1080' '#1088#1072#1089#1095#1105#1090#1072
-    Left = 432
-    Top = 224
+    Left = 256
+    Top = 256
   end
   object FileOpenDialog: TFileOpenDialog
     FavoriteLinks = <>
@@ -183,13 +193,13 @@ object MQCForm: TMQCForm
     OkButtonLabel = #1047#1072#1075#1088#1091#1079#1080#1090#1100
     Options = []
     Title = #1042#1099#1073#1077#1088#1080#1090#1077' '#1092#1072#1081#1083' '#1086#1095#1077#1088#1077#1076#1080' '#1088#1072#1089#1095#1105#1090#1072
-    Left = 488
-    Top = 240
+    Left = 328
+    Top = 256
   end
   object XML: TXMLDocument
     Options = [doNodeAutoCreate, doNodeAutoIndent, doAttrNull, doAutoPrefix, doNamespaceDecl]
-    Left = 432
-    Top = 272
+    Left = 200
+    Top = 256
     DOMVendorDesc = 'ADOM XML v4'
   end
 end

@@ -9,7 +9,7 @@ uses
 
 type
   TVarAlpha = record
-    Enabled, Default: Boolean;
+    Enabled, default: Boolean;
     MinT, MaxT, MinAlpha: Extended;
   end;
 
@@ -59,7 +59,9 @@ type
     MaterialList: TList<TMaterial>;
   public
     matarr: TArray<TMaterial>;
-    procedure ReadFromFile(path: UnicodeString);
+    procedure ReadFromFile(Path: UnicodeString);
+    procedure ReadFromNode(Node: IXMLNode);
+    function SaveToXML: IXMLDocument;
     procedure ReinitList;
   end;
 
@@ -78,7 +80,7 @@ uses
 
 const
   DefMaterial: TMaterial = (G: 10E9; ro0: 1000; sigma0: 1E9; k: 5E9; alpha: 0; sigma1: 1E8; k1: 0; ctep: 0; gammatep: 0;
-    name: 'Новый материал'; Color: clGray; VarAlpha: (Enabled: False; Default: True; MinT: 0; MaxT: 0; MinAlpha: 0));
+    name: 'Новый материал'; Color: clGray; VarAlpha: (Enabled: False; default: True; MinT: 0; MaxT: 0; MinAlpha: 0));
   BlankXML = '<?xml version="1.0" encoding="UTF-8"?> <materials/>';
   Enablers: array [False .. True] of UnicodeString = ('отключено', 'включено');
 
@@ -178,36 +180,8 @@ begin
     'Запись в файл', MB_YESNO + MB_ICONWARNING) <> IDYES then
     Exit;
   Button1Click(self);
-  MatDB.LoadFromXML(BlankXML);
   try
-    for i := 1 to MaterialList.Count - 1 do
-      with MatDB.Node.ChildNodes.Nodes['materials'].AddChild('material') do
-      begin
-        t := MaterialList[i];
-        Attributes['name'] := t.Name;
-        Attributes['color'] := C2T(t.Color);
-        if t.alpha <> DefMaterial.alpha then
-          Attributes['alpha'] := FloatToStr(t.alpha);
-        Attributes['g'] := FloatToStr(t.G);
-        Attributes['ro0'] := FloatToStr(t.ro0);
-        if t.k1 <> DefMaterial.k1 then
-          Attributes['k1'] := FloatToStr(t.k1);
-        Attributes['k'] := FloatToStr(t.k);
-        Attributes['sigma0'] := FloatToStr(t.sigma0);
-        Attributes['sigma1'] := FloatToStr(t.sigma1);
-        if t.ctep <> DefMaterial.ctep then
-          Attributes['c'] := FloatToStr(t.ctep);
-        if t.gammatep <> DefMaterial.gammatep then
-          Attributes['gamma'] := FloatToStr(t.gammatep);
-        if not t.VarAlpha.Default then
-          with AddChild('varAlpha') do
-          begin
-            Attributes['enabled'] := t.VarAlpha.Enabled;
-            AddChild('minT').Attributes['value'] := FloatToStr(t.VarAlpha.MinT);
-            AddChild('maxT').Attributes['value'] := FloatToStr(t.VarAlpha.MaxT);
-            AddChild('minAlpha').Attributes['value'] := FloatToStr(t.VarAlpha.MinAlpha);
-          end;
-      end;
+    MatDB.LoadFromXML(SaveToXML.Xml.Text);
   finally
     MatDB.SaveToFile(LastPath);
   end;
@@ -272,7 +246,18 @@ begin
   Shape1.Brush.Color := T2C(LabeledEdit2.Text);
 end;
 
-procedure TForm1.ReadFromFile(path: UnicodeString);
+procedure TForm1.ReadFromFile(Path: UnicodeString);
+
+begin
+  LastPath := Path;
+  if FileExists(Path) then
+    MatDB.LoadFromFile(Path)
+  else
+    MatDB.LoadFromXML(BlankXML);
+  ReadFromNode(MatDB.Node.ChildNodes.Nodes['materials']);
+end;
+
+procedure TForm1.ReadFromNode(Node: IXMLNode);
 var
   i, j: Integer;
   t: TMaterial;
@@ -287,55 +272,47 @@ var
   end;
 
 begin
-  LastPath := path;
   try
-    if FileExists(path) then
-      MatDB.LoadFromFile(path)
-    else
-      MatDB.LoadFromXML(BlankXML);
-    with MatDB.Node.ChildNodes.Nodes['materials'] do
-    begin
-      MaterialList.Clear;
-      MaterialList.Add(DefMaterial); //нулевой элемент списка игнорируется
-      for i := 1 to ChildNodes.Count do
-        with ChildNodes.Nodes[i - 1] do
-          try
-            t := DefMaterial;
-            t.Name := Attributes['name'];
-            if HasAttribute('color') then
-              t.Color := T2C(Attributes['color']);
-            if HasAttribute('alpha') then
-              t.alpha := StrToFloat(Attributes['alpha']);
-            if HasAttribute('g') then
-              t.G := StrToFloat(Attributes['g']);
-            if HasAttribute('ro0') then
-              t.ro0 := StrToFloat(Attributes['ro0']);
-            if HasAttribute('k1') then
-              t.k1 := StrToFloat(Attributes['k1']);
-            if HasAttribute('k') then
-              t.k := StrToFloat(Attributes['k']);
-            if HasAttribute('sigma0') then
-              t.sigma0 := StrToFloat(Attributes['sigma0']);
-            if HasAttribute('sigma1') then
-              t.sigma1 := StrToFloat(Attributes['sigma1']);
-            if HasAttribute('c') then
-              t.ctep := StrToFloat(Attributes['c']);
-            if HasAttribute('gamma') then
-              t.gammatep := StrToFloat(Attributes['gamma']);
-            if ChildNodes.Count > 0 then
+    MaterialList.Clear;
+    MaterialList.Add(DefMaterial); // нулевой элемент списка игнорируется
+    for i := 1 to Node.ChildNodes.Count do
+      with Node.ChildNodes.Nodes[i - 1] do
+        try
+          t := DefMaterial;
+          t.Name := Attributes['name'];
+          if HasAttribute('color') then
+            t.Color := T2C(Attributes['color']);
+          if HasAttribute('alpha') then
+            t.alpha := StrToFloat(Attributes['alpha']);
+          if HasAttribute('g') then
+            t.G := StrToFloat(Attributes['g']);
+          if HasAttribute('ro0') then
+            t.ro0 := StrToFloat(Attributes['ro0']);
+          if HasAttribute('k1') then
+            t.k1 := StrToFloat(Attributes['k1']);
+          if HasAttribute('k') then
+            t.k := StrToFloat(Attributes['k']);
+          if HasAttribute('sigma0') then
+            t.sigma0 := StrToFloat(Attributes['sigma0']);
+          if HasAttribute('sigma1') then
+            t.sigma1 := StrToFloat(Attributes['sigma1']);
+          if HasAttribute('c') then
+            t.ctep := StrToFloat(Attributes['c']);
+          if HasAttribute('gamma') then
+            t.gammatep := StrToFloat(Attributes['gamma']);
+          if ChildNodes.Count > 0 then
+          begin
+            for j := 0 to ChildNodes.Count - 1 do
             begin
-              for j := 0 to ChildNodes.Count - 1 do
-              begin
-                if ChildNodes.Nodes[j].LocalName = 'varAlpha' then
-                  t.VarAlpha := ParseVarAlpha(ChildNodes.Nodes[j]);
-              end;
+              if ChildNodes.Nodes[j].LocalName = 'varAlpha' then
+                t.VarAlpha := ParseVarAlpha(ChildNodes.Nodes[j]);
             end;
-            MaterialList.Add(t);
-          except
-            on e: Exception do
-              Application.MessageBox(PWideChar('Ошибка при чтении данных из файла!'#13#10 + Xml), 'Ошибка в XML')
           end;
-    end;
+          MaterialList.Add(t);
+        except
+          on e: Exception do
+            Application.MessageBox(PWideChar('Ошибка при чтении данных из файла!'#13#10 + Xml), 'Ошибка в XML')
+        end;
   finally
     matarr := MaterialList.ToArray;
   end;
@@ -345,6 +322,45 @@ procedure TForm1.ReinitList;
 begin
   MaterialList.Clear;
   MaterialList.AddRange(matarr);
+end;
+
+function TForm1.SaveToXML: IXMLDocument;
+var
+  i: Integer;
+  t: TMaterial;
+begin
+  Result := TXMLDocument.Create(nil);
+  Result.NodeIndentStr := '  ';
+  Result.Options := [doNodeAutoIndent, doAutoPrefix];
+  Result.LoadFromXML(BlankXML);
+  for i := 1 to MaterialList.Count - 1 do
+    with Result.Node.ChildNodes.Nodes['materials'].AddChild('material') do
+    begin
+      t := MaterialList[i];
+      Attributes['name'] := t.Name;
+      Attributes['color'] := C2T(t.Color);
+      if t.alpha <> DefMaterial.alpha then
+        Attributes['alpha'] := FloatToStr(t.alpha);
+      Attributes['g'] := FloatToStr(t.G);
+      Attributes['ro0'] := FloatToStr(t.ro0);
+      if t.k1 <> DefMaterial.k1 then
+        Attributes['k1'] := FloatToStr(t.k1);
+      Attributes['k'] := FloatToStr(t.k);
+      Attributes['sigma0'] := FloatToStr(t.sigma0);
+      Attributes['sigma1'] := FloatToStr(t.sigma1);
+      if t.ctep <> DefMaterial.ctep then
+        Attributes['c'] := FloatToStr(t.ctep);
+      if t.gammatep <> DefMaterial.gammatep then
+        Attributes['gamma'] := FloatToStr(t.gammatep);
+      if not t.VarAlpha.Default then
+        with AddChild('varAlpha') do
+        begin
+          Attributes['enabled'] := t.VarAlpha.Enabled;
+          AddChild('minT').Attributes['value'] := FloatToStr(t.VarAlpha.MinT);
+          AddChild('maxT').Attributes['value'] := FloatToStr(t.VarAlpha.MaxT);
+          AddChild('minAlpha').Attributes['value'] := FloatToStr(t.VarAlpha.MinAlpha);
+        end;
+    end;
 end;
 
 procedure TForm1.SpeedButton1Click(Sender: TObject);
@@ -376,7 +392,7 @@ function TMaterial.ToString: UnicodeString;
 begin
   Result := name + ' |';
   Result := Result + ' G=' + GetScPref(G, 2, 'Па');
-  if ro0<0.9 then
+  if ro0 < 0.9 then
     Result := Result + '; ro0=' + GetScPref(ro0 * 1000, 2, 'г/м^3')
   else
     Result := Result + '; ro0=' + GetScPref(ro0 / 1000, 2, 'т/м^3');
@@ -387,7 +403,8 @@ begin
   Result := Result + '; c=' + GetScPref(ctep, 4, 'Вт/(м·K)');
   Result := Result + '; gamma=' + FloatToStr(gammatep) + ' 1/K';
   if VarAlpha.Enabled then
-    Result := Result + '; alpha=' + GetScPref(VarAlpha.MinAlpha, 2, 'Па') + ' [@' + FloatToStr(VarAlpha.MinT) + 'K] : '+ GetScPref(alpha, 2, 'Па') +' [@' + FloatToStr(VarAlpha.MaxT) + 'K]'
+    Result := Result + '; alpha=' + GetScPref(VarAlpha.MinAlpha, 2, 'Па') + ' [@' + FloatToStr(VarAlpha.MinT) + 'K] : ' +
+      GetScPref(alpha, 2, 'Па') + ' [@' + FloatToStr(VarAlpha.MaxT) + 'K]'
   else
     Result := Result + '; alpha=' + GetScPref(alpha, 2, 'Па');
 end;

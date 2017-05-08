@@ -13,6 +13,7 @@
 
 #include "QM.h"
 #include "Main.h"
+#include "MatEdit.hpp"
 // ---------------------------------------------------------------------------
 #pragma package(smart_init)
 #pragma resource "*.dfm"
@@ -23,6 +24,7 @@ void SetCEV(QC::ComputeElement* v);
 
 QC::QC() {
 	elements = new std::list<QC::ComputeElement*>();
+	materials = NULL;
 	name = "Новая очередь";
 	nowRun = -1;
 }
@@ -96,10 +98,21 @@ UnicodeString QC::StatusToStr(QC::Status s) {
 }
 
 void QC::SaveToFile(UnicodeString path) {
-	const UnicodeString blank = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <xbcq/>";
+	const UnicodeString blank = "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <xbcq> </xbcq>";
 	auto xml = MQCForm->XML;
-	xml->LoadFromXML(blank);
 	xml->Active = true;
+	if (materials != NULL) {
+		auto form = new TForm1((System::Classes::TComponent*)NULL);
+		form->matarr.set_length(materials->Length + 1);
+		for (int i = 0; i < materials->Length; ++i)
+			form->matarr[i + 1] = (*materials)[i];
+		form->ReinitList();
+		auto mat = form->SaveToXML()->Node->ChildNodes->Nodes[(UnicodeString)"materials"]->XML;
+		xml->LoadFromXML(ReplaceStr(ReplaceStr(blank, "> </", "> "+mat+" </"), "><", "> <"));
+		delete form;
+	}
+	else
+		xml->LoadFromXML(blank);
 	auto tnode = xml->Node->ChildNodes->GetNode((UnicodeString)"xbcq");
 	QC::ComputeElement* lel = new QC::ComputeElement();
 	for (auto v : *elements) {
@@ -123,11 +136,13 @@ void QC::SaveToFile(UnicodeString path) {
 			cn->Attributes[(UnicodeString)"zFECount"] = v->zFECount;
 		if (v->overheadHight != lel->overheadHight)
 			cn->Attributes[(UnicodeString)"overheadHight"] = FloatToStr(v->overheadHight);
+		if (v->stratCount != lel->stratCount)
+			cn->Attributes[(UnicodeString)"stratCount"] = v->stratCount;
 		if (v->baseStrat1Hight != lel->baseStrat1Hight)
 			cn->Attributes[(UnicodeString)"baseStrat1Hight"] = FloatToStr(v->baseStrat1Hight);
-		if (v->baseStrat2Hight != lel->baseStrat2Hight)
+		if (v->baseStrat2Hight != lel->baseStrat2Hight && v->stratCount > 1)
 			cn->Attributes[(UnicodeString)"baseStrat2Hight"] = FloatToStr(v->baseStrat2Hight);
-		if (v->baseStrat3Hight != lel->baseStrat3Hight)
+		if (v->baseStrat3Hight != lel->baseStrat3Hight && v->stratCount > 2)
 			cn->Attributes[(UnicodeString)"baseStrat3Hight"] = FloatToStr(v->baseStrat3Hight);
 		if (v->recess != lel->recess)
 			cn->Attributes[(UnicodeString)"recess"] = v->recess;
@@ -135,15 +150,13 @@ void QC::SaveToFile(UnicodeString path) {
 			cn->Attributes[(UnicodeString)"ohPoints"] = BoolToStr(v->ohPoints, true);
 		if (v->verticalStrats != lel->verticalStrats)
 			cn->Attributes[(UnicodeString)"verticalStrats"] = BoolToStr(v->verticalStrats, true);
-		if (v->stratCount != lel->stratCount)
-			cn->Attributes[(UnicodeString)"stratCount"] = v->stratCount;
 		if (v->ohMaterial != lel->ohMaterial)
 			cn->Attributes[(UnicodeString)"ohMaterial"] = v->ohMaterial;
 		if (v->baseStrat1Material != lel->baseStrat1Material)
 			cn->Attributes[(UnicodeString)"baseStrat1Material"] = v->baseStrat1Material;
-		if (v->baseStrat2Material != lel->baseStrat2Material)
+		if (v->baseStrat2Material != lel->baseStrat2Material && v->stratCount > 1)
 			cn->Attributes[(UnicodeString)"baseStrat2Material"] = v->baseStrat2Material;
-		if (v->baseStrat3Material != lel->baseStrat3Material)
+		if (v->baseStrat3Material != lel->baseStrat3Material && v->stratCount > 2)
 			cn->Attributes[(UnicodeString)"baseStrat3Material"] = v->baseStrat3Material;
 		if (v->sinImpact != lel->sinImpact)
 			cn->Attributes[(UnicodeString)"sinImpact"] = BoolToStr(v->sinImpact, true);
@@ -224,60 +237,74 @@ void QC::ReadFromFile(UnicodeString path) {
 	elements->clear();
 	QC::ComputeElement* lel = new QC::ComputeElement();
 	auto tnode = xml->Node->ChildNodes->GetNode((UnicodeString)"xbcq");
+	bool mat = false;
 	for (int i = 0; i < tnode->ChildNodes->Count; ++i) {
-		auto v = new QC::ComputeElement();
 		auto cn = tnode->ChildNodes->Nodes[i];
-		v->status = QC::Status::Ready;
-		v->name = cn->Attributes[(UnicodeString)"name"];
-		v->fixation = ReadXmlValue("fixation", cn, lel->fixation);
-		v->fixationT = ReadXmlValue("fixationT", cn, lel->fixationT);
-		v->timePeriod = ReadXmlValue("timePeriod", cn, lel->timePeriod);
-		v->timeStepCount = ReadXmlValue("timeStepCount", cn, lel->timeStepCount);
-		v->overheadRadius = ReadXmlValue("overheadRadius", cn, lel->overheadRadius);
-		v->baseRadius = ReadXmlValue("baseRadius", cn, lel->baseRadius);
-		v->rFECount = ReadXmlValue("rFECount", cn, lel->rFECount);
-		v->zFECount = ReadXmlValue("zFECount", cn, lel->zFECount);
-		v->overheadHight = ReadXmlValue("overheadHight", cn, lel->overheadHight);
-		v->baseStrat1Hight = ReadXmlValue("baseStrat1Hight", cn, lel->baseStrat1Hight);
-		v->baseStrat2Hight = ReadXmlValue("baseStrat2Hight", cn, lel->baseStrat2Hight);
-		v->baseStrat3Hight = ReadXmlValue("baseStrat3Hight", cn, lel->baseStrat3Hight);
-		v->recess = ReadXmlValue("recess", cn, lel->recess);
-		v->ohPoints = ReadXmlValue("ohPoints", cn, lel->ohPoints);
-		v->verticalStrats = ReadXmlValue("verticalStrats", cn, lel->verticalStrats);
-		v->stratCount = ReadXmlValue("stratCount", cn, lel->stratCount);
-		v->ohMaterial = ReadXmlValue("ohMaterial", cn, lel->ohMaterial);
-		v->baseStrat1Material = ReadXmlValue("baseStrat1Material", cn, lel->baseStrat1Material);
-		v->baseStrat2Material = ReadXmlValue("baseStrat2Material", cn, lel->baseStrat2Material);
-		v->baseStrat3Material = ReadXmlValue("baseStrat3Material", cn, lel->baseStrat3Material);
-		v->sinImpact = ReadXmlValue("sinImpact", cn, lel->sinImpact);
-		v->bottomWave = ReadXmlValue("bottomWave", cn, lel->bottomWave);
-		v->bottomWaveForte = ReadXmlValue("bottomWaveForte", cn, lel->bottomWaveForte);
-		v->bottomContWave1 = ReadXmlValue("bottomContWave1", cn, lel->bottomContWave1);
-		v->bottomContWave2 = ReadXmlValue("bottomContWave2", cn, lel->bottomContWave2);
-		v->bottomContWave3 = ReadXmlValue("bottomContWave3", cn, lel->bottomContWave3);
-		v->lateralSide = ReadXmlValue("lateralSide", cn, lel->lateralSide);
-		v->lateralSideForte = ReadXmlValue("lateralSideForte", cn, lel->lateralSideForte);
-		v->movingOverhead = ReadXmlValue("movingOverhead", cn, lel->movingOverhead);
-		v->internalWave = ReadXmlValue("internalWave", cn, lel->internalWave);
-		v->indentor = ReadXmlValue("indentor", cn, lel->indentor);
-		v->bottomImpact = ReadXmlValue("bottomImpact", cn, lel->bottomImpact);
-		v->glassful = ReadXmlValue("glassful", cn, lel->glassful);
-		v->overheadSpeed = ReadXmlValue("overheadSpeed", cn, lel->overheadSpeed);
-		v->lateralWaveSpeed = ReadXmlValue("lateralWaveSpeed", cn, lel->lateralWaveSpeed);
-		v->internalWaveSpeed = ReadXmlValue("internalWaveSpeed", cn, lel->internalWaveSpeed);
-		v->indentorSpeed = ReadXmlValue("indentorSpeed", cn, lel->indentorSpeed);
-		v->showHeat = ReadXmlValue("showHeat", cn, lel->showHeat);
-		v->beautyHeat = ReadXmlValue("beautyHeat", cn, lel->beautyHeat);
-		v->cinema = ReadXmlValue("cinema", cn, lel->cinema);
-		v->cinemaFrameCount = ReadXmlValue("cinemaFrameCount", cn, lel->cinemaFrameCount);
-		v->grayScale = ReadXmlValue("grayScale", cn, lel->grayScale);
-		elements->push_back(v);
-		lel = v;
+		if (cn->NodeName == (UnicodeString)"materials") {
+			if (mat)
+				throw new Exception("Несколько записей материалов в файле!");
+			mat = true;
+			materials = new DynamicArray<TMaterial>();
+			auto form = new TForm1((System::Classes::TComponent*)NULL);
+			form->ReadFromNode(cn);
+			materials->set_length(form->matarr.Length - 1);
+			for (int i = 1; i < form->matarr.Length; ++i)
+				(*materials)[i - 1] = form->matarr[i];
+			delete form;
+		}
+		else {
+			auto v = new QC::ComputeElement();
+			v->status = QC::Status::Ready;
+			v->name = cn->Attributes[(UnicodeString)"name"];
+			v->fixation = ReadXmlValue("fixation", cn, lel->fixation);
+			v->fixationT = ReadXmlValue("fixationT", cn, lel->fixationT);
+			v->timePeriod = ReadXmlValue("timePeriod", cn, lel->timePeriod);
+			v->timeStepCount = ReadXmlValue("timeStepCount", cn, lel->timeStepCount);
+			v->overheadRadius = ReadXmlValue("overheadRadius", cn, lel->overheadRadius);
+			v->baseRadius = ReadXmlValue("baseRadius", cn, lel->baseRadius);
+			v->rFECount = ReadXmlValue("rFECount", cn, lel->rFECount);
+			v->zFECount = ReadXmlValue("zFECount", cn, lel->zFECount);
+			v->overheadHight = ReadXmlValue("overheadHight", cn, lel->overheadHight);
+			v->baseStrat1Hight = ReadXmlValue("baseStrat1Hight", cn, lel->baseStrat1Hight);
+			v->baseStrat2Hight = ReadXmlValue("baseStrat2Hight", cn, lel->baseStrat2Hight);
+			v->baseStrat3Hight = ReadXmlValue("baseStrat3Hight", cn, lel->baseStrat3Hight);
+			v->recess = ReadXmlValue("recess", cn, lel->recess);
+			v->ohPoints = ReadXmlValue("ohPoints", cn, lel->ohPoints);
+			v->verticalStrats = ReadXmlValue("verticalStrats", cn, lel->verticalStrats);
+			v->stratCount = ReadXmlValue("stratCount", cn, lel->stratCount);
+			v->ohMaterial = ReadXmlValue("ohMaterial", cn, lel->ohMaterial);
+			v->baseStrat1Material = ReadXmlValue("baseStrat1Material", cn, lel->baseStrat1Material);
+			v->baseStrat2Material = ReadXmlValue("baseStrat2Material", cn, lel->baseStrat2Material);
+			v->baseStrat3Material = ReadXmlValue("baseStrat3Material", cn, lel->baseStrat3Material);
+			v->sinImpact = ReadXmlValue("sinImpact", cn, lel->sinImpact);
+			v->bottomWave = ReadXmlValue("bottomWave", cn, lel->bottomWave);
+			v->bottomWaveForte = ReadXmlValue("bottomWaveForte", cn, lel->bottomWaveForte);
+			v->bottomContWave1 = ReadXmlValue("bottomContWave1", cn, lel->bottomContWave1);
+			v->bottomContWave2 = ReadXmlValue("bottomContWave2", cn, lel->bottomContWave2);
+			v->bottomContWave3 = ReadXmlValue("bottomContWave3", cn, lel->bottomContWave3);
+			v->lateralSide = ReadXmlValue("lateralSide", cn, lel->lateralSide);
+			v->lateralSideForte = ReadXmlValue("lateralSideForte", cn, lel->lateralSideForte);
+			v->movingOverhead = ReadXmlValue("movingOverhead", cn, lel->movingOverhead);
+			v->internalWave = ReadXmlValue("internalWave", cn, lel->internalWave);
+			v->indentor = ReadXmlValue("indentor", cn, lel->indentor);
+			v->bottomImpact = ReadXmlValue("bottomImpact", cn, lel->bottomImpact);
+			v->glassful = ReadXmlValue("glassful", cn, lel->glassful);
+			v->overheadSpeed = ReadXmlValue("overheadSpeed", cn, lel->overheadSpeed);
+			v->lateralWaveSpeed = ReadXmlValue("lateralWaveSpeed", cn, lel->lateralWaveSpeed);
+			v->internalWaveSpeed = ReadXmlValue("internalWaveSpeed", cn, lel->internalWaveSpeed);
+			v->indentorSpeed = ReadXmlValue("indentorSpeed", cn, lel->indentorSpeed);
+			v->showHeat = ReadXmlValue("showHeat", cn, lel->showHeat);
+			v->beautyHeat = ReadXmlValue("beautyHeat", cn, lel->beautyHeat);
+			v->cinema = ReadXmlValue("cinema", cn, lel->cinema);
+			v->cinemaFrameCount = ReadXmlValue("cinemaFrameCount", cn, lel->cinemaFrameCount);
+			v->grayScale = ReadXmlValue("grayScale", cn, lel->grayScale);
+			elements->push_back(v);
+			lel = v;
+		}
 	}
 }
 
-void SetPBVal(int v, int max)
-{
+void SetPBVal(int v, int max) {
 	MQCForm->SetPBVal(v, max);
 }
 
@@ -294,6 +321,8 @@ void QC::Run(TListView * list, bool hideGraph) {
 		if (v->status == QC::Status::Ready)
 			++rcnt;
 	int cnt = 0;
+	if (materials != NULL)
+		mainForm->SetMaterials(materials);
 	for (auto v : *elements) {
 		UnicodeString repres = "";
 		if (v->status == QC::Status::Ready) {
@@ -313,7 +342,8 @@ void QC::Run(TListView * list, bool hideGraph) {
 			etime = Now();
 			try {
 				res = mainForm->Calculate(dtstamp, hideGraph, "#" + name + "\\series" + sstamp + "\\" +
-					ReplaceStr(ReplaceStr(v->name, "/", "_"), "\\", "_") + " ", [v, elem, rcnt, cnt](int i) {SetPBVal((cnt-1)*100+i, rcnt*100); QC::ResetItem(elem, v, i);});
+					ReplaceStr(ReplaceStr(v->name, "/", "_"), "\\", "_") + " ", [v, elem, rcnt, cnt](int i)
+				{SetPBVal((cnt - 1) * 100 + i, rcnt * 100); QC::ResetItem(elem, v, i);});
 			}
 			catch (Exception &e) {
 				res = false;
@@ -346,6 +376,8 @@ void QC::Run(TListView * list, bool hideGraph) {
 	}
 	report->SaveToFile(DirToResDir(mainForm->DirEdit->Text) + "#" + name + "\\series" + sstamp + "\\#report.txt");
 	delete report;
+	mainForm->FormCreate(NULL);
+	Application->ProcessMessages();
 	nowRun = -1;
 }
 
@@ -399,6 +431,7 @@ void __fastcall TMQCForm::EListSelectItem(TObject * Sender, TListItem * Item, bo
 	DelBtn->Enabled = Selected;
 	DubBtn->Enabled = Selected;
 	EditBtn->Enabled = Selected;
+	FillFormBtn->Enabled = Selected;
 }
 // ---------------------------------------------------------------------------
 
@@ -532,6 +565,7 @@ void __fastcall TMQCForm::StartBtnClick(TObject * Sender) {
 	LoadBtn->Enabled = false;
 	SaveBtn->Enabled = false;
 	EditBtn->Enabled = false;
+	FillFormBtn->Enabled = false;
 	AbNowBtn->Enabled = true;
 	AbAllBtn->Enabled = true;
 	EList->Enabled = false;
@@ -674,5 +708,12 @@ void __fastcall TMQCForm::AddFormBtnClick(TObject * Sender) {
 	EList->ItemIndex = EList->Items->Count - 1;
 	GetCEV(v);
 	EditBtn->Click();
+}
+
+// ---------------------------------------------------------------------------
+void __fastcall TMQCForm::FillFormBtnClick(TObject *Sender) {
+	auto v = computeQueue->GetElementByIndex(EList->ItemIndex);
+	if (v != NULL)
+		SetCEV(v);
 }
 // ---------------------------------------------------------------------------

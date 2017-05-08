@@ -10,6 +10,7 @@
 #include <Dialogs.hpp>
 
 #include "Graph.h"
+#include "MatEdit.hpp"
 #include <Data.Bind.Components.hpp>
 #include <Data.Bind.EngExt.hpp>
 #include <System.Bindings.Outputs.hpp>
@@ -202,6 +203,7 @@ public: // User declarations
 	bool __fastcall Calculate(UnicodeString dtstamp, bool hideGraph = false, UnicodeString subfolder = "", std::function<void(int)> percentCallBack = [](int i){;});
 	void __fastcall SetUS();
 	void __fastcall ResetUS();
+	void __fastcall SetMaterials(DynamicArray<TMaterial> *mat);
 };
 
 // ---------------------------------------------------------------------------

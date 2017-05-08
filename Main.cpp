@@ -209,7 +209,7 @@ bool UnlimStop = false;
 
 int nforgraf = 0;
 
-DynamicArray<TMaterial>Material;
+DynamicArray<TMaterial> Material;
 
 long double step;
 long double aa[30][30];
@@ -2936,4 +2936,11 @@ void __fastcall TmainForm::SetUS() {
 
 void __fastcall TmainForm::ResetUS() {
 	UnlimStop = false;
+}
+
+void __fastcall TmainForm::SetMaterials(DynamicArray<TMaterial> *mat){
+	Material.set_length(mat->Length + 1);
+	for(int i = 0; i < mat->Length; ++i)
+	   Material[i + 1] = (*mat)[i];
+	ReinitBoxes();
 }

@@ -121,7 +121,9 @@ private:
 	
 public:
 	System::TArray__1<TMaterial> matarr;
-	void __fastcall ReadFromFile(System::UnicodeString path);
+	void __fastcall ReadFromFile(System::UnicodeString Path);
+	void __fastcall ReadFromNode(Xml::Xmlintf::_di_IXMLNode Node);
+	Xml::Xmlintf::_di_IXMLDocument __fastcall SaveToXML(void);
 	void __fastcall ReinitList(void);
 public:
 	/* TCustomForm.Create */ inline __fastcall virtual TForm1(System::Classes::TComponent* AOwner) : Vcl::Forms::TForm(AOwner) { }
