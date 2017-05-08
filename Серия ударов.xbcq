@@ -1,9 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xbcq>
-  <ComputeElement name="Удар 100 м/с" fixation="0" fixationT="0" timePeriod="1E-5" timeStepCount="2500" overheadRadius="0,02" baseRadius="0,04" rFECount="12" zFECount="15" overheadHight="0,02" baseStrat1Hight="0,02" baseStrat2Hight="0" baseStrat3Hight="0" recess="0" ohPoints="0" verticalStrats="0" stratCount="1" ohMaterial="1" baseStrat1Material="2" baseStrat2Material="3" baseStrat3Material="3" sinImpact="0" bottomWave="0" bottomWaveForte="0" bottomContWave1="0" bottomContWave2="0" bottomContWave3="0" lateralSide="0" lateralSideForte="0" movingOverhead="1" internalWave="0" indentor="0" bottomImpact="0" glassful="0" overheadSpeed="100" lateralWaveSpeed="0" internalWaveSpeed="0" indentorSpeed="0" showHeat="1" beautyHeat="1" cinema="1" cinemaFrameCount="100" grayScale="0"/>
-  <ComputeElement name="Удар 120 м/с" fixation="0" fixationT="0" timePeriod="1E-5" timeStepCount="2500" overheadRadius="0,02" baseRadius="0,04" rFECount="12" zFECount="15" overheadHight="0,02" baseStrat1Hight="0,02" baseStrat2Hight="0" baseStrat3Hight="0" recess="0" ohPoints="0" verticalStrats="0" stratCount="1" ohMaterial="1" baseStrat1Material="2" baseStrat2Material="3" baseStrat3Material="3" sinImpact="0" bottomWave="0" bottomWaveForte="0" bottomContWave1="0" bottomContWave2="0" bottomContWave3="0" lateralSide="0" lateralSideForte="0" movingOverhead="1" internalWave="0" indentor="0" bottomImpact="0" glassful="0" overheadSpeed="120" lateralWaveSpeed="0" internalWaveSpeed="0" indentorSpeed="0" showHeat="1" beautyHeat="1" cinema="1" cinemaFrameCount="100" grayScale="0"/>
-  <ComputeElement name="Удар 140 м/с" fixation="0" fixationT="0" timePeriod="1E-5" timeStepCount="2500" overheadRadius="0,02" baseRadius="0,04" rFECount="12" zFECount="15" overheadHight="0,02" baseStrat1Hight="0,02" baseStrat2Hight="0" baseStrat3Hight="0" recess="0" ohPoints="0" verticalStrats="0" stratCount="1" ohMaterial="1" baseStrat1Material="2" baseStrat2Material="3" baseStrat3Material="3" sinImpact="0" bottomWave="0" bottomWaveForte="0" bottomContWave1="0" bottomContWave2="0" bottomContWave3="0" lateralSide="0" lateralSideForte="0" movingOverhead="1" internalWave="0" indentor="0" bottomImpact="0" glassful="0" overheadSpeed="140" lateralWaveSpeed="0" internalWaveSpeed="0" indentorSpeed="0" showHeat="1" beautyHeat="1" cinema="1" cinemaFrameCount="100" grayScale="0"/>
-  <ComputeElement name="Удар 160 м/с" fixation="0" fixationT="0" timePeriod="1E-5" timeStepCount="2500" overheadRadius="0,02" baseRadius="0,04" rFECount="12" zFECount="15" overheadHight="0,02" baseStrat1Hight="0,02" baseStrat2Hight="0" baseStrat3Hight="0" recess="0" ohPoints="0" verticalStrats="0" stratCount="1" ohMaterial="1" baseStrat1Material="2" baseStrat2Material="3" baseStrat3Material="3" sinImpact="0" bottomWave="0" bottomWaveForte="0" bottomContWave1="0" bottomContWave2="0" bottomContWave3="0" lateralSide="0" lateralSideForte="0" movingOverhead="1" internalWave="0" indentor="0" bottomImpact="0" glassful="0" overheadSpeed="160" lateralWaveSpeed="0" internalWaveSpeed="0" indentorSpeed="0" showHeat="1" beautyHeat="1" cinema="1" cinemaFrameCount="100" grayScale="0"/>
-  <ComputeElement name="Удар 180 м/с" fixation="0" fixationT="0" timePeriod="1E-5" timeStepCount="2500" overheadRadius="0,02" baseRadius="0,04" rFECount="12" zFECount="15" overheadHight="0,02" baseStrat1Hight="0,02" baseStrat2Hight="0" baseStrat3Hight="0" recess="0" ohPoints="0" verticalStrats="0" stratCount="1" ohMaterial="1" baseStrat1Material="2" baseStrat2Material="3" baseStrat3Material="3" sinImpact="0" bottomWave="0" bottomWaveForte="0" bottomContWave1="0" bottomContWave2="0" bottomContWave3="0" lateralSide="0" lateralSideForte="0" movingOverhead="1" internalWave="0" indentor="0" bottomImpact="0" glassful="0" overheadSpeed="180" lateralWaveSpeed="0" internalWaveSpeed="0" indentorSpeed="0" showHeat="1" beautyHeat="1" cinema="1" cinemaFrameCount="100" grayScale="0"/>
-  <ComputeElement name="Удар 200 м/с" fixation="0" fixationT="0" timePeriod="1E-5" timeStepCount="2500" overheadRadius="0,02" baseRadius="0,04" rFECount="12" zFECount="15" overheadHight="0,02" baseStrat1Hight="0,02" baseStrat2Hight="0" baseStrat3Hight="0" recess="0" ohPoints="0" verticalStrats="0" stratCount="1" ohMaterial="1" baseStrat1Material="2" baseStrat2Material="3" baseStrat3Material="3" sinImpact="0" bottomWave="0" bottomWaveForte="0" bottomContWave1="0" bottomContWave2="0" bottomContWave3="0" lateralSide="0" lateralSideForte="0" movingOverhead="1" internalWave="0" indentor="0" bottomImpact="0" glassful="0" overheadSpeed="200" lateralWaveSpeed="0" internalWaveSpeed="0" indentorSpeed="0" showHeat="1" beautyHeat="1" cinema="1" cinemaFrameCount="100" grayScale="0"/>
+  <materials>
+    <material name="Сталь" color="8a9597" g="81000000000" ro0="7800" k="175000000000" sigma0="1660000000" sigma1="1660000000" c="58" gamma="1,3E-5"/>
+    <material name="Алюминий (ИП)" color="a5a5a5" alpha="0" g="26200000000" ro0="2700" k="64000000000" sigma0="370000000" sigma1="70000000" c="210" gamma="2,22E-5"/>
+    <material name="Алюминий (разупрочнение)" color="6495ed" alpha="50000000000" g="26200000000" ro0="2700" k="64000000000" sigma0="370000000" sigma1="70000000" c="210" gamma="2,22E-5"/>
+    <material name="Алюминий (ПКР 100)" color="1974d2" alpha="50000000000" g="26200000000" ro0="2700" k="64000000000" sigma0="370000000" sigma1="70000000" c="210" gamma="2,22E-5">
+      <varAlpha enabled="true">
+        <minT value="373,15"/>
+        <maxT value="473,15"/>
+        <minAlpha value="0"/>
+      </varAlpha>
+    </material>
+    <material name="Алюминий (ПКР 200)" color="1b5583" alpha="50000000000" g="26200000000" ro0="2700" k="64000000000" sigma0="370000000" sigma1="70000000" c="210" gamma="2,22E-5">
+      <varAlpha enabled="true">
+        <minT value="373,15"/>
+        <maxT value="573,15"/>
+        <minAlpha value="0"/>
+      </varAlpha>
+    </material>
+    <material name="Алюминий (ПКР 300)" color="354d73" alpha="50000000000" g="26200000000" ro0="2700" k="64000000000" sigma0="370000000" sigma1="70000000" c="210" gamma="2,22E-5">
+      <varAlpha enabled="true">
+        <minT value="373,15"/>
+        <maxT value="673,15"/>
+        <minAlpha value="0"/>
+      </varAlpha>
+    </material>
+  </materials>
+  <ComputeElement name="25 м/с, ИП" fixationT="6" timePeriod="0,001" timeStepCount="2000" overheadRadius="2" baseRadius="4" rFECount="12" zFECount="15" overheadHight="2" baseStrat1Hight="2" stratCount="1" ohMaterial="1" baseStrat1Material="2" movingOverhead="True" overheadSpeed="25" showHeat="True" beautyHeat="True" cinemaFrameCount="10" grayScale="True"/>
+  <ComputeElement name="50 м/с, ИП" overheadSpeed="50"/>
+  <ComputeElement name="75 м/с, ИП" overheadSpeed="75"/>
+  <ComputeElement name="100 м/с, ИП" overheadSpeed="100"/>
+  <ComputeElement name="125 м/с, ИП" overheadSpeed="125"/>
+  <ComputeElement name="150 м/с, ИП" overheadSpeed="150"/>
+  <ComputeElement name="175 м/с, ИП" overheadSpeed="175"/>
+  <ComputeElement name="200 м/с, ИП" overheadSpeed="200"/>
+  <ComputeElement name="25 м/с, Р" overheadSpeed="25" baseStrat1Material="3"/>
+  <ComputeElement name="50 м/с, Р" overheadSpeed="50"/>
+  <ComputeElement name="75 м/с, Р" overheadSpeed="75"/>
+  <ComputeElement name="100 м/с, Р" overheadSpeed="100"/>
+  <ComputeElement name="125 м/с, Р" overheadSpeed="125"/>
+  <ComputeElement name="150 м/с, Р" overheadSpeed="150"/>
+  <ComputeElement name="175 м/с, Р" overheadSpeed="175"/>
+  <ComputeElement name="200 м/с, Р" overheadSpeed="200"/>
+  <ComputeElement name="25 м/с, ПКР100" overheadSpeed="25" baseStrat1Material="4"/>
+  <ComputeElement name="50 м/с, ПКР100" overheadSpeed="50"/>
+  <ComputeElement name="75 м/с, ПКР100" overheadSpeed="75"/>
+  <ComputeElement name="100 м/с, ПКР100" overheadSpeed="100"/>
+  <ComputeElement name="125 м/с, ПКР100" overheadSpeed="125"/>
+  <ComputeElement name="150 м/с, ПКР100" overheadSpeed="150"/>
+  <ComputeElement name="175 м/с, ПКР100" overheadSpeed="175"/>
+  <ComputeElement name="200 м/с, ПКР100" overheadSpeed="200"/>
+  <ComputeElement name="25 м/с, ПКР200" overheadSpeed="25" baseStrat1Material="5"/>
+  <ComputeElement name="50 м/с, ПКР200" overheadSpeed="50"/>
+  <ComputeElement name="75 м/с, ПКР200" overheadSpeed="75"/>
+  <ComputeElement name="100 м/с, ПКР200" overheadSpeed="100"/>
+  <ComputeElement name="125 м/с, ПКР200" overheadSpeed="125"/>
+  <ComputeElement name="150 м/с, ПКР200" overheadSpeed="150"/>
+  <ComputeElement name="175 м/с, ПКР200" overheadSpeed="175"/>
+  <ComputeElement name="200 м/с, ПКР200" overheadSpeed="200"/>
+  <ComputeElement name="25 м/с, ПКР300" overheadSpeed="25" baseStrat1Material="6"/>
+  <ComputeElement name="50 м/с, ПКР300" overheadSpeed="50"/>
+  <ComputeElement name="75 м/с, ПКР300" overheadSpeed="75"/>
+  <ComputeElement name="100 м/с, ПКР300" overheadSpeed="100"/>
+  <ComputeElement name="125 м/с, ПКР300" overheadSpeed="125"/>
+  <ComputeElement name="150 м/с, ПКР300" overheadSpeed="150"/>
+  <ComputeElement name="175 м/с, ПКР300" overheadSpeed="175"/>
+  <ComputeElement name="200 м/с, ПКР300" overheadSpeed="200"/>
 </xbcq>
