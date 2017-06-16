@@ -2,7 +2,7 @@
 // Copyright (c) 1995, 2016 by Embarcadero Technologies, Inc.
 // All rights reserved
 
-// (DO NOT EDIT: machine generated header) 'MatEdit.pas' rev: 31.00 (Windows)
+// (DO NOT EDIT: machine generated header) 'MatEdit.pas' rev: 32.00 (Windows)
 
 #ifndef MateditHPP
 #define MateditHPP
@@ -35,6 +35,7 @@
 #include <Vcl.Grids.hpp>
 #include <Vcl.ValEdit.hpp>
 #include <Vcl.ComCtrls.hpp>
+#include <Vcl.XPMan.hpp>
 #include <System.Generics.Defaults.hpp>
 #include <System.Types.hpp>
 
@@ -104,6 +105,7 @@ __published:
 	Vcl::Stdctrls::TButton* AddPropButton;
 	Vcl::Stdctrls::TLabel* Label2;
 	Vcl::Valedit::TValueListEditor* AddPropEdit;
+	Vcl::Xpman::TXPManifest* XPManifest1;
 	void __fastcall ColorListBox1Click(System::TObject* Sender);
 	void __fastcall ComboBox1Change(System::TObject* Sender);
 	void __fastcall FormShow(System::TObject* Sender);

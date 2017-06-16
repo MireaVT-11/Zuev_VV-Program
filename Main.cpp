@@ -271,6 +271,9 @@ long double WidthCoef2;
 
 int point1 = 0, point2 = 0, point3 = 0;
 
+long double BigI2pValue = 1.0;
+bool BigI2p = false;
+
 // ---------------------------------------------------------------------------
 __fastcall TmainForm::TmainForm(TComponent* Owner) : TForm(Owner) {
 }
@@ -358,8 +361,8 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 
 	// КОМПОНЕНТЫ ТЕНЗОРА СКОРОСТЕЙ ДЕФОРМАЦИЙ
 	long double epsdotrr = ((z2 - z3) * u1 + (z3 - z1) * u2 + (z1 - z2) * u3) / (as[k] + aks[k]) + dTptime; // ;
-	long double epsdotrz = ((r3 - r2) * u1 + (r1 - r3) * u2 + (r2 - r1) * u3 + (z2 - z3) * v1 + (z3 - z1) * v2 + (z1 - z2) * v3) /
-		(2. * (as[k] + aks[k])) + dTptime; // ;
+	long double epsdotrz = ((r3 - r2) * u1 + (r1 - r3) * u2 + (r2 - r1) * u3 + (z2 - z3) * v1 + (z3 - z1) * v2 +
+		(z1 - z2) * v3) / (2. * (as[k] + aks[k])) + dTptime; // ;
 	long double epsdotzz = ((r3 - r2) * v1 + (r1 - r3) * v2 + (r2 - r1) * v3) / (as[k] + aks[k]) + dTptime; // ;
 	long double epsdottt = -epsdotrr - epsdotzz + vdif; // + dTptime;
 
@@ -406,7 +409,8 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	long double Heps = 2. * Gs[k];
 	if (sigma1s[k] < alf * p[k] + sigma0s[k] - alphas[k] * I2p[k]) {
 		Heps = 2. * Gs[k] + ks[k] * powl(k1s[k], 2) - k1s[k] * k1s[k] / ks[k] -
-			alphas[k] / F[k] * (srr[k] * (epsrrp[k] - epsttp[k]) + szz[k] * (epszzp[k] - epsttp[k]) + 2. * srz[k] * epsrzp[k]);
+			alphas[k] / F[k] * (srr[k] * (epsrrp[k] - epsttp[k]) + szz[k] * (epszzp[k] - epsttp[k]) +
+			2. * srz[k] * epsrzp[k]);
 	}
 
 	// то что было в новой версии
@@ -429,8 +433,8 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	// ПРОИЗВОДНАЯ ФУНКЦИИ ДЕФОРМИРОВАНИЯ ПО ВРЕМЕНИ
 	// (2015 год) За такое надо руки отрывать!
 	// (2017 год) Поддерживаю предыдущего оратора.
-	psidot[k] = 2.e0 * Gs[k] / F[k] * (srr[k] * (epsdotrr - epsdottt) + szz[k] * (epsdotzz - epsdottt) + 2.e0 * srz[k] * epsdotrz)
-		- ks[k] * alf * k1s[k] * (epsdotrr + epsdotzz + epsdottt);
+	psidot[k] = 2.e0 * Gs[k] / F[k] * (srr[k] * (epsdotrr - epsdottt) + szz[k] * (epsdotzz - epsdottt) +
+		2.e0 * srz[k] * epsdotrz) - ks[k] * alf * k1s[k] * (epsdotrr + epsdotzz + epsdottt);
 
 	// (2017 год) По уверениям Зуева, к psidot нужно добавить производную от alpha по температуре.
 	// Ниже: d(alpha)/dT*dT/dt, если alpha не константа.
@@ -521,6 +525,8 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	// Версия 2015 - надо писать так!
 	// (2015 год) Ололололо!!!
 	sqI2p[k] = sqrtl(I2p[k]);
+	if(sqI2p[k]>BigI2pValue)
+		BigI2p = true;
 
 	// if(m_sqI2p<sqI2p[k]) {m_sqI2p = sqI2p[k];}
 
@@ -595,6 +601,7 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 	GetBeginValue();
 	// ****************************************
 	step = nt / 10.;
+    BigI2p = false;
 	// if (!NoAnim) {
 	graphForm->Canvas->Brush->Color = clWhite;
 	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
@@ -866,16 +873,16 @@ SavingStartInformation: {
 		if (CheckBoxbsh->Checked)
 			BaseInfo->Add("V_инд.     = " + Editbsh->Text + " м/с");
 		BaseInfo->Add("Размер уд. = " + rad0Edit->Text + "x" + h0Edit->Text + " (м)");
-		BaseInfo->Add("Размер м.  = " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" + h2iEdit3->Text +
-			") (м)");
+		BaseInfo->Add("Размер м.  = " + rad1Edit->Text + "x(" + h2iEdit1->Text + "+" + h2iEdit2->Text + "+" +
+			h2iEdit3->Text + ") (м)");
 		BaseInfo->SaveToFile(GetFileName("#", "", "", path, exstamp, "txt"));
 
 		delete BaseInfo;
 	}
 
 	int minpp[nel];
-	long double tcrd = max(zcoord[itop[1][TElemTarget[1]]], max(zcoord[itop[2][TElemTarget[1]]], zcoord[itop[3][TElemTarget[1]]]))
-		/ 0.001;
+	long double tcrd = max(zcoord[itop[1][TElemTarget[1]]], max(zcoord[itop[2][TElemTarget[1]]],
+		zcoord[itop[3][TElemTarget[1]]])) / 0.001;
 	for (int i = 1; i <= 2 * (int)n4; ++i) {
 		minpp[i] = -1;
 	}
@@ -978,15 +985,17 @@ SavingStartInformation: {
 			if (UnlimStop) {
 				throw new Exception("Прервано пользователем");
 			}
+			if(BigI2p){
+				throw new Exception("Интенсивность пластической деформации превысила предел. Выявлено на шаге " + IntToStr(n));
+			}
 			Application->ProcessMessages();
 			newspeed(); // speedr1,speedz1
 			// ************************************************************
 			// УСЛОВИЯ ЗАКРЕПЛЕНИЯ
-			/* for (int i = 1; i <= numberelem; i++)
-			 {
-			 if (IsZero(rcoord[i],1.e-10L))
-			 speedr1[i] = 0.;//симметрия, нам всем нужна симметрия
-			 } */
+			for (int i = 1; i <= numberelem; i++) {
+				if (IsZero(rcoord[i], 1.e-10L))
+					speedr1[i] = 0.; // симметрия, нам всем нужна симметрия
+			}
 			if (jjjj != 1)
 				for (int i = 1; i <= numbertop; i++) {
 					switch (jjjj) {
@@ -1129,11 +1138,13 @@ SavingStartInformation: {
 						else {
 							if ((rcoord[i] > radius1 / 2.) && (rcoord[i] <= 3. * radius1 / 4.)) {
 								speedz[i] =
-									abs(vindent * sin(M_PI_2 * 8. * rcoord[i] / (3. * radius1)) * sin(M_PI_2 - M_PI_2 * n / nt));
+									abs(vindent * sin(M_PI_2 * 8. * rcoord[i] / (3. * radius1)) * sin
+									(M_PI_2 - M_PI_2 * n / nt));
 							}
 							else {
 								if ((rcoord[i] > 3. * radius1 / 4.) && (rcoord[i] <= radius1)) {
-									speedz[i] = abs(vn2 * sin(M_PI_2 * 2. * rcoord[i] / radius1) * sin(M_PI_2 - M_PI_2 * n / nt));
+									speedz[i] =
+										abs(vn2 * sin(M_PI_2 * 2. * rcoord[i] / radius1) * sin(M_PI_2 - M_PI_2 * n / nt));
 								}
 							}
 						}
@@ -1199,7 +1210,7 @@ SavingStartInformation: {
 				{
 					// for (int i=1; i<=numbertop; i++)
 					// if (zcoord[i]==h0+h2i[1])
-					for (int i = (n2 + 1) * (n4 + 1) + (n1) * (n3); i <= (n2 + 1) * (n4 + 1) + (n1) * (n3 + 1); i++)
+					for (int i = (n2 + 1) * (n4 + 1) + (n1) * (n3); i <= (n2 + 1) * (n4 + 1) + (n1) * (n3 + 1) + 1; i++)
 						// int i=(n2+1)*(n4+1)+(n1)*(n3+1);
 							speedz[i] = -bsh;
 					for (int i = 1; i <= n4 + 1; i++) {
@@ -1253,7 +1264,8 @@ SavingStartInformation: {
 			if (!hideGraph || (hideGraph && cinema)) {
 				threegraphs(false, n / (nt / CinemaEdit->Value), cinema, path);
 				graphForm->Caption = FloatToStr(RoundTo(n * 100. / nt, -1)) + "%|"; // <-- (2015 год) Проверить здесь
-				graphForm->Caption = graphForm->Caption + FloatToStr(RoundTo(T_max, 0)) + "|" + FloatToStr(RoundTo(T_rec, 0));
+				graphForm->Caption = graphForm->Caption + FloatToStr(RoundTo(T_max, 0)) + "|" +
+					FloatToStr(RoundTo(T_rec, 0));
 			}
 		}
 		// }
@@ -1314,8 +1326,7 @@ SavingStartInformation: {
 		if (res < 0)
 			res = max(minpp[2 * i], minpp[2 * i - 1]);
 		if (res < 0)
-			return 0.L;
-		return tcrd - (zcoord[itop[1][res]] + zcoord[itop[2][res]] + zcoord[itop[3][res]]) / 0.003;});
+			return 0.L; return tcrd - (zcoord[itop[1][res]] + zcoord[itop[2][res]] + zcoord[itop[3][res]]) / 0.003;});
 
 	for (int i = 1; i <= n4; ++i) {
 		sD->SaveValues(i);
@@ -1912,8 +1923,8 @@ TColor TempToColor(long double T, bool bw) {
 		}
 	} TG[5] = {
 		{0, 0, 0, 0.}, {(bw) ? 20 : 70, (bw) ? 20 : 70, (bw) ? 20 : 70, 300.},
-		{(bw) ? 150 : 175, (bw) ? 150 : 43, (bw) ? 150 : 30, 350.}, {(bw) ? 220 : 255, (bw) ? 220 : 255, (bw) ? 220 : 0, 400.},
-		{255, 255, 255, T_max}};
+		{(bw) ? 150 : 175, (bw) ? 150 : 43, (bw) ? 150 : 30, 350.}, {(bw) ? 220 : 255, (bw) ? 220 : 255, (bw) ? 220 : 0, 400.
+		}, {255, 255, 255, T_max}};
 	if (T >= TG[4].T) {
 		return TG[4].color();
 	}
@@ -2938,9 +2949,9 @@ void __fastcall TmainForm::ResetUS() {
 	UnlimStop = false;
 }
 
-void __fastcall TmainForm::SetMaterials(DynamicArray<TMaterial> *mat){
+void __fastcall TmainForm::SetMaterials(DynamicArray<TMaterial> *mat) {
 	Material.set_length(mat->Length + 1);
-	for(int i = 0; i < mat->Length; ++i)
-	   Material[i + 1] = (*mat)[i];
+	for (int i = 0; i < mat->Length; ++i)
+		Material[i + 1] = (*mat)[i];
 	ReinitBoxes();
 }

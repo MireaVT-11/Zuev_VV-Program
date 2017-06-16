@@ -272,4 +272,8 @@ object Form1: TForm1
     Top = 224
     DOMVendorDesc = 'ADOM XML v4'
   end
+  object XPManifest1: TXPManifest
+    Left = 152
+    Top = 192
+  end
 end

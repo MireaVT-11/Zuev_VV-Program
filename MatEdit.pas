@@ -5,7 +5,8 @@ interface
 uses
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants, System.Classes, Vcl.Graphics,
   System.Generics.Collections, Vcl.Controls, Vcl.Forms, Vcl.Dialogs, Vcl.StdCtrls, Vcl.ExtCtrls, Xml.xmldom, Xml.XMLIntf,
-  Xml.XMLDoc, Xml.adomxmldom, Vcl.Buttons, System.StrUtils, Vcl.Grids, Vcl.ValEdit, Vcl.ComCtrls;
+  Xml.XMLDoc, Xml.adomxmldom, Vcl.Buttons, System.StrUtils, Vcl.Grids, Vcl.ValEdit, Vcl.ComCtrls,
+  Vcl.XPMan;
 
 type
   TVarAlpha = record
@@ -44,6 +45,7 @@ type
     AddPropButton: TButton;
     Label2: TLabel;
     AddPropEdit: TValueListEditor;
+    XPManifest1: TXPManifest;
     procedure ColorListBox1Click(Sender: TObject);
     procedure ComboBox1Change(Sender: TObject);
     procedure FormShow(Sender: TObject);
