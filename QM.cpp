@@ -326,14 +326,21 @@ void QC::Run(TListView * list, bool hideGraph) {
 	for (auto v : *elements)
 		if (v->status == QC::Status::Ready)
 			++rcnt;
+	if(rcnt == 0) {
+		MQCForm->ProgressBar->Position = MQCForm->ProgressBar->Max;
+		MQCForm->ProgressBar->State = pbsError;
+		return;
+	}
 	int cnt = 0;
 	if (materials != NULL)
 		mainForm->SetMaterials(materials);
+    list->Items->Item[0]->MakeVisible(false);
 	for (auto v : *elements) {
 		UnicodeString repres = "";
 		if (v->status == QC::Status::Ready) {
 			auto etime = Now();
 			auto elem = list->Items->Item[i];
+            list->Items->Item[(i > list->Items->Count - 4)? list->Items->Count - 1: i + 3]->MakeVisible(false);
 			elem->Checked = false;
 			nowRun = i;
 			++cnt;
