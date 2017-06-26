@@ -13,7 +13,7 @@ object mainForm: TmainForm
   Font.Name = 'MS Sans Serif'
   Font.Style = []
   OldCreateOrder = False
-  Position = poDesigned
+  Position = poDesktopCenter
   OnClose = FormClose
   OnCreate = FormCreate
   PixelsPerInch = 96
@@ -926,5 +926,21 @@ object mainForm: TmainForm
     Caption = #1052#1077#1085#1077#1076#1078#1077#1088' '#1086#1095#1077#1088#1077#1076#1080' '#1088#1072#1089#1095#1105#1090#1072
     TabOrder = 62
     OnClick = MQCButtonClick
+  end
+  object SymCBox: TCheckBox
+    Left = 562
+    Top = 630
+    Width = 128
+    Height = 17
+    Caption = #1055#1088#1080#1085#1091#1076'. '#1089#1080#1084#1084#1084#1077#1090#1088#1080#1103
+    TabOrder = 63
+  end
+  object SoftSymCBox: TCheckBox
+    Left = 562
+    Top = 653
+    Width = 128
+    Height = 17
+    Caption = #1052#1103#1075#1082#1072#1103' '#1087#1088#1080#1085#1091#1076'. '#1089#1080#1084'.'
+    TabOrder = 64
   end
 end

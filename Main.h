@@ -159,6 +159,8 @@ __published: // IDE-managed Components
 	TCheckBox *CBoxPoints;
 	TCheckBox *BBCBox;
 	TButton *MQCButton;
+	TCheckBox *SymCBox;
+	TCheckBox *SoftSymCBox;
 
 	void __fastcall RefreshClick(TObject *Sender);
 	void __fastcall FormCreate(TObject *Sender);

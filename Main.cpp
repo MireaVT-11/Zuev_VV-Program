@@ -525,7 +525,7 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 	// Версия 2015 - надо писать так!
 	// (2015 год) Ололололо!!!
 	sqI2p[k] = sqrtl(I2p[k]);
-	if(sqI2p[k]>BigI2pValue)
+	if (sqI2p[k] > BigI2pValue)
 		BigI2p = true;
 
 	// if(m_sqI2p<sqI2p[k]) {m_sqI2p = sqI2p[k];}
@@ -601,7 +601,7 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 	GetBeginValue();
 	// ****************************************
 	step = nt / 10.;
-    BigI2p = false;
+	BigI2p = false;
 	// if (!NoAnim) {
 	graphForm->Canvas->Brush->Color = clWhite;
 	graphForm->Canvas->FillRect(Rect(0, 0, graphForm->ClientWidth, graphForm->ClientHeight));
@@ -655,6 +655,16 @@ bool __fastcall TmainForm::Calculate(UnicodeString dtstamp, bool hideGraph, Unic
 		point1 = 2 * (n2 - zcl - 1) * n4 + 2;
 		point2 = 2 * (n2 - zcl) * n4 - 2 * (n4 - n3 - 1);
 		point3 = 2 * (n2) * n4 - 2 * (n4 - n3 - 1);
+	}
+	auto centralPoints = new int[(int)(n1 + n2 + 1)];
+	centralPoints[0] = 1;
+	for (int i = 1; i <= n1 + n2 + 1; ++i) {
+		if (i <= n2 + 1)
+			centralPoints[i] = centralPoints[i - 1] + (n4 + 1);
+		else
+			centralPoints[i] = centralPoints[i - 1] + (n3 + 1);
+		if (rcoord[centralPoints[i]] > 1.e-5)
+			throw new Exception("Ошибочная топология; обратитесь к разработчику");
 	}
 	// *****************************************************************
 	// Массив для удаления эффекта "залечивания"
@@ -985,16 +995,29 @@ SavingStartInformation: {
 			if (UnlimStop) {
 				throw new Exception("Прервано пользователем");
 			}
-			if(BigI2p){
-				throw new Exception("Интенсивность пластической деформации превысила предел. Выявлено на шаге " + IntToStr(n));
+			if (BigI2p) {
+				throw new Exception("Интенсивность пластической деформации превысила предел. Выявлено на шаге " +
+					IntToStr(n));
 			}
 			Application->ProcessMessages();
 			newspeed(); // speedr1,speedz1
 			// ************************************************************
 			// УСЛОВИЯ ЗАКРЕПЛЕНИЯ
-			for (int i = 1; i <= numberelem; i++) {
-				if (IsZero(rcoord[i], 1.e-10L))
-					speedr1[i] = 0.; // симметрия, нам всем нужна симметрия
+			for (int i = 0; i < n1 + n2 + 1; i++) {
+				speedr1[centralPoints[i]] = 0.; // симметрия, нам всем нужна симметрия
+				speedr[centralPoints[i]] = 0.;
+				if (SymCBox->Checked && n > 0.01 * nt) // совсем симметрия (n>0.01nt нужно для реалистичности)
+				{
+					// скорости центрального узла устанвливаются равными соседним для избежания артефактов
+					speedz[centralPoints[i]] = speedz[centralPoints[i] + 1];
+					speedz1[centralPoints[i]] = speedz1[centralPoints[i] + 1];
+				}
+				if (SymCBox->Checked && n > 0.01 * nt) // мягкая симметрия
+				{
+					// скорости центрального узла меньше влияют на него
+					speedz[centralPoints[i]] = 0.8 * speedz[centralPoints[i] + 1] + 0.2 * speedz[centralPoints[i]];
+					speedz1[centralPoints[i]] = 0.8 * speedz1[centralPoints[i] + 1] + 0.2 * speedz1[centralPoints[i]];
+				}
 			}
 			if (jjjj != 1)
 				for (int i = 1; i <= numbertop; i++) {
@@ -1903,11 +1926,11 @@ void _fastcall TmainForm::threegraphs(bool save, int i, bool cinema, UnicodeStri
 
 	// if (beauty) AntiAliasing();//Антиальясинг - зло!
 	graphForm->Canvas->CopyRect(rect, holst, rect);
-	// bmp->ReleaseHandle();
-	// bmp->Free();
 	if (save || cinema) {
 		SaveAsPNG(bmp, path + ((cinema) ? "Cinema\\" : "") + IntToStr(i) + ".png");
 	}
+	// bmp->ReleaseHandle();
+	// bmp->Free();
 	delete bmp;
 }
 
@@ -2297,217 +2320,6 @@ void __fastcall TmainForm::jjjjBoxChange(TObject *) {
 }
 
 // ---------------------------------------------------------------------------
-
-// **************************************************************
-// ВЫВОД РЕЗУЛЬТАТОВ В ФАЙЛ
-// (2015 год) Переписать!!! // (2015 год) Переписать!!!
-// (2015 год) Переписать!!! // (2015 год) Переписать!!!
-// void WriteToFile(FILE *file, FILE *file1, FILE *file2, FILE *file3)
-// {
-// int j;
-// // sqI2p - интенсивность пластических деформаций
-// // tetp - объёмная пластическая деформация
-// // p - давление
-// // tet - полная объёмная деформация
-// // tete - упругая объёмная деформация
-// // Hepsilon, Hsigma - функции упрочнения
-// // ener - енергия
-// // psi - функция деформирования
-//
-// const AnsiString format700 =
-// " i=\t%d\t r/rmax=\t%10.2lg\t z/Hmax=\t%10.2lg\t speedr=\t%10.2lg\t speedz=\t%10.2lg\n";
-// const AnsiString format800 =
-// "j=\t%d\t sqI2p=\t%10.2lg\t tetp=\t%10.2lg\t p=\t%10.2lg\t tet=\t%10.2lg\t tete=\t%10.2lg\t psi=\t%10.2lg\t ener=\t%10.2lg\t sigmarr=\t%10.2lg\t sigmazz=\t%10.2lg\t sigmatt=\t%10.2lg\t sigmarz=\t%10.2lg\n"; ;
-// const AnsiString format801 =
-// "j=\t%d\t sqI2p[1]=\t%10.2lg\t tetp[1]=\t%10.2lg\t p[1]=\t%10.2lg\t tet[1]=\t%10.2lg\t tete[1]=\t%10.2lg\t psi[1]=\t%10.2lg\t ener[1]=\t%10.2lg\t sigmarr[1]=\t%10.2lg\t sigmazz[1]=\t%10.2lg\t sigmatt[1]=\t%10.2lg\t sigmarz[1]=\t%10.2lg\n";
-// const AnsiString format802 =
-// "j=\t%d\t sqI2p[2]=\t%10.2lg\t tetp[2]=\t%10.2lg\t p[2]=\t%10.2lg\t tet[2]=\t%10.2lg\t tete[2]=\t%10.2lg\t psi[2]=\t%10.2lg\t ener[2]=\t%10.2lg\t sigmarr[2]=\t%10.2lg\t sigmazz[2]=\t%10.2lg\t sigmatt[2]=\t%10.2lg\t sigmarz[2]=\t%10.2lg\n"; ;
-// const AnsiString format803 =
-// "j=\t%d\t sqI2p[3]=\t%10.2lg\t tetp[3]=\t%10.2lg\t p[3]=\t%10.2lg\t tet[3]=\t%10.2lg\t tete[3]=\t%10.2lg\t psi[3]=\t%10.2lg\t ener[3]=\t%10.2lg\t sigmarr[3]=\t%10.2lg\t sigmazz[3]=\t%10.2lg\t sigmatt[3]=\t%10.2lg\t sigmarz[3]=\t%10.2lg\n"; ;
-// // iii = 2*n2*n4-2*n4+2*n3;
-// // fprintf(file, "t=%LE\n", timepr);
-// fprintf(file, "t=\t%10.2LE\t", timepr);
-// fprintf(file, "numbertop=\t%d\t", numbertop);
-// fprintf(file, "numberelem=\t%d\n", numberelem);
-// fprintf(file1, "t=\t%10.2LE\t", timepr);
-// fprintf(file1, "numbertop=\t%d\t", numbertop);
-// fprintf(file1, "numberelem=\t%d\n", numberelem);
-// fprintf(file2, "t=\t%10.2LE\t", timepr);
-// fprintf(file2, "numbertop=\t%d\t", numbertop);
-// fprintf(file2, "numberelem=\t%d\n", numberelem);
-// fprintf(file3, "t=\t%10.2LE\t", timepr);
-// fprintf(file3, "numbertop=\t%d\t", numbertop);
-// fprintf(file3, "numberelem=\t%d\n", numberelem);
-// /* fprintf(file, "xx[2*n2*n4-2*n4+2*n3]=%LE\n", xx[iii]);
-// fprintf(file, "x0[2*n2*n4-2*n4+2*n3]=%LE\n", x0[iii]);
-// fprintf(file, "mm[2*n2*n4-2*n4+2*n3]=%LE\n", mm[iii]);
-// fprintf(file, "F[2*n2*n4-2*n4+2*n3]=%LE\n", F[iii]);
-// fprintf(file, "I2p[2*n2*n4-2*n4+2*n3]=%LE\n", I2p[iii]);
-// fprintf(file, "p[2*n2*n4-2*n4+2*n3]=%LE\n", p[iii]);
-// fprintf(file, "tet[2*n2*n4-2*n4+2*n3]=%LE\n", tet[iii]);
-// fprintf(file, "tetp[2*n2*n4-2*n4+2*n3]=%LE\n", tetp[iii]);
-// fprintf(file, "tete[2*n2*n4-2*n4+2*n3]=%LE\n", tete[iii]);
-// fprintf(file, "psidot[2*n2*n4-2*n4+2*n3]=%LE\n", psidot[iii]);
-// fprintf(file, "Heps[2*n2*n4-2*n4+2*n3]=%LE\n", Heps[iii]); */
-//
-// // КОНТАКТНАЯ ГРАНИЦА УДАРНИКА И МИШЕНИ  - файл out.xls
-// fprintf(file, "КОНТАКТНАЯ ГРАНИЦА УДАРНИКА И МИШЕНИ\n");
-// fprintf(file, " значения в узлах \n");
-// for (int i = 1; i <= n4 + 1; i++) {
-// j = TPointTarget[i];
-// fprintf(file, format700.c_str(), j, rcoord[j] / radius1,
-// zcoord[j] / (h0 + n2*dz), speedr[j], speedz[j]);
-// }
-// fprintf(file, " значения в элементах \n");
-// for (int i = 1; i <= n4; i++) {
-// j = TElemTarget[i];
-// fprintf(file, format800.c_str(), j, sqI2p[j], tetp[j], p[j], tet[j],
-// tete[j], psi[j], ener[j], sigmarr[j], sigmazz[j], sigmatt[j],
-// sigmarz[j]);
-// }
-// fprintf(file, " значения в элементах для трёх точек \n");
-// for (int i = 1; i <= n4; i++) {
-// j = TElemTarget[i];
-// if (j == 2 * n4 * (n2 - 1) + 2) {
-// fprintf(file, format801.c_str(), j, sqI2p[j], tetp[j], p[j], tet[j],
-// tete[j], psi[j], ener[j], sigmarr[j], sigmazz[j], sigmatt[j],
-// sigmarz[j]);
-// }
-// if (j == 2 * n4 * (n2 - 1) + n3 + 2 - 1) {
-// fprintf(file, format802.c_str(), j, sqI2p[j], tetp[j], p[j], tet[j],
-// tete[j], psi[j], ener[j], sigmarr[j], sigmazz[j], sigmatt[j],
-// sigmarz[j]);
-// }
-// if (j == 2 * n4 * (n2 - 1) + 2 * n3) {
-// fprintf(file, format803.c_str(), j, sqI2p[j], tetp[j], p[j], tet[j],
-// tete[j], psi[j], ener[j], sigmarr[j], sigmazz[j], sigmatt[j],
-// sigmarz[j]);
-// }
-// }
-// // ЦЕНТР МИШЕНИ/УДАРНИКА - файл out1.xls
-//
-// fprintf(file1, "ЦЕНТР\n");
-// fprintf(file1, " Значения в узлах \n");
-//
-// for (int i = 1; i <= n2 + 1; i++) {
-// j = CPointTarget[i];
-// fprintf(file1, format700.c_str(), j, rcoord[j] / radius1,
-// zcoord[j] / (h0 + n2*dz), speedr[j], speedz[j]);
-// }
-// for (int i = 2; i <= n1 + 1; i++) {
-// j = CPointImpactor[i];
-// fprintf(file1, format700.c_str(), j, rcoord[j] / radius1,
-// zcoord[j] / (h0 + n2*dz), speedr[j], speedz[j]);
-// }
-//
-// fprintf(file1, " Значения в элементах \n");
-//
-// for (int i = 1; i <= n2; i++) {
-// j = CElemTarget[i];
-// fprintf(file1, format800.c_str(), j, sqI2p[j], tetp[j], p[j], tet[j],
-// tete[j], psi[j], ener[j], sigmarr[j], sigmazz[j], sigmatt[j],
-// sigmarz[j]);
-// }
-// for (int i = 1; i <= n1; i++) {
-// j = CElemImpactor[i];
-// try {
-// fprintf(file1, format800.c_str(), j, sqI2p[j], tetp[j], p[j],
-// tet[j], tete[j], psi[j], ener[j], sigmarr[j], sigmazz[j],
-// sigmatt[j], sigmarz[j]);
-// }
-// catch (...) {
-// Application->ProcessMessages();
-// // throw;
-// };
-// }
-//
-// // БОКОВАЯ СТОРОНА МИШЕНИ/УДАРНИКА - файл out2.xls
-// fprintf(file2, "БОКОВАЯ СТОРОНА МИШЕНИ\n");
-// fprintf(file2, " значения в узлах мишени\n");
-//
-// for (int i = 1; i <= n2 + 1; i++) {
-// j = SPointTarget[i];
-// fprintf(file2, format700.c_str(), j, rcoord[j] / radius1,
-// zcoord[j] / (h0 + n2*dz), speedr[j], speedz[j]);
-// }
-//
-// /* fprintf(file2," значения в узлах ударника \n");
-//
-// for (int i=1; i<=n1+1; i++)
-// {
-// j=SPointImpactor[i];
-// fprintf(file2,format700.c_str(),j,rcoord[j]/radius1,zcoord[j]/(h0+n2*dz),speedr[j],speedz[j]);
-// } */
-//
-// fprintf(file2, " значения в элементах мишени\n");
-//
-// for (int i = 1; i <= n2; i++) {
-// j = SElemTarget[i];
-// try {
-// fprintf(file2, format800.c_str(), j, sqI2p[j], tetp[j], p[j],
-// tet[j], tete[j], psi[j], ener[j]);
-// }
-// catch (...) {
-// Application->ProcessMessages();
-// }
-// }
-//
-// /* fprintf(file2," значения в элементах ударника \n");
-//
-// for (int i=1; i<=n1; i++)
-// {
-// j = SElemImpactor[i];
-// fprintf(file2,format800.c_str(),j,sqI2p[j],tetp[j],p[j],tet[j],tete[j],psi[j],
-// Heps[j],Hsigma[j],ener[j]);
-// } */
-//
-// // ТЫЛЬНАЯ СТОРОНА МИШЕНИ / ВЕРХНЯЯ СТОРОНА УДАРНИКА - файл out3.xls
-// // fprintf(file3,"ТЫЛЬНАЯ СТОРОНА МИШЕНИ / ВЕРХНЯЯ СТОРОНА УДАРНИКА\n");
-// fprintf(file3, "ТЫЛЬНАЯ СТОРОНА МИШЕНИ \n");
-// fprintf(file3, " значения в узлах мишени \n");
-//
-// for (int i = 1; i <= n4 + 1; i++) {
-// j = BPointTarget[i];
-// fprintf(file3, format700.c_str(), j, rcoord[j] / radius1,
-// zcoord[j] / (h0 + n2*dz), speedr[j], speedz[j]);
-// }
-//
-// /* fprintf(file3," значения в узлах ударника \n");
-//
-// for (int i=1; i<=n3+1; i++)
-// {
-// j=TPointImpactor[i];
-// fprintf(file3,format700.c_str(),j,rcoord[j]/radius1,zcoord[j]/(h0+n2*dz),speedr[j],speedz[j]);
-// } */
-//
-// fprintf(file3, " значения в элементах мишени \n");
-//
-// for (int i = 1; i <= n4; i++) {
-// j = BElemTarget[i];
-// try {
-// fprintf(file3, format800.c_str(), j, sqI2p[j], tetp[j], p[j],
-// tet[j], tete[j], psi[j], ener[j]);
-// }
-// catch (...) {
-// Application->ProcessMessages();
-// }
-// }
-//
-// /* fprintf(file3," значения в элементах ударника \n");
-//
-// for (int i=1; i<=n3; i++)
-// {
-// j=TElemImpactor[i];
-// fprintf(file3,format800.c_str(),j,sqI2p[j],tetp[j],p[j],tet[j],tete[j],psi[j],
-// Heps[j],Hsigma[j],ener[j]);
-// } */ ;
-// }
-
-// ***************************************************************************
-
-// ---------------------------------------------------------------------------
-
-// ---------------------------------------------------------------------------
 void __fastcall TmainForm::GetBeginValue() {
 	for (int i = 0; i < nel; i++) {
 		srr[i] = szz[i] = srz[i] = stt[i] = epsrr[i] = epszz[i] = epsrz[i] = epstt[i] = matelm[i] = epsrrp[i] = epszzp[i] =
@@ -2526,13 +2338,11 @@ void __fastcall TmainForm::GetBeginValue() {
 	c0 = StrToFloat(c0Edit->Text); // Коэффициент квадратичной псевдовязкости
 	cl = StrToFloat(clEdit->Text); // Коэффициент линейной псевдовязкости
 	ca = StrToFloat(caEdit->Text); // Коэффициент сдвиговой вязкости
-	jjjj = jjjjBox->ItemIndex + 1;
-	// Условия закрепления (0-5) переводим в (1-6)
-	t = StrToInt(tEdit->Text);
-	// ??? Выясняется		// (2015 год) 0_0 - я, 8_8 - мой мозг, *_* - моё сознание
+	jjjj = jjjjBox->ItemIndex + 1; // Условия закрепления (0-5) переводим в (1-6)
+	t = StrToInt(tEdit->Text); // ??? Выясняется // (2015 год) 0_0 - я, 8_8 - мой мозг, *_* - моё сознание
 	nt = StrToInt(ntEdit->Text); // Число разбиений по времени (сек)
-	dtimepr = StrToFloat(dtimeprEdit->Text) / nt;
-	// Интервал времени, поделённый на число разбиений, то есть длина одного временного шага
+	dtimepr = StrToFloat(dtimeprEdit->Text) / nt; // Интервал времени, поделённый на число разбиений,
+	// то есть длина одного временного шага
 	vindent = StrToFloat(vindentEdit->Text); // Скорость нижней волны (м/с)
 	vb = StrToFloat(Editb->Text); // Скорость боковой волны (м/с)
 	inss = StrToFloat(Editinss->Text); // Скорость внутренней волны (м/с)
@@ -2540,49 +2350,16 @@ void __fastcall TmainForm::GetBeginValue() {
 	radius0 = StrToFloat(rad0Edit->Text); // Радиус сооружения (м)
 	radius1 = StrToFloat(rad1Edit->Text); // Радиус основания (м)
 	h0 = StrToFloat(h0Edit->Text); // Высота сооружения (м)
-	n1 = EnsureRange(StrToInt(n1Edit->Text), 3, 30);
-	// Число разбиений по высоте сооружения
-	n3 = EnsureRange(StrToInt(n3Edit->Text), 3, 30);
-	// Число разбиений по радиусу сооружения
-	matstrat0 = matstrat0Box->ItemIndex; // + 1;
-	// Материал сооружения (0-9) переводим в (1-10)
-	nstrat = nstratBox->ItemIndex + 1;
-	// Число слоёв основания (0-2) переводим в (1-3)
+	n1 = EnsureRange(StrToInt(n1Edit->Text), 3, 30); // Число разбиений по высоте сооружения
+	n3 = EnsureRange(StrToInt(n3Edit->Text), 3, 30); // Число разбиений по радиусу сооружения
+	matstrat0 = matstrat0Box->ItemIndex; // + 1;// Материал сооружения (0-9) переводим в (1-10)
+	nstrat = nstratBox->ItemIndex + 1; // Число слоёв основания (0-2) переводим в (1-3)
 	h2i[1] = StrToFloat(h2iEdit1->Text); // Высота первого слоя (м)
 	h2i[2] = StrToFloat(h2iEdit2->Text); // Высота второго слоя (м)
 	h2i[3] = StrToFloat(h2iEdit3->Text); // Высота третьего слоя (м)
-	matstrat[1] = matstrat1Box->ItemIndex; // + 1;
-	// Материал первого слоя (0-9) переводим в (1-10)
-	matstrat[2] = matstrat2Box->ItemIndex; // + 1;
-	// Материал второго слоя (0-9) переводим в (1-10)
-	matstrat[3] = matstrat3Box->ItemIndex; // + 1;
-	// Материал третьего слоя (0-9) переводим в (1-10)
-}
-
-// ---------------------------------------------------------------------------
-// Добавление нового материала
-void NewMat() {
-	// (2015 год) Переписать!!! // (2015 год) Переписать!!!
-	// (2015 год) Переписать!!! // (2015 год) Переписать!!!
-	// FILE *F;
-	// strcpy(Material[MatCount].Name, AnsiString(FormNewMaterial->NameEdit->Text).c_str());
-	// String temp = Form2->NameEdit->Text.c_str();
-	// Material[MatCount].ro0 = StrToFloat(Form2->densEdit->Text);
-	// Material[MatCount].G = StrToFloat(Form2->GEdit->Text) * GPa;
-	// Material[MatCount].sigma0 = StrToFloat(Form2->sigma0Edit->Text) * GPa;
-	// Material[MatCount].k = StrToFloat(Form2->kEdit->Text) * GPa;
-	// Material[MatCount].alpha = StrToFloat(Form2->alphaEdit->Text) * GPa;
-	// Material[MatCount].sigma1 = StrToFloat(Form2->sigma1Edit->Text) * GPa;
-	// Material[MatCount].Color = Form2->Panel1->Color;
-	// F = fopen("MatBase.dat", "ab");
-	// fwrite(&Material[MatCount], sizeof(TMaterial), 1, F);
-	// fclose(F);
-	// FormMain->matstrat0Box->Items->Add(temp);
-	// FormMain->matstrat1Box->Items->Add(temp);
-	// FormMain->matstrat2Box->Items->Add(temp);
-	// FormMain->matstrat3Box->Items->Add(temp);
-	// Form2->Close();
-	// MatCount++;
+	matstrat[1] = matstrat1Box->ItemIndex; // + 1; // Материал первого слоя (0-9) переводим в (1-10)
+	matstrat[2] = matstrat2Box->ItemIndex; // + 1; // Материал второго слоя (0-9) переводим в (1-10)
+	matstrat[3] = matstrat3Box->ItemIndex; // + 1; // Материал третьего слоя (0-9) переводим в (1-10)
 }
 
 // ---------------------------------------------------------------------------
