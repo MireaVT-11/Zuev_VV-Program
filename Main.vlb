@@ -1,287 +1,338 @@
 ﻿[CheckBox4]
-Coordinates=204,144,95,51
+Coordinates=10,552,114,58
 
 [Bevel2]
-Coordinates=337,620,47,33
+Coordinates=362,620,54,36
 
 [matstrat3Box]
-Coordinates=681,10,84,105
+Coordinates=681,10,101,124
 
 [Label2]
-Coordinates=531,416,46,51
+Coordinates=951,416,53,58
 
 [CheckBoxb2]
-Coordinates=587,212,95,51
+Coordinates=274,552,114,58
 
 [Bevel3]
-Coordinates=273,620,47,33
+Coordinates=902,552,54,36
 
 [CheckBoxns]
-Coordinates=220,416,95,51
+Coordinates=668,416,114,58
 
 [Label14]
-Coordinates=910,212,52,51
+Coordinates=946,348,60,58
 
 [ntEdit]
-Coordinates=328,484,43,51
+Coordinates=976,280,48,58
 
 [Label26]
-Coordinates=913,10,52,51
+Coordinates=584,212,60,58
 
 [Bevel5]
-Coordinates=209,620,47,33
+Coordinates=298,620,54,36
 
 [Label21]
-Coordinates=950,348,52,51
+Coordinates=792,416,60,58
 
 [matstrat1Box]
-Coordinates=343,10,84,105
+Coordinates=237,10,101,124
 
 [alfEdit]
-Coordinates=80,280,45,51
+Coordinates=80,212,51,58
 
 [Label1]
-Coordinates=406,280,46,51
+Coordinates=605,416,53,58
 
 [clEdit]
-Coordinates=61,552,42,51
+Coordinates=541,280,46,58
 
 [CheckBoxb]
-Coordinates=773,484,95,51
+Coordinates=597,280,114,58
 
 [Bevel10]
-Coordinates=138,620,53,33
+Coordinates=99,620,61,36
 
 [Editb2]
-Coordinates=155,212,45,51
+Coordinates=336,348,51,58
 
 [Label18]
-Coordinates=10,484,52,51
+Coordinates=906,280,60,58
 
 [BeautyCBox]
-Coordinates=463,212,95,51
+Coordinates=10,416,114,58
 
 [Label19]
-Coordinates=842,416,52,51
+Coordinates=274,484,60,58
 
 [CheckBoxnp3]
-Coordinates=578,484,95,51
+Coordinates=721,280,114,58
 
 [Label7]
-Coordinates=134,484,46,51
+Coordinates=470,144,53,58
 
 [Editinss]
-Coordinates=80,416,54,51
+Coordinates=786,348,60,58
 
 [h0Edit]
-Coordinates=267,484,45,51
+Coordinates=270,144,51,58
 
 [Label4]
-Coordinates=277,348,46,51
+Coordinates=207,144,53,58
 
 [CheckBoxinss]
-Coordinates=672,280,95,51
+Coordinates=264,212,114,58
 
 [ComboBoxBuild]
-Coordinates=565,10,95,105
+Coordinates=121,10,106,124
 
 [Label6]
-Coordinates=468,416,46,51
+Coordinates=521,212,53,58
 
 [matstrat2Box]
-Coordinates=10,10,84,105
+Coordinates=10,10,101,124
 
 [n1Edit]
-Coordinates=10,348,45,51
+Coordinates=194,416,51,58
 
 [Label15]
-Coordinates=150,416,52,51
+Coordinates=848,212,60,58
 
 [h2iEdit1]
-Coordinates=141,280,54,51
+Coordinates=591,348,61,58
 
 [Bevel6]
-Coordinates=74,620,47,33
+Coordinates=1030,552,54,36
 
 [Edits]
-Coordinates=286,212,40,51
+Coordinates=141,212,43,58
 
 [CheckBoxnp2]
-Coordinates=533,144,95,51
+Coordinates=150,484,114,58
 
 [c0Edit]
-Coordinates=386,484,45,51
+Coordinates=533,144,50,58
 
 [Label28]
-Coordinates=781,144,52,51
+Coordinates=344,484,60,58
 
 [Label3]
-Coordinates=966,484,46,51
+Coordinates=477,484,53,58
 
 [Label10]
-Coordinates=532,280,52,51
+Coordinates=10,212,60,58
 
 [nstratBox]
-Coordinates=232,10,84,105
+Coordinates=459,10,101,124
 
 [CheckBoxStakan]
-Coordinates=851,144,98,51
+Coordinates=10,348,114,58
 
 [Label20]
-Coordinates=85,212,52,51
+Coordinates=331,144,60,58
 
 [rad0Edit]
-Coordinates=340,348,55,51
+Coordinates=134,144,63,58
 
 [vindentEdit]
-Coordinates=117,552,70,51
+Coordinates=862,416,79,58
 
 [Editn2]
-Coordinates=205,552,45,51
+Coordinates=593,144,51,58
 
 [Label32]
-Coordinates=602,280,52,51
+Coordinates=10,484,60,58
 
 [caEdit]
-Coordinates=890,348,45,51
+Coordinates=134,416,50,58
 
 [n3Edit]
-Coordinates=71,348,45,51
+Coordinates=845,280,51,58
 
 [Label29]
-Coordinates=406,552,52,51
+Coordinates=540,484,60,58
 
 [CheckBoxno2]
-Coordinates=344,416,95,51
+Coordinates=662,348,114,58
 
 [Label12]
-Coordinates=912,416,52,51
+Coordinates=134,552,60,58
 
 [Button3]
-Coordinates=391,144,53,51
+Coordinates=401,144,59,58
 
 [Refresh]
-Coordinates=476,552,52,51
+Coordinates=1014,416,60,58
 
 [CheckBoxbs]
-Coordinates=413,348,95,51
+Coordinates=805,484,114,58
 
 [Label27]
-Coordinates=796,280,52,51
+Coordinates=204,552,60,58
 
 [Label16]
-Coordinates=266,552,52,51
+Coordinates=80,484,60,58
 
 [dtimeprEdit]
-Coordinates=537,348,71,51
+Coordinates=856,348,80,58
 
 [CheckBoxs]
-Coordinates=657,144,95,51
+Coordinates=397,348,114,58
 
 [Label17]
-Coordinates=10,280,52,51
+Coordinates=388,212,60,58
 
 [CheckBox3]
-Coordinates=339,212,95,51
+Coordinates=902,144,114,58
 
 [CheckBoxn]
-Coordinates=766,348,95,51
+Coordinates=778,144,114,58
 
 [Label25]
-Coordinates=132,348,52,51
+Coordinates=918,212,60,58
 
 [tEdit]
-Coordinates=10,552,40,51
+Coordinates=929,484,41,58
 
 [CheckBox1]
-Coordinates=212,280,95,51
+Coordinates=481,416,114,58
 
 [h2iEdit2]
-Coordinates=702,484,54,51
+Coordinates=734,484,61,58
 
 [Bevel1]
-Coordinates=10,620,47,33
+Coordinates=170,620,54,36
 
 [matstrat0Box]
-Coordinates=121,10,84,105
+Coordinates=348,10,101,124
 
 [rad1Edit]
-Coordinates=460,144,55,51
+Coordinates=1043,484,63,58
 
 [Label31]
-Coordinates=216,212,52,51
+Coordinates=325,416,60,58
 
 [Editbsh]
-Coordinates=792,10,52,51
+Coordinates=349,280,58,58
 
 [CheckBoxn2]
-Coordinates=718,416,95,51
+Coordinates=1016,348,114,58
 
 [Bevel11]
-Coordinates=961,552,53,33
+Coordinates=831,552,61,36
 
 [CheckBoxnp1]
-Coordinates=786,212,95,51
+Coordinates=654,212,114,58
 
 [Label8]
-Coordinates=446,484,46,51
+Coordinates=980,484,53,58
 
 [Label24]
-Coordinates=134,144,52,51
+Coordinates=255,416,60,58
 
 [Bevel9]
-Coordinates=897,552,47,33
+Coordinates=966,552,54,36
 
 [Label22]
-Coordinates=336,280,52,51
+Coordinates=417,280,60,58
 
 [Bevel8]
-Coordinates=833,552,47,33
+Coordinates=767,552,54,36
 
 [StaticText1]
-Coordinates=744,552,69,33
+Coordinates=10,620,79,36
 
 [Bevel7]
-Coordinates=680,552,47,33
+Coordinates=234,620,54,36
 
 [Editb]
-Coordinates=80,484,40,51
+Coordinates=487,280,44,58
 
 [Label11]
-Coordinates=10,416,52,51
+Coordinates=266,348,60,58
 
 [RadioGroup1]
-Coordinates=967,280,79,51
+Coordinates=1034,280,91,58
 
 [CheckBoxbsh]
-Coordinates=594,416,95,51
+Coordinates=10,144,114,58
 
 [Label23]
-Coordinates=336,552,52,51
+Coordinates=194,212,60,58
 
 [Label5]
-Coordinates=469,280,46,51
+Coordinates=458,212,53,58
 
 [jjjjBox]
-Coordinates=454,10,84,105
+Coordinates=570,10,101,124
 
 [Label13]
-Coordinates=197,484,52,51
+Coordinates=521,348,60,58
 
 [Label9]
-Coordinates=328,144,46,51
+Coordinates=203,348,53,58
 
 [Bevel4]
-Coordinates=616,552,47,33
+Coordinates=426,620,54,36
 
 [h2iEdit3]
-Coordinates=695,348,54,51
+Coordinates=1026,144,61,58
 
 [Bevel12]
-Coordinates=545,552,53,33
+Coordinates=696,552,61,36
 
 []
-Coordinates=938,87,91,36
+Coordinates=1163,56,91,36
 Visible=True
 ExplicitSubNodes=Enabled
+
+[CinemaCBox]
+Coordinates=988,212,114,58
+
+[CBoxPoints]
+Coordinates=101,280,114,58
+
+[BWCBox]
+Coordinates=225,280,114,58
+
+[Label30]
+Coordinates=778,212,60,58
+
+[BBCBox]
+Coordinates=398,552,114,58
+
+[LineButton]
+Coordinates=395,416,76,58
+
+[MQCButton]
+Coordinates=10,280,81,58
+
+[CheckBox5]
+Coordinates=654,144,114,58
+
+[Button4]
+Coordinates=134,348,59,58
+
+[DirEdit]
+Coordinates=414,484,53,58
+
+[CinemaEdit]
+Coordinates=605,552,81,36
+
+[AltInpCBox]
+Coordinates=610,484,114,58
+
+[InputEdit1]
+Coordinates=522,552,73,36
+
+[SymCBox]
+Coordinates=916,10,114,58
+ExplicitSubNodes=
+
+[SoftSymCBox]
+Coordinates=792,10,114,80
+Visible=True
+ExplicitSubNodes=Enabled
+
+[BindingsList1]
+Coordinates=1168,1,91,36
 

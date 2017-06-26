@@ -161,6 +161,8 @@ __published: // IDE-managed Components
 	TButton *MQCButton;
 	TCheckBox *SymCBox;
 	TCheckBox *SoftSymCBox;
+	TBindingsList *BindingsList1;
+	TLinkControlToProperty *LinkControlToPropertyEnabled;
 
 	void __fastcall RefreshClick(TObject *Sender);
 	void __fastcall FormCreate(TObject *Sender);

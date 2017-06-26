@@ -1006,13 +1006,13 @@ SavingStartInformation: {
 			for (int i = 0; i < n1 + n2 + 1; i++) {
 				speedr1[centralPoints[i]] = 0.; // симметрия, нам всем нужна симметрия
 				speedr[centralPoints[i]] = 0.;
-				if (SymCBox->Checked && n > 0.01 * nt) // совсем симметрия (n>0.01nt нужно для реалистичности)
+				if (SymCBox->Checked && !SoftSymCBox->Checked) // совсем симметрия
 				{
 					// скорости центрального узла устанвливаются равными соседним для избежания артефактов
 					speedz[centralPoints[i]] = speedz[centralPoints[i] + 1];
 					speedz1[centralPoints[i]] = speedz1[centralPoints[i] + 1];
 				}
-				if (SymCBox->Checked && n > 0.01 * nt) // мягкая симметрия
+				if (SymCBox->Checked && SoftSymCBox->Checked) // мягкая симметрия
 				{
 					// скорости центрального узла меньше влияют на него
 					speedz[centralPoints[i]] = 0.8 * speedz[centralPoints[i] + 1] + 0.2 * speedz[centralPoints[i]];

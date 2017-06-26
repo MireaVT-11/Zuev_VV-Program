@@ -202,6 +202,10 @@ void QC::SaveToFile(UnicodeString path) {
 			cn->Attributes[(UnicodeString)"cinemaFrameCount"] = v->cinemaFrameCount;
 		if (v->grayScale != lel->grayScale)
 			cn->Attributes[(UnicodeString)"grayScale"] = BoolToStr(v->grayScale, true);
+		if (v->symmetry != lel->symmetry)
+			cn->Attributes[(UnicodeString)"symmetry"] = BoolToStr(v->symmetry, true);
+		if (v->softSymmetry != lel->softSymmetry)
+			cn->Attributes[(UnicodeString)"softSymmetry"] = BoolToStr(v->softSymmetry, true);
 		lel = v;
 	}
 	xml->SaveToFile(path);
@@ -298,6 +302,8 @@ void QC::ReadFromFile(UnicodeString path) {
 			v->cinema = ReadXmlValue("cinema", cn, lel->cinema);
 			v->cinemaFrameCount = ReadXmlValue("cinemaFrameCount", cn, lel->cinemaFrameCount);
 			v->grayScale = ReadXmlValue("grayScale", cn, lel->grayScale);
+			v->symmetry = ReadXmlValue("symmetry", cn, lel->symmetry);
+			v->softSymmetry = ReadXmlValue("softSymmetry", cn, lel->softSymmetry);
 			elements->push_back(v);
 			lel = v;
 		}
@@ -496,6 +502,11 @@ void SetCEV(QC::ComputeElement * v) {
 	mainForm->BWCBox->Checked = v->grayScale;
 	mainForm->InputEdit1->Value = v->recess;
 	mainForm->AltInpCBox->Checked = v->ohPoints;
+	mainForm->SymCBox->Checked = v->symmetry;
+	if(v->symmetry && v->softSymmetry){
+		mainForm->SymCBox->Checked = false;
+		mainForm->SoftSymCBox->Checked = true;
+	}
 }
 
 void GetCEV(QC::ComputeElement * v) {
@@ -541,6 +552,8 @@ void GetCEV(QC::ComputeElement * v) {
 	v->grayScale = mainForm->BWCBox->Checked;
 	v->recess = mainForm->InputEdit1->Value;
 	v->ohPoints = mainForm->AltInpCBox->Checked;
+	v->symmetry = mainForm->SymCBox->Checked || mainForm->SoftSymCBox->Checked;
+	v->softSymmetry = mainForm->SoftSymCBox->Checked;
 }
 
 void __fastcall TMQCForm::AbNowBtnClick(TObject * Sender) {
@@ -607,17 +620,18 @@ void __fastcall TMQCForm::EditBtnClick(TObject * Sender) {
 		"Число слоёв", "Материал ударника", "Материал слоя 1", "Материал слоя 2", "Материал слоя 3", "Режим фиксации",
 		"Период для режима 5", "Число разбиений по радиусу", "Число разбиений по высоте", "Число разбиений по времени",
 		"Заглубление", "Число кадров анимации"};
-	const int bcnt = 19;
+	const int bcnt = 21;
 	bool* bval[bcnt] = {
 		&elem->ohPoints, &elem->sinImpact, &elem->verticalStrats, &elem->bottomWave, &elem->bottomWaveForte,
 		&elem->bottomContWave1, &elem->bottomContWave2, &elem->bottomContWave3, &elem->lateralSide, &elem->lateralSideForte,
 		&elem->movingOverhead, &elem->internalWave, &elem->indentor, &elem->bottomImpact, &elem->glassful, &elem->showHeat,
-		&elem->beautyHeat, &elem->grayScale, &elem->cinema};
+		&elem->beautyHeat, &elem->grayScale, &elem->cinema, &elem->symmetry, &elem->softSymmetry};
 	UnicodeString bname[bcnt] = {
 		"Точки в ударнике", "Синусоидальный удар", "Вертикальные слои", "Нижняя волна", "Сильная нижняя волна",
 		"Пространственная нижняя волна 1", "Пространственная нижняя волна 2", "Пространственная нижняя волна 3", "Боковая волна",
 		"Сильная боковая волна", "Снаряд", "Внутрення волна", "Индентор", "Нижний удар", "«Стакан»", "Показывать нагрев",
-		"Сглаживание нагрева", "Чёрно-белая графика", "Записывать анимацию"};
+		"Сглаживание нагрева", "Чёрно-белая графика", "Записывать анимацию", "Принудительная симметрия",
+		"Мягкая принудительная симметрия"};
 	const int fcnt = 11;
 	long double* fval[fcnt] = {
 		&elem->timePeriod, &elem->baseRadius, &elem->overheadRadius, &elem->overheadHight, &elem->baseStrat1Hight,

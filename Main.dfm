@@ -941,6 +941,20 @@ object mainForm: TmainForm
     Width = 128
     Height = 17
     Caption = #1052#1103#1075#1082#1072#1103' '#1087#1088#1080#1085#1091#1076'. '#1089#1080#1084'.'
+    Enabled = False
     TabOrder = 64
+  end
+  object BindingsList1: TBindingsList
+    Methods = <>
+    OutputConverters = <>
+    Left = 20
+    Top = 5
+    object LinkControlToPropertyEnabled: TLinkControlToProperty
+      Category = 'Quick Bindings'
+      Control = SymCBox
+      Track = True
+      Component = SoftSymCBox
+      ComponentProperty = 'Enabled'
+    end
   end
 end

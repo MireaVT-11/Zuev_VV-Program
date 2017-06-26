@@ -76,6 +76,9 @@ public:
 		bool cinema;
 		int cinemaFrameCount;
 		bool grayScale;
+
+		bool symmetry;
+        bool softSymmetry;
 	};
 
 private:
