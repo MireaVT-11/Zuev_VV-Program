@@ -19,7 +19,9 @@
 #pragma package(smart_init)
 #pragma resource "*.dfm"
 
-#define UseParallel
+#ifndef DEBUG
+  #define UseParallel
+#endif DEBUG
 
 using namespace std;
 
@@ -39,6 +41,7 @@ long double k1s[nel];
 long double as[nel];
 long double aks[nel];
 long double sigma1s[nel];
+bool crashed[nel];
 
 // температура
 #define Cels2Kelvin(x) (x+273.15)
@@ -305,6 +308,7 @@ void __fastcall TmainForm::InitLoop(TObject *, int k) {
 	tet[k] = 0.;
 	T[k] = T_old[k] = T_plast[k] = T_elast[k] = T_m[k] = T0;
 	T_in[k] = 0.;
+	crashed[k] = false;
 }
 
 #define _varalpha(t, maa, mia, mint, maxt) ((mia)+((maa)-(mia))/(1.0+exp((-20.0/((maxt)-(mint)))*((t)-((maxt)+(mint))/2.0))))
@@ -538,7 +542,18 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 		sigmatt[k] * square[k] * (u1 + u2 + u3) / (3.e0 * rcent[k])) / amaselm[k];
 
 	// ПЕРЕМЕННЫЙ ПРЕДЕЛ ТЕКУЧЕСТИ (ФУНКЦИЯ F) С УЧЁТОМ ПАДАЮЩЕЙ ДИАГРАММЫ
-	F[k] = max(sigma1s[k], k1s[k] * alf * p[k] + sigma0s[k] - alphas[k] * I2p[k]);
+	F[k] = k1s[k] * alf * p[k] + sigma0s[k] - alphas[k] * I2p[k];
+	if (alphas[k] > 0 && F[k] < sigma1s[k]) {
+		crashed[k] = true;
+		F[k] = sigma1s[k];
+	}
+	if(alphas[k] < 0) {
+		if (sigma1s[k] > sigma0s[k] + 1 && F[k] > sigma1s[k]) {
+			crashed[k] = true;
+			F[k] = sigma1s[k];
+		}
+	}
+
 	// F[k]=max(sigma1s[k], alf*p[k]+sigma0s[k]-alphas[k]*I2p[k]);
 	// F[k]=k1s[k]*p[k]+sigma0s[k]-alphas[k]*I2p[k];
 
@@ -1973,17 +1988,13 @@ void threeangle(int k) {
 	bool bw = mainForm->BWCBox->Checked;
 	holst->Pen->Color = (bw) ? clBlack : static_cast<TColor>(RGB(30, 30, 30));
 	DefColor = (bw) ? clWhite : static_cast<TColor>(Material[matelm[k]].Color);
-	if (Colorletch[k - 1] != 0) {
+	if (Colorletch[k - 1] && matelm[k]) {//материал — не воздух
 		if (I2p[k] > 0) {
-			if (matelm[k] != 0)
-				DefColor = (bw) ? clGray : clYellow;
+			DefColor = (bw) ? clGray : clYellow;
 		}
-		// if (I2p[k]>0.01)
-		if (Material[matelm[k]].sigma1 > Material[matelm[k]].sigma0 - abs(Material[matelm[k]].alpha * I2p[k])) {
-			if (matelm[k] != 0) {
-				DefColor = (bw) ? clBlack : clRed;
-				Colorletch[k - 1] = 0;
-			}
+		if (crashed[k]) {
+			DefColor = (bw) ? clBlack : clRed;
+			Colorletch[k - 1] = 0;
 		}
 	}
 	else
