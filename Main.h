@@ -163,6 +163,7 @@ __published: // IDE-managed Components
 	TCheckBox *SoftSymCBox;
 	TBindingsList *BindingsList1;
 	TLinkControlToProperty *LinkControlToPropertyEnabled;
+	TCheckBox *GravityCBox;
 
 	void __fastcall RefreshClick(TObject *Sender);
 	void __fastcall FormCreate(TObject *Sender);

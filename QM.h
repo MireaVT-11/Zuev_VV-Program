@@ -65,6 +65,7 @@ public:
 		bool indentor;
 		bool bottomImpact;
 		bool glassful;
+        bool gravity;
 
 		long double overheadSpeed;
 		long double lateralWaveSpeed;

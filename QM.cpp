@@ -206,6 +206,9 @@ void QC::SaveToFile(UnicodeString path) {
 			cn->Attributes[(UnicodeString)"symmetry"] = BoolToStr(v->symmetry, true);
 		if (v->softSymmetry != lel->softSymmetry)
 			cn->Attributes[(UnicodeString)"softSymmetry"] = BoolToStr(v->softSymmetry, true);
+		if (v->gravity != lel->gravity) {
+			cn->Attributes[(UnicodeString)"gravity"] = BoolToStr(v->gravity, true);
+		}
 		lel = v;
 	}
 	xml->SaveToFile(path);
@@ -304,6 +307,7 @@ void QC::ReadFromFile(UnicodeString path) {
 			v->grayScale = ReadXmlValue("grayScale", cn, lel->grayScale);
 			v->symmetry = ReadXmlValue("symmetry", cn, lel->symmetry);
 			v->softSymmetry = ReadXmlValue("softSymmetry", cn, lel->softSymmetry);
+			v->gravity = ReadXmlValue("gravity", cn, lel->gravity);
 			elements->push_back(v);
 			lel = v;
 		}
@@ -510,6 +514,7 @@ void SetCEV(QC::ComputeElement * v) {
 	mainForm->InputEdit1->Value = v->recess;
 	mainForm->AltInpCBox->Checked = v->ohPoints;
 	mainForm->SymCBox->Checked = v->symmetry;
+	mainForm->GravityCBox->Checked = v->gravity;
 	if(v->symmetry && v->softSymmetry){
 		mainForm->SymCBox->Checked = false;
 		mainForm->SoftSymCBox->Checked = true;
@@ -561,6 +566,7 @@ void GetCEV(QC::ComputeElement * v) {
 	v->ohPoints = mainForm->AltInpCBox->Checked;
 	v->symmetry = mainForm->SymCBox->Checked || mainForm->SoftSymCBox->Checked;
 	v->softSymmetry = mainForm->SoftSymCBox->Checked;
+	v->gravity = mainForm->GravityCBox->Checked;
 }
 
 void __fastcall TMQCForm::AbNowBtnClick(TObject * Sender) {

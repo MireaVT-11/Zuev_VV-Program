@@ -1020,19 +1020,23 @@ SavingStartInformation: {
 			// УСЛОВИЯ ЗАКРЕПЛЕНИЯ
 			for (int i = 0; i < n1 + n2 + 1; i++) {
 				speedr1[centralPoints[i]] = 0.; // симметрия, нам всем нужна симметрия
-				speedr[centralPoints[i]] = 0.;
 				if (SymCBox->Checked && !SoftSymCBox->Checked) // совсем симметрия
 				{
 					// скорости центрального узла устанвливаются равными соседним для избежания артефактов
-					speedz[centralPoints[i]] = speedz[centralPoints[i] + 1];
 					speedz1[centralPoints[i]] = speedz1[centralPoints[i] + 1];
 				}
 				if (SymCBox->Checked && SoftSymCBox->Checked) // мягкая симметрия
 				{
 					// скорости центрального узла меньше влияют на него
-					speedz[centralPoints[i]] = 0.8 * speedz[centralPoints[i] + 1] + 0.2 * speedz[centralPoints[i]];
 					speedz1[centralPoints[i]] = 0.8 * speedz1[centralPoints[i] + 1] + 0.2 * speedz1[centralPoints[i]];
 				}
+			}
+            double grfactor = 0.0;
+			if (GravityCBox->Checked) {
+				grfactor = dtime * 9.80665;
+			}
+            for (int i = 1; i <= numbertop; i++) {
+				speedz1[i] -= grfactor;
 			}
 			if (jjjj != 1)
 				for (int i = 1; i <= numbertop; i++) {
@@ -2712,6 +2716,7 @@ void __fastcall TmainForm::SetFormState(bool enabled) {
 	CinemaCBox->Enabled = enabled;
 	CinemaEdit->Enabled = enabled;
 	CheckBoxStakan->Enabled = enabled;
+    GravityCBox->Enabled = enabled;
 	InputEdit1->Enabled = enabled;
 	AltInpCBox->Enabled = enabled;
 	CBoxPoints->Enabled = enabled;
