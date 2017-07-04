@@ -548,7 +548,7 @@ void __fastcall TmainForm::BaseLoop(TObject *, int k) {
 		F[k] = sigma1s[k];
 	}
 	if(alphas[k] < 0) {
-		if (sigma1s[k] > sigma0s[k] + 1 && F[k] > sigma1s[k]) {
+		if ((sigma1s[k] > sigma0s[k] + 1) && F[k] > sigma1s[k]) {
 			crashed[k] = true;
 			F[k] = sigma1s[k];
 		}
@@ -1372,6 +1372,8 @@ SavingStartInformation: {
 
 	sD->Final();
 	delete sD;
+
+    delete[]centralPoints;
 
 	// Button2->Caption = capt;
 	// fclose(file);
