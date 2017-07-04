@@ -1078,11 +1078,15 @@ SavingStartInformation: {
 					}
 				}
 			// *************************************************************
+			double grfactor = 0.0;
+			if (GravityCBox->Checked) {
+				grfactor = dtime * 9.80665;
+			}
 			for (int i = 1; i <= numbertop; i++) {
 				rcoord1[i] = rcoord[i];
 				rcoord[i] += dtime * speedr1[i];
 				zcoord1[i] = zcoord[i];
-				zcoord[i] += dtime * speedz1[i];
+				zcoord[i] += dtime * (speedz1[i] -= grfactor); //именно -=
 			}
 			for (int k = 1; k <= numberelem; k++)
 				square1[k] = square[k];
@@ -2712,6 +2716,7 @@ void __fastcall TmainForm::SetFormState(bool enabled) {
 	CinemaCBox->Enabled = enabled;
 	CinemaEdit->Enabled = enabled;
 	CheckBoxStakan->Enabled = enabled;
+    GravityCBox->Enabled = enabled;
 	InputEdit1->Enabled = enabled;
 	AltInpCBox->Enabled = enabled;
 	CBoxPoints->Enabled = enabled;

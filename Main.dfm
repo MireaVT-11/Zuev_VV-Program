@@ -944,6 +944,14 @@ object mainForm: TmainForm
     Enabled = False
     TabOrder = 64
   end
+  object GravityCBox: TCheckBox
+    Left = 562
+    Top = 676
+    Width = 97
+    Height = 17
+    Caption = #1043#1088#1072#1074#1080#1090#1072#1094#1080#1103
+    TabOrder = 65
+  end
   object BindingsList1: TBindingsList
     Methods = <>
     OutputConverters = <>
